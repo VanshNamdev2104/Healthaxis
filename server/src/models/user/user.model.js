@@ -10,9 +10,9 @@ const UserSchema = new mongoose.Schema({
   },
   number: {
     type: String,
-    required: [true, "Please provide number"],
     minlength: 10,
     maxlength: 10,
+    default: null,
   },
   role: {
     type: String,
@@ -30,8 +30,14 @@ const UserSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, "Please provide password"],
     minlength: 6,
+    default: null,
+  },
+  googleId: {
+    type: String,
+    unique: true,
+    sparse: true,
+    default: null,
   },
 
   refreshToken: {
@@ -41,7 +47,7 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre("save", async function () {
-  if (!this.isModified("password")) return;
+  if (!this.password || !this.isModified("password")) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });

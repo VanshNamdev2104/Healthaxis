@@ -1,6 +1,7 @@
 import app from "./src/index.js";
 import env from "./src/config/dotenv.js";
 import connectDb from "./src/config/db.js";
+import "./src/services/mail.service.js";
 
 const startServer = async () => {
   try {

@@ -18,7 +18,13 @@ import {
 } from "../../validations/user/index.js";
 
 const router = Router();
-
+router.get("/current-user", authenticate, authorizeRoles("user","admin"), (req,res) => {
+    return res.status(200).json({
+        success: true,
+        message: "Current user",
+        user: req.user
+    });
+});
 // ─── Public Routes ───────────────────────────────────────────
 router.post("/register", validate(registerSchema), register);
 router.post("/login", validate(loginSchema), login);
