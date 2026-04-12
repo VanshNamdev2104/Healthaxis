@@ -7,15 +7,28 @@ import {
     unauthorizedResponse,
     validationError,
 } from "../../utils/responsehandler.js";
+import {
+    ACCESS_TOKEN_COOKIE_OPTIONS,
+    REFRESH_TOKEN_COOKIE_OPTIONS,
+} from "../../constant.js";
+import sendMail from "../../services/mail.service.js";
+import {
+    welcomeEmail,
+    loginAlertEmail,
+    profileUpdatedEmail,
+    accountDeletedEmail,
+} from "../../utils/emailTemplates.js";
 
 /**
  * @desc    Register a new user
  * @route   POST /api/user/register
  * @access  Public
  */
+
+
 export const register = async (req, res) => {
     try {
-        const { name, email, password, number, role } = req.body;
+        const { name, email, password, number } = req.body;
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -24,7 +37,7 @@ export const register = async (req, res) => {
         }
 
         // Create the user (password is hashed via pre-save hook)
-        const user = await User.create({ name, email, password, number, role });
+        const user = await User.create({ name, email, password, number });
 
         // Generate tokens
         const { accessToken, refreshToken } = generateTokens(user);
@@ -32,6 +45,14 @@ export const register = async (req, res) => {
         // Save refresh token to DB
         user.refreshToken = refreshToken;
         await user.save();
+
+        // Set tokens as httpOnly cookies
+        res.cookie("accessToken", accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+        res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+        // Send welcome email (fire-and-forget)
+        const { subject, text, html } = welcomeEmail(user.name);
+        sendMail(user.email, subject, text, html);
 
         return successResponse(
             res,
@@ -92,6 +113,15 @@ export const login = async (req, res) => {
         user.refreshToken = refreshToken;
         await user.save();
 
+        // Set tokens as httpOnly cookies
+        res.cookie("accessToken", accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+        res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+
+        // Send login alert email (fire-and-forget)
+        const loginTime = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+        const { subject, text, html } = loginAlertEmail(user.name, req.ip, loginTime);
+        sendMail(user.email, subject, text, html);
+
         return successResponse(
             res,
             {
@@ -122,6 +152,10 @@ export const logout = async (req, res) => {
         // Clear the refresh token from DB
         await User.findByIdAndUpdate(req.user._id, { refreshToken: null });
 
+        // Clear auth cookies
+        res.clearCookie("accessToken", ACCESS_TOKEN_COOKIE_OPTIONS);
+        res.clearCookie("refreshToken", REFRESH_TOKEN_COOKIE_OPTIONS);
+
         return successResponse(res, null, "Logged out successfully");
     } catch (error) {
         return errorResponse(res, error, "Logout failed");
@@ -135,7 +169,8 @@ export const logout = async (req, res) => {
  */
 export const refreshToken = async (req, res) => {
     try {
-        const { refreshToken: token } = req.body;
+        // Read refresh token from cookies first, then fall back to body
+        const token = req.cookies?.refreshToken || req.body.refreshToken;
 
         if (!token) {
             return validationError(res, "Refresh token is required");
@@ -156,6 +191,10 @@ export const refreshToken = async (req, res) => {
         // Update refresh token in DB
         user.refreshToken = newRefreshToken;
         await user.save();
+
+        // Set new tokens as httpOnly cookies
+        res.cookie("accessToken", accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
+        res.cookie("refreshToken", newRefreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
         return successResponse(
             res,
@@ -211,6 +250,12 @@ export const updateProfile = async (req, res) => {
             { new: true, runValidators: true }
         ).select("-password -refreshToken");
 
+        // Send profile updated email (fire-and-forget)
+        if (Object.keys(updates).length > 0) {
+            const { subject, text, html } = profileUpdatedEmail(updatedUser.name, updates);
+            sendMail(updatedUser.email, subject, text, html);
+        }
+
         return successResponse(res, { user: updatedUser }, "Profile updated successfully");
     } catch (error) {
         return errorResponse(res, error, "Failed to update profile");
@@ -224,7 +269,17 @@ export const updateProfile = async (req, res) => {
  */
 export const deleteAccount = async (req, res) => {
     try {
+        const { name, email } = req.user;
+
         await User.findByIdAndDelete(req.user._id);
+
+        // Clear auth cookies
+        res.clearCookie("accessToken", ACCESS_TOKEN_COOKIE_OPTIONS);
+        res.clearCookie("refreshToken", REFRESH_TOKEN_COOKIE_OPTIONS);
+
+        // Send account deleted email (fire-and-forget)
+        const { subject, text, html } = accountDeletedEmail(name);
+        sendMail(email, subject, text, html);
 
         return successResponse(res, null, "Account deleted successfully");
     } catch (error) {

@@ -9,14 +9,15 @@ import User from "../models/user/user.model.js";
  */
 const authenticate = async (req, res, next) => {
     try {
-        // Extract token from "Bearer <token>" header
+        // Extract token from "Bearer <token>" header or fall back to cookies
+        let token;
         const authHeader = req.headers.authorization;
 
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return unauthorizedResponse(res, "Access token is required");
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+            token = authHeader.split(" ")[1];
+        } else if (req.cookies?.accessToken) {
+            token = req.cookies.accessToken;
         }
-
-        const token = authHeader.split(" ")[1];
 
         if (!token) {
             return unauthorizedResponse(res, "Access token is required");
