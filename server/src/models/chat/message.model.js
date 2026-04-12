@@ -5,7 +5,11 @@ const messageSchema = new mongoose.Schema({
         type : mongoose.Schema.Types.ObjectId,
         ref : "Chat"
     },
-    message : {
+    content : {
+        type : String,
+        required : true
+    },
+    summary : {
         type : String,
         required : true
     },

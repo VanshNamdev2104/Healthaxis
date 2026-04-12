@@ -49,6 +49,8 @@ const stateSchema = z.object({
         confidence_score: z.number().min(0).max(100).default(0),
         severity: z.enum(["low", "medium", "high"]).default("low"),
         explanation: z.string().default(""),
+        Summary: z.string().default(""),
+        
         medical_sol: z.array(
             z.object({
                 medicine_name: z.string(),
@@ -293,6 +295,7 @@ const judgeNode = async (state) => {
             "confidence_score": number,
             "severity": "low | medium | high",
             "explanation": "string",
+            "Summary": "string",
 
             "medical_sol": [
             {
