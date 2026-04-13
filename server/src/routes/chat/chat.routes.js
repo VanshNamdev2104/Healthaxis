@@ -7,6 +7,6 @@ const chatRoutes = Router();
 chatRoutes.post("/", auth.authenticate, auth.authorizeRoles("user", "admin") , chatController.createChatController);
 chatRoutes.get("/", auth.authenticate, auth.authorizeRoles("user", "admin"), chatController.getChatsController);
 chatRoutes.get("/:chatId/messages", auth.authenticate, auth.authorizeRoles("user", "admin"), chatController.getMessagesController);
-chatRoutes.post("/messages", auth.authenticate, auth.authorizeRoles("user", "admin"), chatController.sendMessageController);
+chatRoutes.post("/message", auth.authenticate, auth.authorizeRoles("user", "admin"), chatController.sendMessageController);
 
 export default chatRoutes;

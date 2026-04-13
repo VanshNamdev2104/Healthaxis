@@ -4,7 +4,7 @@ import graphService from "../../services/ai/graph.service.js";
 
 async function createChatController(req, res) {
     const user = req.user;
-    
+
     try {
         const newChat = await chatModel.create({ user: user._id });
         res.status(201).json({
@@ -62,7 +62,7 @@ async function sendMessageController(req, res) {
             });
         }
 
-        const newHumanMessage = await messageModel.create({ chat: chatId, content: message, role: "human" });
+        const newHumanMessage = await messageModel.create({ chat: chatId, content: message, summary: message, role: "human" });
         // const messages = await messageModel.find({ chat: chatId });
         const lastMessages = await messageModel
             .find({ chat: chatId })
@@ -79,7 +79,7 @@ async function sendMessageController(req, res) {
             }
         });
 
-        const AIResponse = await graphService(msgArr);
+        const AIResponse = await graphService( JSON.stringify(msgArr));
         const newAIMessage = await messageModel.create({ chat: chatId, content: JSON.stringify(AIResponse), summary: AIResponse?.final_solution.Summary, role: "ai" });
 
         res.status(201).json({

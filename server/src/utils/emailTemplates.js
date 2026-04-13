@@ -181,3 +181,113 @@ export const profileUpdatedEmail = (name, updatedFields) => {
 
     return { subject, text, html };
 };
+
+export const appointmentEmail = (name, doctorName, hospitalName, city) => {
+    const subject = "Appointment Request Received 🏥";
+
+    const text = `Hi ${name},
+
+Your appointment request has been successfully received.
+
+Doctor: ${doctorName}
+Hospital: ${hospitalName}
+City: ${city}
+
+We will notify you shortly with the confirmed date and time of your appointment.
+
+Best regards,
+The HealthAxis Team`;
+
+    const html = wrapHtml(`
+        <h2 style="margin:0 0 16px; color:#1e293b; font-size:22px;">
+            Appointment Request Received, ${name}! 🏥
+        </h2>
+
+        <p style="margin:0 0 16px; color:#475569; font-size:15px; line-height:1.6;">
+            Your appointment request has been successfully submitted. Here are the details:
+        </p>
+
+        <div style="background:#f1f5f9; padding:16px; border-radius:8px; margin-bottom:20px;">
+            <p style="margin:0 0 8px; font-size:14px;"><strong>Doctor:</strong> ${doctorName}</p>
+            <p style="margin:0 0 8px; font-size:14px;"><strong>Hospital:</strong> ${hospitalName}</p>
+            <p style="margin:0; font-size:14px;"><strong>City:</strong> ${city}</p>
+        </div>
+
+        <p style="margin:0 0 20px; color:#475569; font-size:15px; line-height:1.6;">
+            We will notify you shortly with the confirmed <strong>date and time</strong> of your appointment.
+        </p>
+
+        <table cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+            <tr>
+                <td style="background-color:${brandColor}; border-radius:8px; padding:14px 32px;">
+                    <span style="color:#ffffff; font-size:15px; font-weight:600;">
+                        View Appointment Status
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        <p style="margin:24px 0 0; color:#94a3b8; font-size:13px;">
+            If you did not request this appointment, please contact support immediately.
+        </p>
+    `);
+
+    return { subject, text, html };
+};
+
+export const appointmentApprovedEmail = (name, doctorName, hospitalName, city, date, time) => {
+    const subject = "Appointment Confirmed ✅";
+
+    const text = `Hi ${name},
+
+    Your appointment has been successfully confirmed.
+
+    Doctor: ${doctorName}
+    Hospital: ${hospitalName}
+    City: ${city}
+    Date: ${date}
+    Time: ${time}
+
+    Please arrive 10-15 minutes early and bring necessary documents.
+
+    Best regards,
+    The HealthAxis Team`;
+
+    const html = wrapHtml(`
+      <h2 style="margin:0 0 16px; color:#1e293b; font-size:22px;">
+          Appointment Confirmed, ${name}! ✅
+      </h2>
+
+      <p style="margin:0 0 16px; color:#475569; font-size:15px; line-height:1.6;">
+          Great news! Your appointment has been successfully confirmed. Here are your appointment details:
+      </p>
+
+      <div style="background:#f1f5f9; padding:16px; border-radius:8px; margin-bottom:20px;">
+          <p style="margin:0 0 8px; font-size:14px;"><strong>Doctor:</strong> ${doctorName}</p>
+          <p style="margin:0 0 8px; font-size:14px;"><strong>Hospital:</strong> ${hospitalName}</p>
+          <p style="margin:0 0 8px; font-size:14px;"><strong>City:</strong> ${city}</p>
+          <p style="margin:0 0 8px; font-size:14px;"><strong>Date:</strong> ${date}</p>
+          <p style="margin:0; font-size:14px;"><strong>Time:</strong> ${time}</p>
+      </div>
+
+      <p style="margin:0 0 20px; color:#475569; font-size:15px; line-height:1.6;">
+          Please make sure to arrive <strong>10-15 minutes early</strong> and carry any necessary medical records.
+      </p>
+
+      <table cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+          <tr>
+              <td style="background-color:${brandColor}; border-radius:8px; padding:14px 32px;">
+                  <span style="color:#ffffff; font-size:15px; font-weight:600;">
+                      View Appointment
+                  </span>
+              </td>
+          </tr>
+      </table>
+
+      <p style="margin:24px 0 0; color:#94a3b8; font-size:13px;">
+          If you did not book this appointment, please contact support immediately.
+      </p>
+  `);
+
+    return { subject, text, html };
+};
