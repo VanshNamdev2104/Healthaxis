@@ -1,12 +1,26 @@
 import mongoose from "mongoose";
 import env from "./dotenv.js";
-const connectDb = async () => {
-    try {
-        await mongoose.connect(env.MONGO_URI);
-        console.log("Database connected");
-    } catch (error) {
-        console.log(error);
-    }
-}
+import logger from "./logger.js";
 
-export default connectDb;
+const connectDb = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+
+   logger.info("✅ MongoDB Connected");
+  } catch (error) {
+    logger.error("❌ DB Connection Error:", error.message);
+    process.exit(1);
+  }
+};
+
+
+const closeDb = async () => {
+    try {
+        await mongoose.connection.close();
+        logger.info("Database connection closed successfully");
+    } catch (error) {
+        logger.error("Error closing database connection", { error: error.message });
+    }
+};
+
+export { connectDb, closeDb };

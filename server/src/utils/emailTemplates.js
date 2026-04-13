@@ -127,7 +127,48 @@ export const accountDeletedEmail = (name) => {
 
     return { subject, text, html };
 };
+export const forgotPasswordEmail = (name, resetToken) => {
+    const subject = "Reset Your HealthAxis Password";
 
+    const resetLink = `${process.env.CLIENT_URL || "http://localhost:3000"}/reset-password?token=${resetToken}`;
+
+    const text = `Hi ${name},\n\nWe received a request to reset your HealthAxis account password.\n\nClick the link below to reset your password:\n${resetLink}\n\nThis link will expire in 15 minutes.\n\nIf you didn't request a password reset, please ignore this email. Your password will remain unchanged.\n\nBest regards,\nThe HealthAxis Team`;
+
+    const html = wrapHtml(`
+        <h2 style="margin:0 0 16px; color:#1e293b; font-size:22px;">Reset Your Password 🔑</h2>
+        <p style="margin:0 0 16px; color:#475569; font-size:15px; line-height:1.6;">
+            Hi ${name}, we received a request to reset your HealthAxis account password.
+        </p>
+        <p style="margin:0 0 24px; color:#475569; font-size:15px; line-height:1.6;">
+            Click the button below to create a new password:
+        </p>
+        <table cellpadding="0" cellspacing="0" style="margin: 0 auto 24px;">
+            <tr>
+                <td style="background-color:${brandColor}; border-radius:8px; padding:14px 32px;">
+                    <a href="${resetLink}" style="color:#ffffff; font-size:15px; font-weight:600; text-decoration:none; display:inline-block;">Reset Password</a>
+                </td>
+            </tr>
+        </table>
+        <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#fffbeb; border-radius:8px; border: 1px solid #fde68a; margin-bottom:24px;">
+            <tr>
+                <td style="padding:16px 20px;">
+                    <span style="color:#92400e; font-size:14px; font-weight:500;">⏱️ This link will expire in 15 minutes.</span>
+                </td>
+            </tr>
+        </table>
+        <p style="margin:0 0 8px; color:#94a3b8; font-size:13px;">
+            If the button doesn't work, copy and paste this link into your browser:
+        </p>
+        <p style="margin:0 0 16px; color:#0ea5e9; font-size:13px; word-break:break-all;">
+            ${resetLink}
+        </p>
+        <p style="margin:0; color:#ef4444; font-size:14px; font-weight:500;">
+            ⚠️ If you didn't request this, please ignore this email. Your password will remain unchanged.
+        </p>
+    `);
+
+    return { subject, text, html };
+}
 // ─── Password Changed Email ─────────────────────────────────────
 export const passwordChangedEmail = (name) => {
     const subject = "Your HealthAxis Password Was Changed";

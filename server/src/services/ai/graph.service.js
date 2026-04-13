@@ -2,6 +2,7 @@ import { START, END, StateSchema, StateGraph, CompiledStateGraph } from "@langch
 import * as z from "zod";
 import { geminiModel, mistalModel, groqModel } from "./model.service.js";
 import { HumanMessage, AIMessage, SystemMessage, createAgent, providerStrategy } from "langchain"
+import logger from "../../config/logger.js"
 
 const language = "hinglish" // default ai response language
 
@@ -370,7 +371,7 @@ const judgeNode = async (state) => {
     })
 
     // const { judge_solution, final_solution } = judgeResponse.structuredResponse
-    console.log(judgeResponse,"This is judge Response");
+    logger.info("Judge response received", { responseLength: judgeResponse?.messages?.[1]?.content?.length });
     
     const parsed = extractJson(judgeResponse.messages[1].content);
     const result = stateSchema.parse(parsed);

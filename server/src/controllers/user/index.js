@@ -1,4 +1,5 @@
 import User from "../../models/user/user.model.js";
+import crypto from "crypto";
 import { generateTokens, verifyRefreshToken } from "../../utils/token.js";
 import {
     successResponse,
@@ -6,6 +7,7 @@ import {
     conflictResponse,
     unauthorizedResponse,
     validationError,
+    notFoundResponse,
 } from "../../utils/responsehandler.js";
 import {
     ACCESS_TOKEN_COOKIE_OPTIONS,
@@ -17,6 +19,8 @@ import {
     loginAlertEmail,
     profileUpdatedEmail,
     accountDeletedEmail,
+    forgotPasswordEmail,
+    passwordChangedEmail,
 } from "../../utils/emailTemplates.js";
 
 /**
@@ -286,3 +290,42 @@ export const deleteAccount = async (req, res) => {
         return errorResponse(res, error, "Failed to delete account");
     }
 };
+
+
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const user = await User.findOne({ email });
+        if (!user) {
+            return notFoundResponse(res, "User not found");
+        }
+        const resetToken = crypto.randomBytes(32).toString("hex");
+        user.resetPasswordToken = resetToken;
+        user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
+        await user.save();
+        const { subject, text, html } = forgotPasswordEmail(user.name, resetToken);
+        sendMail(user.email, subject, text, html);
+        return successResponse(res, null, "Forgot password email sent successfully");
+    } catch (error) {
+        return errorResponse(res, error, "Failed to forgot password");
+    }
+}
+
+export const resetPassword = async (req, res) => {
+    try {
+        const { resetToken, password } = req.body;
+        const user = await User.findOne({ resetPasswordToken: resetToken, resetPasswordExpires: { $gt: Date.now() } });
+        if (!user) {
+            return notFoundResponse(res, "Invalid or expired reset token");
+        }
+        user.password = password;
+        user.resetPasswordToken = null;
+        user.resetPasswordExpires = null;
+        await user.save();
+        const { subject, text, html } = passwordChangedEmail(user.name);
+        sendMail(user.email, subject, text, html);
+        return successResponse(res, null, "Password reset successfully");
+    } catch (error) {
+        return errorResponse(res, error, "Failed to reset password");
+    }
+}

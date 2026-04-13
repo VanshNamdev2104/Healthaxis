@@ -7,6 +7,8 @@ import {
     getProfile,
     updateProfile,
     deleteAccount,
+    forgotPassword,
+    resetPassword,
 } from "../../controllers/user/index.js";
 import auth from "../../middlewares/auth.js";
 const { authenticate, authorizeRoles } = auth;
@@ -29,6 +31,8 @@ router.get("/current-user", authenticate, authorizeRoles("user","admin"), (req,r
 router.post("/register", validate(registerSchema), register);
 router.post("/login", validate(loginSchema), login);
 router.post("/refresh-token", refreshToken);
+router.post("/forgot-password", forgotPassword);
+router.post("/reset-password", resetPassword);
 
 // ─── Private Routes (require authentication) ────────────────
 router.post("/logout", authenticate, authorizeRoles("user", "admin"), logout);

@@ -16,7 +16,7 @@ const UserSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
+    enum: ["user", "admin","Doctor"],
     default: "user",
   },
   email: {
@@ -44,6 +44,14 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  resetPasswordToken: {
+    type: String,
+    default: null,
+  },
+  resetPasswordExpires: {
+    type: Date,
+    default: null,
+  },
 });
 
 UserSchema.pre("save", async function () {
@@ -56,5 +64,13 @@ UserSchema.methods.comparePassword = async function (canditatePassword) {
   const isMatch = await bcrypt.compare(canditatePassword, this.password);
   return isMatch;
 };
+
+// Database indexes for better performance
+// Note: email and googleId already have unique indexes from schema definition
+UserSchema.index({ number: 1 }); // Index for phone number lookups
+UserSchema.index({ role: 1 }); // Index for role-based queries
+UserSchema.index({ createdAt: -1 }); // Index for sorting by creation date
+UserSchema.index({ resetPasswordToken: 1 }); // Index for password reset lookups
+UserSchema.index({ resetPasswordExpires: 1 }); // Index for expired token cleanup
 
 export default mongoose.model("User", UserSchema);

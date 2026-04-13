@@ -80,7 +80,7 @@ async function sendMessageController(req, res) {
         });
 
         const AIResponse = await graphService( JSON.stringify(msgArr));
-        const newAIMessage = await messageModel.create({ chat: chatId, content: JSON.stringify(AIResponse), summary: AIResponse?.final_solution.Summary, role: "ai" });
+        const newAIMessage = await messageModel.create({ chat: chatId, content: JSON.stringify(AIResponse), summary: AIResponse?.final_solution?.Summary || "No summary available" , role: "ai" });
 
         res.status(201).json({
             success: true,
@@ -92,7 +92,7 @@ async function sendMessageController(req, res) {
 
         return res.status(500).json({
             success: false,
-            message: error.message || "Feiled to send message"
+            message: error.message || "Failed to send message"
         });
     }
 }
@@ -109,7 +109,7 @@ async function getMessagesController(req, res) {
             });
         }
 
-        const chat = await chatModel.findById({
+        const chat = await chatModel.findOne({
             _id: chatId,
             user: user._id
         });
