@@ -21,8 +21,28 @@ const diseaseSchema = new mongoose.Schema({
   causes: {
     type: [String],
     default: []
+  },
+  precautions: {
+    type: [String],
+    default: []
+  },
+  diagnosis: {
+    type: [String],
+    default: []
+  },
+  homeRemedies: {
+    type: [String],
+    default: []
   }
 
 }, { timestamps: true });
 
+// Database indexes for better performance
+// Note: name already has unique index from schema definition
+diseaseSchema.index({ name: "text", description: "text" }); // Text index for search
+diseaseSchema.index({ symptoms: "text" }); // Text index for symptom search
+diseaseSchema.index({ createdAt: -1 }); // Index for sorting by creation date
+
 export default mongoose.model("Disease", diseaseSchema);
+
+

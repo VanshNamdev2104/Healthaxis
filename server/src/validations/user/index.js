@@ -29,8 +29,12 @@ export const registerSchema = z.object({
 
   password: z
     .string({ required_error: "Password is required" })
-    .min(6, "Password must be at least 6 characters")
-    .max(20, "Password must be at most 20 characters"),
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password must be at most 128 characters")
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+    ),
 });
 
 /**
@@ -52,7 +56,7 @@ export const loginSchema = z
 
     password: z
       .string({ required_error: "Password is required" })
-      .min(6, "Password must be at least 6 characters"),
+      .min(1, "Password is required"),
   })
 
   // At least one required

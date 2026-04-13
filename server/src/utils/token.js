@@ -32,7 +32,7 @@ const generateRefreshToken = (payload) => {
  * @throws {JsonWebTokenError | TokenExpiredError} If token is invalid or expired
  */
 const verifyAccessToken = (token) => {
-    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    return jwt.verify(token, env.ACCESS_TOKEN_SECRET);
 };
 
 /**
@@ -42,7 +42,7 @@ const verifyAccessToken = (token) => {
  * @throws {JsonWebTokenError | TokenExpiredError} If token is invalid or expired
  */
 const verifyRefreshToken = (token) => {
-    return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    return jwt.verify(token, env.REFRESH_TOKEN_SECRET);
 };
 
 /**
