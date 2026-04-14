@@ -4,6 +4,7 @@ import hospitalModel from "../../models/hospital/hospital.model.js";
 import sendMail from "../../services/mail.service.js";
 import { appointmentEmail, appointmentApprovedEmail } from "../../utils/emailTemplates.js";
 import mongoose from "mongoose";
+import logger from "../../config/logger.js";
 
 async function createAppointmentController(req, res) {
     const user = req.user;
@@ -88,7 +89,12 @@ async function createAppointmentController(req, res) {
         });
 
     } catch (error) {
-        console.error("Create Appointment Error:", error); // 🔥 Debugging ke liye
+        logger.error("Create Appointment Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id,
+            doctorId 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to create appointment",
@@ -124,7 +130,11 @@ async function getAllAppointmentsOfHospital(req, res) {
         });
 
     } catch (error) {
-        console.error("Get Appointments Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get All Hospital Appointments Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch appointments",
@@ -153,7 +163,11 @@ async function getAllAppointmentsOfUser(req, res) {
         });
 
     } catch (error) {
-        console.error("Get Appointments Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get All User Appointments Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch user appointments",
@@ -189,7 +203,11 @@ async function getApprovedAppointmentsOfHospital(req, res) {
         });
 
     } catch (error) {
-        console.error("Get Appointments Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Approved Hospital Appointments Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch all approved appointments",
@@ -217,7 +235,11 @@ async function getApprovedAppointmentOfUser(req, res) {
         });
 
     } catch (error) {
-        console.error("Get Appointments Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Approved User Appointments Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch user approved appointments",
@@ -253,7 +275,11 @@ async function getPendingAppointmentsOfHospital(req, res) {
         });
 
     } catch (error) {
-        console.error("Get Appointments Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Pending Hospital Appointments Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch all pending appointments",
@@ -281,7 +307,11 @@ async function getPendingAppointmentsOfUser(req, res) {
         });
 
     } catch (error) {
-        console.error("Get Appointments Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Pending User Appointments Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch user pending appointments",
@@ -330,7 +360,12 @@ async function getAppointment(req, res) {
         });
 
     } catch (error) {
-        console.error("Get Appointment Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Appointment Error", { 
+            error: error.message, 
+            stack: error.stack,
+            appointmentId,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch appointment",
@@ -400,7 +435,12 @@ async function approveAppointment(req, res) {
         });
 
     } catch (error) {
-        console.error("Approve Appointment Error:", error); // 🔥 Debugging ke liye
+        logger.error("Approve Appointment Error", { 
+            error: error.message, 
+            stack: error.stack,
+            appointmentId,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to approve appointment",
@@ -444,7 +484,12 @@ async function deleteAppointment(req, res) {
         });
 
     } catch (error) {
-        console.error("Delete Appointment Error:", error); // 🔥 Debugging ke liye
+        logger.error("Delete Appointment Error", { 
+            error: error.message, 
+            stack: error.stack,
+            appointmentId,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to delete appointment",

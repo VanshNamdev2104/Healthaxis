@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { number } from "zod";
 
 // hospital, name, email, contect, specialization, experience, fee
 
@@ -19,7 +18,7 @@ const doctorSchema = new mongoose.Schema({
         required: [true, "Email is required"],
         trim: true,
     },
-    contect: {
+    contact: {
         type: String,
         required: [true, "Phone is required"],
         trim: true,
@@ -35,13 +34,21 @@ const doctorSchema = new mongoose.Schema({
         trim: true,
     },
     fee: {
-        type: number,
+        type: Number,
         default: 0
     },
 }, {
     timestamps: true
 })
 
+// Database indexes for better performance
+doctorSchema.index({ hospital: 1 }); // Index for hospital-doctor relationship
+doctorSchema.index({ name: 1 }); // Index for doctor name lookups
+doctorSchema.index({ specialization: 1 }); // Index for specialization searches
+doctorSchema.index({ specialization: "text", name: "text" }); // Text index for search
+doctorSchema.index({ fee: 1 }); // Index for fee-based filtering
+doctorSchema.index({ hospital: 1, specialization: 1 }); // Compound index for hospital + specialization
+doctorSchema.index({ createdAt: -1 }); // Index for sorting by creation date
 
 const doctorModel = mongoose.model("Doctor", doctorSchema);
 export default doctorModel;

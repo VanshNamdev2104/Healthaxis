@@ -41,6 +41,13 @@ const medicineSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: "Disease",
     }
+  ],
+
+  images: [
+    {
+      url: { type: String, required: true },
+      fileId: { type: String, required: true },
+    }
   ]
 
 }, { timestamps: true });

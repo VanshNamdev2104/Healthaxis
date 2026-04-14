@@ -13,10 +13,10 @@ import chatRoutes from "./routes/chat/chat.routes.js";
 import authRoutes from "./routes/auth/google.routes.js";
 import diseaseRoutes from "./routes/health/disease.routes.js";
 import medicineRoutes from "./routes/health/medicine.routes.js";
+import hospitalRoutes from "./routes/hospital/hospital.routes.js";
+import doctorRoutes from "./routes/hospital/doctor.routes.js";
+import appointmentRoutes from "./routes/hospital/apointment.routes.js";
 import graphService from "./services/ai/graph.service.js";
-import doctorRouter from "./routes/hospital/doctor.routes.js";
-import hospitalRouter from "./routes/hospital/hospital.routes.js";
-import appointmentRouter from "./routes/hospital/apointment.routes.js";
 
 const app = express();
 
@@ -65,12 +65,9 @@ app.use("/api/chat", aiLimiter, chatRoutes);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/health/diseases", diseaseRoutes);
 app.use("/api/health/medicines", medicineRoutes);
-app.use("/api/doctor", doctorRouter);
-app.use("/api/hospital", hospitalRouter);
-app.use("/api/appointment", appointmentRouter);
-
-
-
+app.use("/api/hospital", hospitalRoutes);
+app.use("/api/doctors", doctorRoutes);
+app.use("/api/appointments", appointmentRoutes);    
 // 404 handler
 app.use((req, res) => {
     return notFoundResponse(res, {

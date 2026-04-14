@@ -1,6 +1,10 @@
 import Medicine from "../../models/health/medicine.model.js";
 import Disease from "../../models/health/disease.model.js";
 import {
+    uploadMultipleToImageKit,
+    deleteMultipleFromImageKit,
+} from "../../services/storage.service.js";
+import {
     successResponse,
     errorResponse,
     notFoundResponse,
@@ -17,12 +21,22 @@ export const createMedicine = async (req, res) => {
     try {
         const { name, genericName, description, dosage, sideEffects, storage, isPrescriptionRequired, diseases } = req.body;
 
+        // Parse array/boolean fields that arrive as strings via form-data
+        const parsedDiseases = diseases ? (Array.isArray(diseases) ? diseases : JSON.parse(diseases)) : [];
+        const parsedSideEffects = sideEffects ? (Array.isArray(sideEffects) ? sideEffects : JSON.parse(sideEffects)) : [];
+
         // Validate that referenced diseases exist
-        if (diseases && diseases.length > 0) {
-            const existingDiseases = await Disease.find({ _id: { $in: diseases } });
-            if (existingDiseases.length !== diseases.length) {
+        if (parsedDiseases.length > 0) {
+            const existingDiseases = await Disease.find({ _id: { $in: parsedDiseases } });
+            if (existingDiseases.length !== parsedDiseases.length) {
                 return validationError(res, "One or more disease IDs are invalid");
             }
+        }
+
+        // Handle multiple image uploads to ImageKit
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            images = await uploadMultipleToImageKit(req.files, "/healthaxis/medicines");
         }
 
         const medicine = await Medicine.create({
@@ -30,10 +44,11 @@ export const createMedicine = async (req, res) => {
             genericName,
             description,
             dosage,
-            sideEffects,
+            sideEffects: parsedSideEffects,
             storage,
-            isPrescriptionRequired,
-            diseases,
+            isPrescriptionRequired: isPrescriptionRequired === "true" || isPrescriptionRequired === true,
+            diseases: parsedDiseases,
+            images,
         });
 
         return successResponse(res, medicine, "Medicine created successfully", 201);
@@ -156,17 +171,44 @@ export const updateMedicine = async (req, res) => {
             return notFoundResponse(res, "Medicine not found");
         }
 
+        // Parse array/boolean fields that arrive as strings via form-data
+        const parsedDiseases = diseases ? (Array.isArray(diseases) ? diseases : JSON.parse(diseases)) : medicine.diseases;
+        const parsedSideEffects = sideEffects ? (Array.isArray(sideEffects) ? sideEffects : JSON.parse(sideEffects)) : medicine.sideEffects;
+
         // Validate that referenced diseases exist
-        if (diseases && diseases.length > 0) {
-            const existingDiseases = await Disease.find({ _id: { $in: diseases } });
-            if (existingDiseases.length !== diseases.length) {
+        if (Array.isArray(parsedDiseases) && parsedDiseases.length > 0) {
+            const existingDiseases = await Disease.find({ _id: { $in: parsedDiseases } });
+            if (existingDiseases.length !== parsedDiseases.length) {
                 return validationError(res, "One or more disease IDs are invalid");
             }
         }
 
+        const updateData = {
+            name,
+            genericName,
+            description,
+            dosage,
+            sideEffects: parsedSideEffects,
+            storage,
+            isPrescriptionRequired: isPrescriptionRequired !== undefined
+                ? (isPrescriptionRequired === "true" || isPrescriptionRequired === true)
+                : medicine.isPrescriptionRequired,
+            diseases: parsedDiseases,
+        };
+
+        // Handle multiple image uploads — delete all old images, then upload new ones
+        if (req.files && req.files.length > 0) {
+            if (medicine.images && medicine.images.length > 0) {
+                const oldFileIds = medicine.images.map((img) => img.fileId);
+                await deleteMultipleFromImageKit(oldFileIds);
+            }
+
+            updateData.images = await uploadMultipleToImageKit(req.files, "/healthaxis/medicines");
+        }
+
         const updatedMedicine = await Medicine.findByIdAndUpdate(
             req.params.id,
-            { name, genericName, description, dosage, sideEffects, storage, isPrescriptionRequired, diseases },
+            updateData,
             { new: true, runValidators: true }
         ).populate("diseases", "name");
 
@@ -193,6 +235,12 @@ export const deleteMedicine = async (req, res) => {
 
         if (!medicine) {
             return notFoundResponse(res, "Medicine not found");
+        }
+
+        // Delete all images from ImageKit
+        if (medicine.images && medicine.images.length > 0) {
+            const fileIds = medicine.images.map((img) => img.fileId);
+            await deleteMultipleFromImageKit(fileIds);
         }
 
         await Medicine.findByIdAndDelete(req.params.id);

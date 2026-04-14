@@ -1,5 +1,6 @@
 import doctorModel from "../../models/hospital/doctor.model.js";
 import userModel from "../../models/user/user.model.js";
+import logger from "../../config/logger.js";
 
 
 async function createDoctorController(req, res) {
@@ -38,7 +39,11 @@ async function createDoctorController(req, res) {
         });
     }
     catch (error) {
-        console.error("Create Doctor Error:", error); // 🔥 Debugging ke liye
+        logger.error("Create Doctor Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to create doctor",
@@ -65,7 +70,12 @@ async function getAllDoctorsController(req, res) {
         });
     }
     catch (error) {
-        console.error("Get Doctors Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Doctors Error", { 
+            error: error.message, 
+            stack: error.stack,
+            hospitalId,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch doctors",
@@ -92,7 +102,12 @@ async function getDoctorController(req, res) {
         });
     }
     catch (error) {
-        console.error("Get Doctor Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Doctor Error", { 
+            error: error.message, 
+            stack: error.stack,
+            doctorId,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch doctor",
@@ -118,7 +133,11 @@ async function getDoctorsBySpecialization(req, res) {
         });
     }
     catch (error) {
-        console.error("Get Doctors Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Doctors Error", { 
+            error: error.message, 
+            stack: error.stack,
+            specialization,
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch doctors",
@@ -145,7 +164,12 @@ async function deleteDoctorController(req, res) {
         });
     }
     catch (error) {
-        console.error("Delete Doctor Error:", error); // 🔥 Debugging ke liye
+        logger.error("Delete Doctor Error", { 
+            error: error.message, 
+            stack: error.stack,
+            doctorId,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to delete doctor",
