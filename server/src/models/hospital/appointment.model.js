@@ -68,6 +68,18 @@ const appointmentSchema = new mongoose.Schema({
     timestamps: true
 });
 
+// Database indexes for better performance
+appointmentSchema.index({ user: 1 }); // Index for user appointments
+appointmentSchema.index({ doctor: 1 }); // Index for doctor appointments
+appointmentSchema.index({ hospital: 1 }); // Index for hospital appointments
+appointmentSchema.index({ status: 1 }); // Index for status filtering
+appointmentSchema.index({ date: 1 }); // Index for date-based queries
+appointmentSchema.index({ user: 1, status: 1 }); // Compound index for user + status
+appointmentSchema.index({ doctor: 1, date: 1 }); // Compound index for doctor + date
+appointmentSchema.index({ hospital: 1, status: 1 }); // Compound index for hospital + status
+appointmentSchema.index({ date: 1, time: 1 }); // Compound index for date + time
+appointmentSchema.index({ createdAt: -1 }); // Index for sorting by creation date
+
 const appointmentModel = mongoose.model("Appointment", appointmentSchema);
 export default appointmentModel;
     

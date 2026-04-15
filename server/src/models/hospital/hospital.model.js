@@ -68,6 +68,16 @@ const hospitalSchema = new mongoose.Schema({
     timestamps: true
 })
 
+// Database indexes for better performance
+hospitalSchema.index({ name: 1 }); // Index for hospital name lookups
+hospitalSchema.index({ city: 1 }); // Index for city-based searches
+hospitalSchema.index({ state: 1 }); // Index for state-based searches
+hospitalSchema.index({ type: 1 }); // Index for hospital type filtering
+hospitalSchema.index({ speciality: "text" }); // Text index for speciality search
+hospitalSchema.index({ isVerified: 1 }); // Index for verification status
+hospitalSchema.index({ user: 1 }); // Index for user-hospital relationship
+hospitalSchema.index({ city: 1, type: 1 }); // Compound index for city + type searches
+hospitalSchema.index({ createdAt: -1 }); // Index for sorting by creation date
 
 const hospitalModel = mongoose.model("Hospital", hospitalSchema);
 export default hospitalModel;

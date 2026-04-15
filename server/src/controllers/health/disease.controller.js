@@ -1,5 +1,9 @@
 import Disease from "../../models/health/disease.model.js";
 import {
+    uploadMultipleToImageKit,
+    deleteMultipleFromImageKit,
+} from "../../services/storage.service.js";
+import {
     successResponse,
     errorResponse,
     notFoundResponse,
@@ -22,14 +26,21 @@ export const createDisease = async (req, res) => {
             return conflictResponse(res, "Disease with this name already exists");
         }
 
+        // Handle multiple image uploads to ImageKit
+        let images = [];
+        if (req.files && req.files.length > 0) {
+            images = await uploadMultipleToImageKit(req.files, "/healthaxis/diseases");
+        }
+
         const disease = await Disease.create({
             name,
             description,
-            symptoms,
-            causes,
-            precautions,
-            diagnosis,
-            homeRemedies,
+            symptoms: symptoms ? (Array.isArray(symptoms) ? symptoms : JSON.parse(symptoms)) : [],
+            causes: causes ? (Array.isArray(causes) ? causes : JSON.parse(causes)) : [],
+            precautions: precautions ? (Array.isArray(precautions) ? precautions : JSON.parse(precautions)) : [],
+            diagnosis: diagnosis ? (Array.isArray(diagnosis) ? diagnosis : JSON.parse(diagnosis)) : [],
+            homeRemedies: homeRemedies ? (Array.isArray(homeRemedies) ? homeRemedies : JSON.parse(homeRemedies)) : [],
+            images,
         });
 
         return successResponse(res, disease, "Disease created successfully", 201);
@@ -123,9 +134,31 @@ export const updateDisease = async (req, res) => {
             }
         }
 
+        const updateData = {
+            name,
+            description,
+            symptoms: symptoms ? (Array.isArray(symptoms) ? symptoms : JSON.parse(symptoms)) : disease.symptoms,
+            causes: causes ? (Array.isArray(causes) ? causes : JSON.parse(causes)) : disease.causes,
+            precautions: precautions ? (Array.isArray(precautions) ? precautions : JSON.parse(precautions)) : disease.precautions,
+            diagnosis: diagnosis ? (Array.isArray(diagnosis) ? diagnosis : JSON.parse(diagnosis)) : disease.diagnosis,
+            homeRemedies: homeRemedies ? (Array.isArray(homeRemedies) ? homeRemedies : JSON.parse(homeRemedies)) : disease.homeRemedies,
+        };
+
+        // Handle multiple image uploads — delete all old images, then upload new ones
+        if (req.files && req.files.length > 0) {
+            // Delete old images from ImageKit
+            if (disease.images && disease.images.length > 0) {
+                const oldFileIds = disease.images.map((img) => img.fileId);
+                await deleteMultipleFromImageKit(oldFileIds);
+            }
+
+            // Upload new images
+            updateData.images = await uploadMultipleToImageKit(req.files, "/healthaxis/diseases");
+        }
+
         const updatedDisease = await Disease.findByIdAndUpdate(
             req.params.id,
-            { name, description, symptoms, causes, precautions, diagnosis, homeRemedies },
+            updateData,
             { new: true, runValidators: true }
         );
 
@@ -154,6 +187,12 @@ export const deleteDisease = async (req, res) => {
             return notFoundResponse(res, "Disease not found");
         }
 
+        // Delete all images from ImageKit
+        if (disease.images && disease.images.length > 0) {
+            const fileIds = disease.images.map((img) => img.fileId);
+            await deleteMultipleFromImageKit(fileIds);
+        }
+
         await Disease.findByIdAndDelete(req.params.id);
 
         return successResponse(res, null, "Disease deleted successfully");
@@ -164,4 +203,3 @@ export const deleteDisease = async (req, res) => {
         return errorResponse(res, error, "Failed to delete disease");
     }
 };
-

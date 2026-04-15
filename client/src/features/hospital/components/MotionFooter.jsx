@@ -310,7 +310,7 @@ export function CinematicFooter() {
           {/* Content */}
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 mt-20 w-full max-w-5xl mx-auto">
             <h2 ref={headingRef} className="text-5xl md:text-8xl font-black flex flex-col  mb-12 text-center">
-              <span className="footer-text-glow">Welcome to</span> <span className=" footer-text-glow-sec text-4xl md:text-6xl text-emerald-500 bg-none">Hospital Control Center</span>
+              <span className="footer-text-glow">Welcome to</span> <span className=" footer-text-glow-sectext-4xl md:text-6xl text-emerald-500 bg-none">Hospital Control Center</span>
             </h2>
 
             <div ref={linksRef} className="flex flex-col items-center gap-6 w-full">

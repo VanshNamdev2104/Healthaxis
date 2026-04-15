@@ -2,6 +2,7 @@ import hospitalModel from "../../models/hospital/hospital.model.js";
 import doctorModel from "../../models/hospital/doctor.model.js";
 import appointmentModel from "../../models/hospital/appointment.model.js";
 import userModel from "../../models/user/user.model.js";
+import logger from "../../config/logger.js";
 
 //All controller related to hospitals
 async function createHospitalController(req, res) {
@@ -40,7 +41,11 @@ async function createHospitalController(req, res) {
         });
     }
     catch (error) {
-        console.error("Create Hospital Error:", error); // 🔥 Debugging ke liye
+        logger.error("Create Hospital Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to create hospital",
@@ -61,7 +66,11 @@ async function getAllHospitalsController(req, res) {
         });
     }
     catch (error) {
-        console.error("Get Hospitals Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Hospitals Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch hospitals",
@@ -86,7 +95,12 @@ async function getHospitalController(req, res) {
             data: hospital,
         });
     } catch (error) {
-        console.error("Get Hospital Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Hospital Error", { 
+            error: error.message, 
+            stack: error.stack,
+            hospitalId,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch hospital",
@@ -110,7 +124,11 @@ async function getYourHospitalController(req, res) {
             data: hospital,
         });
     } catch (error) {
-        console.error("Get Your Hospital Error:", error); // 🔥 Debugging ke liye
+        logger.error("Get Your Hospital Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch your hospital",
@@ -163,7 +181,11 @@ async function deleteHospitalController(req, res) {
         });
 
     } catch (error) {
-        console.error("Delete Hospital Error:", error); // 🔥 Debugging ke liye
+        logger.error("Delete Hospital Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to delete hospital",
