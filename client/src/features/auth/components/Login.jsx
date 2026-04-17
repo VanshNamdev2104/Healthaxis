@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import { SunIcon as Sunburst } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 
-export default function Login({ toggleLogin }) {
+export default function Login({ toggleLogin, toggleForgot }) {
   const [loginType, setLoginType] = useState("email");
   const { handleLogin, handleGoogleAuth, loading } = useAuth();
 
@@ -151,7 +151,16 @@ export default function Login({ toggleLogin }) {
 
             {/* PASSWORD */}
             <div>
-              <label className="text-sm">Password</label>
+              <div className="flex justify-between items-center mt-1">
+                <label className="text-sm">Password</label>
+                <button
+                  type="button"
+                  onClick={toggleForgot}
+                  className="text-xs text-orange-500 font-medium hover:underline"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <input
                 type="password"
                 className="w-full px-3 py-2 border rounded-lg mt-1"

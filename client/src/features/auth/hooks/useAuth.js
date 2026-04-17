@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setUser, setLoading, setError, logout as logoutAction, clearError } from "../slice/auth.slice.js";
-import { login, register, logout as logoutApi, getCurrentUser, updateProfile, changePassword, googleAuth } from "../services/auth.api.js";
+import { login, register, logout as logoutApi, getCurrentUser, updateProfile, changePassword, googleAuth, forgotPassword as forgotPasswordApi, resetPassword as resetPasswordApi } from "../services/auth.api.js";
 
 export const useAuth = () => {
     const dispatch = useDispatch();
@@ -97,6 +97,34 @@ export const useAuth = () => {
         }
     }
 
+    async function handleForgotPassword(email) {
+        try {
+            dispatch(setLoading(true));
+            dispatch(clearError());
+            const response = await forgotPasswordApi(email);
+            return response;
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Failed to send reset email"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    async function handleResetPassword(formData) {
+        try {
+            dispatch(setLoading(true));
+            dispatch(clearError());
+            const response = await resetPasswordApi(formData);
+            return response;
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Failed to reset password"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     return {
         user,
         loading,
@@ -109,6 +137,8 @@ export const useAuth = () => {
         handleGetCurrentUser,
         handleUpdateProfile,
         handleChangePassword,
+        handleForgotPassword,
+        handleResetPassword,
         clearError: () => dispatch(clearError())
     };
 };

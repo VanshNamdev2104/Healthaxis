@@ -5,6 +5,37 @@ const api = axios.create({
     withCredentials: true
 });
 
+// Response interceptor to handle token refresh
+api.interceptors.response.use(
+    (response) => response,
+    async (error) => {
+        const originalRequest = error.config;
+
+        // If the error is 401, we haven't retried yet, and it's not the login or refresh routes themselves
+        if (
+            error.response?.status === 401 &&
+            !originalRequest._retry &&
+            originalRequest.url !== "/user/login" &&
+            originalRequest.url !== "/user/refresh-token"
+        ) {
+            originalRequest._retry = true;
+            try {
+                // Make a call to refresh the token using the base axios to avoid infinite loops
+                await axios.post("/api/user/refresh-token", {}, { withCredentials: true });
+                
+                // If the refresh is successful, retry the original request
+                return api(originalRequest);
+            } catch (refreshError) {
+                // If the refresh token has expired, force logout by redirecting to login page
+                window.location.href = "/";
+                return Promise.reject(refreshError);
+            }
+        }
+
+        return Promise.reject(error);
+    }
+);
+
 export async function login({ email, number, password }) {
     try {
         const payload = {
@@ -43,7 +74,7 @@ export async function logout() {
 
 export async function getCurrentUser() {
     try {
-        const response = await api.get("/user/me");
+        const response = await api.get("/user/current-user");
         return response.data;
     } catch (error) {
         throw error;
@@ -62,6 +93,24 @@ export async function updateProfile({ name, email, number }) {
 export async function changePassword({ currentPassword, newPassword }) {
     try {
         const response = await api.put("/user/change-password", { currentPassword, newPassword });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function forgotPassword(email) {
+    try {
+        const response = await api.post("/user/forgot-password", { email });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}
+
+export async function resetPassword({ resetToken, password }) {
+    try {
+        const response = await api.post("/user/reset-password", { resetToken, password });
         return response.data;
     } catch (error) {
         throw error;

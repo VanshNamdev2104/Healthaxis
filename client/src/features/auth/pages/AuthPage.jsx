@@ -1,21 +1,24 @@
 import React, { useState } from "react";
 import Register from "../components/Register";
 import Login from "../components/Login";
+import ForgotPassword from "../components/ForgotPassword";
 
 const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
+  const [authState, setAuthState] = useState("login"); // 'login', 'register', 'forgot'
 
   const toggleLogin = () => {
-    setIsLogin(!isLogin);
+    setAuthState(prevState => prevState === "login" ? "register" : "login");
+  };
+
+  const toggleForgot = () => {
+    setAuthState(prevState => prevState === "forgot" ? "login" : "forgot");
   };
 
   return (
     <>
-      {isLogin ? (
-        <Login toggleLogin={toggleLogin} />
-      ) : (
-        <Register toggleLogin={toggleLogin} />
-      )}
+      {authState === "login" && <Login toggleLogin={toggleLogin} toggleForgot={toggleForgot} />}
+      {authState === "register" && <Register toggleLogin={toggleLogin} />}
+      {authState === "forgot" && <ForgotPassword toggleForgot={toggleForgot} />}
     </>
   );
 };
