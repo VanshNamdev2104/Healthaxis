@@ -209,3 +209,10 @@ MongoParseError: option buffermaxentries is not supported
 2026-04-17 20:53:27 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
 2026-04-17 20:53:27 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
 2026-04-17 20:56:06 [INFO]: Server shutting down... {"service":"healthaxis-api"}
+2026-04-17 21:31:30 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 21:31:30 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 21:31:30 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 23:54:03 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 23:54:03 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 23:54:03 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 23:59:01 [INFO]: Server shutting down... {"service":"healthaxis-api"}
