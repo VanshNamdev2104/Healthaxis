@@ -11,8 +11,10 @@ const validate = (schema) => (req, res, next) => {
 
     if (!result.success) {
         // Extract the first error message for a clean response
-        const firstError = result.error.errors[0];
-        return validationError(res, firstError.message);
+        const errors = result.error.errors || result.error.issues || [];
+        const firstError = errors[0];
+        const errorMessage = firstError ? firstError.message : "Validation failed";
+        return validationError(res, errorMessage);
     }
 
     // Replace req.body with the parsed (cleaned) data
