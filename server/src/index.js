@@ -66,8 +66,8 @@ app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/health/diseases", diseaseRoutes);
 app.use("/api/health/medicines", medicineRoutes);
 app.use("/api/hospital", hospitalRoutes);
-app.use("/api/doctors", doctorRoutes);
-app.use("/api/appointments", appointmentRoutes);    
+app.use("/api/doctor", doctorRoutes);
+app.use("/api/appointment", appointmentRoutes);    
 // 404 handler
 app.use((req, res) => {
     return notFoundResponse(res, {

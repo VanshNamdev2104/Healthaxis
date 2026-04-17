@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router"
 import Authlayout from "../../layouts/Authlayout"
 import Hospital from "../../features/hospital/pages/Hospital"
 import DoctorsPage from "../../features/hospital/pages/DoctorsPage"
+import AppointmentPage from "../../features/hospital/pages/AppointmentPage"
 
 
 export const router = createBrowserRouter([
@@ -16,6 +17,10 @@ export const router = createBrowserRouter([
     {
         path: "/hospital/doctors",
         element: < DoctorsPage />
+    },
+    {
+        path: "/hospital/appointments",
+        element: < AppointmentPage />
     }
 ])
 

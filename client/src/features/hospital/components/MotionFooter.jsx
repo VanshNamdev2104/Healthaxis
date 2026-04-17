@@ -211,9 +211,9 @@ const MarqueeItem = () => (
   <div className="flex items-center space-x-12 px-6">
     <span>Shree Narayan Hospital</span> <span className="text-primary/60">✦</span>
     <span>Best Facilites Available</span> <span className="text-secondary/60">✦</span>
-    <span>24 Hours Open</span> <span className="text-primary/60">✦</span>
+    <span>24*7 Open</span> <span className="text-primary/60">✦</span>
     <span>Multi Specialist</span> <span className="text-secondary/60">✦</span>
-    <span>Best Doctors Available</span> <span className="text-primary/60">✦</span>
+    <span>Your health our priority</span> <span className="text-primary/60">✦</span>
   </div>
 );
 
@@ -288,7 +288,7 @@ export function CinematicFooter() {
         className="relative h-screen w-full"
         style={{ clipPath: "polygon(0% 0, 100% 0%, 100% 100%, 0 100%)" }}
       >
-        <footer className="fixed bottom-0 left-0 flex h-screen w-full flex-col justify-between overflow-hidden bg-background text-foreground cinematic-footer-wrapper">
+        <footer className="fixed bottom-0 left-0 flex min-h-screen w-full flex-col justify-between overflow-hidden bg-background text-foreground cinematic-footer-wrapper">
 
           {/* Background */}
           <div className="footer-aurora absolute left-1/2 top-1/2 h-[60vh] w-[80vw] -translate-x-1/2 -translate-y-1/2 animate-footer-breathe rounded-[50%] blur-[80px]" />
@@ -321,7 +321,9 @@ export function CinematicFooter() {
                   navigate("/hospital/doctors")
                   
                 }} className="footer-glass-pill px-10 py-5 rounded-full">Doctors</MagneticButton>
-                <MagneticButton as="a" href="#" className="footer-glass-pill px-10 py-5 rounded-full">Appointments</MagneticButton>
+                <MagneticButton as="a" onClick={() => {
+                  navigate("/hospital/appointments")
+                }} className="footer-glass-pill px-10 py-5 rounded-full">Appointments</MagneticButton>
               </div>
 
               <div className="flex flex-wrap justify-center gap-4">
@@ -334,8 +336,7 @@ export function CinematicFooter() {
           </div>
 
           {/* Bottom */}
-          <div className="flex justify-between p-6">
-            <span>© 2026 Volvox</span>
+          <div className="flex justify-end p-6">
             <MagneticButton className="footer-glass-pill px-6 py-3 rounded-full" onClick={scrollToTop}>Back to Top </MagneticButton>
           </div>
 

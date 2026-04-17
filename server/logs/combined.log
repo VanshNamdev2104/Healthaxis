@@ -147,3 +147,42 @@ MongoParseError: option buffermaxentries is not supported
 2026-04-14 22:12:19 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
 2026-04-14 22:12:19 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
 2026-04-14 22:12:19 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-16 00:25:38 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
+2026-04-16 00:26:28 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-16 00:26:28 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-16 00:26:28 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-16 00:26:32 [INFO]: Server shutting down... {"service":"healthaxis-api"}
+2026-04-16 00:28:49 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-16 00:28:49 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-16 00:28:49 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-16 00:29:05 [INFO]: Server shutting down... {"service":"healthaxis-api"}
+2026-04-16 17:58:20 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-16 17:58:20 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-16 17:58:20 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-16 21:16:00 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-16 21:16:00 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-16 21:16:00 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-16 21:23:02 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-16 21:23:02 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-16 21:23:02 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-16 21:25:28 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-16 21:25:28 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-16 21:25:28 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-16 21:56:51 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-16 21:56:51 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-16 21:56:51 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 00:47:26 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 00:47:26 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 00:47:26 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 01:50:34 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 01:50:34 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 01:50:34 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 11:38:53 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 11:38:53 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 11:38:53 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 11:41:28 [WARN]: Auth rate limit exceeded {"service":"healthaxis-api","ip":"::1","method":"GET","url":"/api/auth/google/CLIENT_URL=http://localhost:5173","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"}
+2026-04-17 11:41:58 [WARN]: Auth rate limit exceeded {"service":"healthaxis-api","ip":"::1","method":"GET","url":"/api/auth/google/callback?iss=https%3A%2F%2Faccounts.google.com&code=4%2F0Aci98E-Zn8_L4d22tcPFEZ46iXacdDhGvA1rHagO7TlQRj4SoqpH1XT0WZ2IYNNpYgEFyg&scope=email+profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile+https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email+openid&authuser=0&prompt=consent","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"}
+2026-04-17 11:42:24 [WARN]: Auth rate limit exceeded {"service":"healthaxis-api","ip":"::1","method":"GET","url":"/api/auth/google","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"}
+2026-04-17 11:42:37 [WARN]: Auth rate limit exceeded {"service":"healthaxis-api","ip":"::1","method":"GET","url":"/api/auth/google","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"}
+2026-04-17 11:42:47 [WARN]: Auth rate limit exceeded {"service":"healthaxis-api","ip":"::1","method":"GET","url":"/api/auth/google","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"}
+2026-04-17 14:01:26 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
