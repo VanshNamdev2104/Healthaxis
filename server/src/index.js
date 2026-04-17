@@ -4,9 +4,9 @@ import compression from "compression";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import passport from "./config/passport.js";
+import env from "./config/dotenv.js";
 import { notFoundResponse } from "./utils/responsehandler.js";
 import errorhandlerMiddleware from "./utils/errorhandler.js";
-import { generalLimiter, authLimiter, aiLimiter } from "./middlewares/rateLimiter.js";
 
 import userRoutes from "./routes/user/index.js";
 import chatRoutes from "./routes/chat/chat.routes.js";
@@ -56,18 +56,16 @@ app.use(cookieParser());
 app.use(passport.initialize());
 app.set("trust proxy", true);
 
-// Apply general rate limiting to all API routes
-app.use("/api/", generalLimiter);
-
 // ─── API Routes ──────────────────────────────────────────────
 app.use("/api/user", userRoutes);
-app.use("/api/chat", aiLimiter, chatRoutes);
-app.use("/api/auth", authLimiter, authRoutes);
+app.use("/api/chat", chatRoutes);
+app.use("/api/auth", authRoutes);
 app.use("/api/health/diseases", diseaseRoutes);
 app.use("/api/health/medicines", medicineRoutes);
 app.use("/api/hospital", hospitalRoutes);
 app.use("/api/doctors", doctorRoutes);
-app.use("/api/appointments", appointmentRoutes);    
+app.use("/api/appointments", appointmentRoutes);
+
 // 404 handler
 app.use((req, res) => {
     return notFoundResponse(res, {

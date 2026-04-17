@@ -1,5 +1,5 @@
 import { createBrowserRouter, RouterProvider } from "react-router"
-import Authlayout from "../../layouts/Authlayout"
+import AuthPage from "../../features/auth/pages/AuthPage"
 import Hospital from "../../features/hospital/pages/Hospital"
 import DoctorsPage from "../../features/hospital/pages/DoctorsPage"
 
@@ -7,9 +7,8 @@ import DoctorsPage from "../../features/hospital/pages/DoctorsPage"
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <Authlayout />
-    },
-    {
+        element: <AuthPage />
+    },{
         path: "/hospital",
         element: < Hospital />
     },

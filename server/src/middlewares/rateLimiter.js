@@ -12,6 +12,8 @@ export const generalLimiter = rateLimit({
   },
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  skipFailedRequests: true, // Don't count failed requests
+  trustProxy: false, // Disable trust proxy validation
   handler: (req, res) => {
     logger.warn('Rate limit exceeded', {
       ip: req.ip,
@@ -31,7 +33,7 @@ export const generalLimiter = rateLimit({
 // Strict rate limiter for authentication endpoints
 export const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // Limit each IP to 5 auth requests per windowMs
+  max: 100, // Limit each IP to 100 auth requests per windowMs
   message: {
     success: false,
     message: 'Too many authentication attempts, please try again later.',
@@ -39,6 +41,8 @@ export const authLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skipFailedRequests: true, // Don't count failed requests
+  trustProxy: false, // Disable trust proxy validation
   handler: (req, res) => {
     logger.warn('Auth rate limit exceeded', {
       ip: req.ip,
@@ -66,6 +70,8 @@ export const aiLimiter = rateLimit({
   },
   standardHeaders: true,
   legacyHeaders: false,
+  skipFailedRequests: true, // Don't count failed requests
+  trustProxy: false, // Disable trust proxy validation
   handler: (req, res) => {
     logger.warn('AI rate limit exceeded', {
       ip: req.ip,

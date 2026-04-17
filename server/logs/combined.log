@@ -147,3 +147,65 @@ MongoParseError: option buffermaxentries is not supported
 2026-04-14 22:12:19 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
 2026-04-14 22:12:19 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
 2026-04-14 22:12:19 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-16 21:52:21 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-16 21:52:21 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-16 21:52:21 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 12:48:08 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 12:48:08 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 12:48:08 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 12:51:45 [WARN]: Auth rate limit exceeded {"service":"healthaxis-api","ip":"::1","method":"GET","url":"/api/auth/google/CLIENT_URL=http://localhost:5173","userAgent":"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/147.0.0.0 Safari/537.36"}
+2026-04-17 12:53:01 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 12:53:01 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 12:53:01 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 13:03:06 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 13:03:06 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 13:03:06 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 13:22:15 [INFO]: Server shutting down... {"service":"healthaxis-api"}
+2026-04-17 13:22:25 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 13:22:25 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 13:22:25 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:32:18 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:32:18 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:32:18 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:35:19 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:35:19 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:35:19 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:37:55 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:37:55 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:37:55 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:38:07 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:38:07 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:38:07 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:38:18 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:38:18 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:38:18 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:39:13 [INFO]: Server shutting down... {"service":"healthaxis-api"}
+2026-04-17 20:39:23 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:39:23 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:39:23 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:39:33 [INFO]: Server shutting down... {"service":"healthaxis-api"}
+2026-04-17 20:39:43 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:39:43 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:39:43 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:40:34 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:40:34 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:40:34 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:41:13 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:41:13 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:41:13 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:48:01 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:48:01 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:48:01 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:52:23 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:52:23 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:52:23 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:52:55 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:52:55 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:52:55 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:53:16 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:53:16 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:53:16 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:53:27 [INFO]: ✅ MongoDB Connected {"service":"healthaxis-api"}
+2026-04-17 20:53:27 [INFO]: Socket.IO initialized {"service":"healthaxis-api"}
+2026-04-17 20:53:27 [INFO]: Server running on port 3000 {"service":"healthaxis-api"}
+2026-04-17 20:56:06 [INFO]: Server shutting down... {"service":"healthaxis-api"}

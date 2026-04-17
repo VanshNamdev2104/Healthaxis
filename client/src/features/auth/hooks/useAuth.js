@@ -1,0 +1,115 @@
+import { useDispatch, useSelector } from "react-redux";
+import { setUser, setLoading, setError, logout as logoutAction, clearError } from "../slice/auth.slice.js";
+import { login, register, logout as logoutApi, getCurrentUser, updateProfile, changePassword, googleAuth } from "../services/auth.api.js";
+
+export const useAuth = () => {
+    const dispatch = useDispatch();
+    const { user, loading, error, isAuthenticated } = useSelector((state) => state.auth);
+
+    async function handleLogin(formData) {
+        try {
+            dispatch(setLoading(true));
+            dispatch(clearError());
+            const response = await login(formData);
+            dispatch(setUser(response.data));
+            return response;
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Login failed"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    async function handleRegister(formData) {
+        try {
+            dispatch(setLoading(true));
+            dispatch(clearError());
+            const response = await register(formData);
+            return response;
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Registration failed"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    function handleGoogleAuth() {
+        googleAuth();
+    }
+
+    async function handleLogout() {
+        try {
+            dispatch(setLoading(true));
+            await logoutApi();
+            dispatch(logoutAction());
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Logout failed"));
+            // Even if API fails, clear local state
+            dispatch(logoutAction());
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    async function handleGetCurrentUser() {
+        try {
+            dispatch(setLoading(true));
+            dispatch(clearError());
+            const response = await getCurrentUser();
+            dispatch(setUser(response.data));
+            return response;
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Failed to get user"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    async function handleUpdateProfile(formData) {
+        try {
+            dispatch(setLoading(true));
+            dispatch(clearError());
+            const response = await updateProfile(formData);
+            dispatch(setUser(response.data));
+            return response;
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Failed to update profile"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    async function handleChangePassword(formData) {
+        try {
+            dispatch(setLoading(true));
+            dispatch(clearError());
+            const response = await changePassword(formData);
+            return response;
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Failed to change password"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
+    return {
+        user,
+        loading,
+        error,
+        isAuthenticated,
+        handleLogin,
+        handleRegister,
+        handleGoogleAuth,
+        handleLogout,
+        handleGetCurrentUser,
+        handleUpdateProfile,
+        handleChangePassword,
+        clearError: () => dispatch(clearError())
+    };
+};
+
