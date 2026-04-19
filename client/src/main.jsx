@@ -24,7 +24,7 @@ const InitAuth = ({ children }) => {
 }
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+ 
     <Provider store={store}>
       <InitAuth>
         <Approuter />
@@ -36,5 +36,5 @@ createRoot(document.getElementById('root')).render(
         theme="dark"
         newestOnTop />
     </Provider>
-  </StrictMode>,
+ 
 )

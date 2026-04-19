@@ -7,7 +7,7 @@ import { useSearchParams, useNavigate, Link } from "react-router";
 
 export default function ResetPassword() {
   const { handleResetPassword, loading } = useAuth();
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);  
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const resetToken = searchParams.get("token");

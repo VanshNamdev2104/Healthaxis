@@ -26,7 +26,10 @@ api.interceptors.response.use(
                 // If the refresh is successful, retry the original request
                 return api(originalRequest);
             } catch (refreshError) {
-                // If the refresh token has expired or is missing, reject the promise
+                // If the refresh token has expired, just reject the promise. Let the application handle the unauthenticated state.
+                if (window.location.pathname !== '/') {
+                    window.location.href = "/";
+                }
                 return Promise.reject(refreshError);
             }
         }

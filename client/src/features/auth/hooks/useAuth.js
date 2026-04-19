@@ -11,7 +11,7 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             dispatch(clearError());
             const response = await login(formData);
-            dispatch(setUser(response));
+            dispatch(setUser(response.data.user));
             return response;
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Login failed"));
@@ -58,10 +58,11 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             dispatch(clearError());
             const response = await getCurrentUser();
-            dispatch(setUser(response));
+            dispatch(setUser(response.data.user));
             return response;
         } catch (error) {
-            dispatch(setError(error.response?.data?.message || "Failed to get user"));
+            // If getting current user fails (e.g. 401), we just clear the user state.
+            dispatch(logoutAction());
             throw error;
         } finally {
             dispatch(setLoading(false));
