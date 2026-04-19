@@ -5,12 +5,12 @@ const api = axios.create({
     withCredentials: true
 });
 
-export async function createDoctor({name, email, contect, specialization, experience, fee}) {
+export async function createDoctor({name, email, contect, specialization, experience, fee, isAvailable}) {
     try {
-        const response = await api.post("/doctor", {name, email, contect, specialization, experience, fee});
+        const response = await api.post("/doctor", {name, email, contect, specialization, experience, fee, isAvailable});
         return response.data
     } catch (error) {
-        throw error || "Failed to create doctor";
+        throw error.response?.data?.message || "Failed to create doctor";
     }
 }
 

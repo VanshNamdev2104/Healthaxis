@@ -44,6 +44,8 @@ async function createDoctorController(req, res) {
             stack: error.stack,
             userId: user._id 
         });
+        console.log(error);
+        
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to create doctor",

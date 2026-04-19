@@ -6,4 +6,5 @@ node_modules/
 coverage/
 dist/
 build/
-logs/
+server/logs/
+*.log

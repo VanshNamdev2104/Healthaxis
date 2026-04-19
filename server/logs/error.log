@@ -102,3 +102,5 @@ MongoParseError: option buffermaxentries is not supported
     at connectDb (file:///C:/Users/Windows11/Desktop/HealthAxis/server/src/config/db.js:20:28)
     at connectDb (file:///C:/Users/Windows11/Desktop/HealthAxis/server/src/config/db.js:55:20)
     at async startServer (file:///C:/Users/Windows11/Desktop/HealthAxis/server/server.js:11:5)
+2026-04-16 00:25:38 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
+2026-04-17 14:01:26 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
