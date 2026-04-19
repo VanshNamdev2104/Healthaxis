@@ -1,5 +1,11 @@
 import { useDispatch, useSelector } from "react-redux";
+
+// ------------------------- Import SLICES -------------------------
+
+// doctor slice ---------------------------
 import { setDoctors, setLoading as setDoctorLoading, setError as setDoctorError } from "../slice/doctor.slice.js";
+
+// appointment slice ---------------------------
 import { 
     setAppointments, 
     setLoading as setAppointmentLoading, 
@@ -7,6 +13,13 @@ import {
     updateAppointmentStatusInState,
     removeAppointmentFromState
 } from "../slice/appointment.slice.js";
+
+// hospital slice ---------------------------
+import { setHospitalAdmin , setHospital ,setLoading as setHospitalLoading , setError as setHospitalError }  from "../slice/hospital.slice.js";
+
+// -------------------------------Import APIs ------------------------ 
+
+// DOCTORS APIS
 import { 
     createDoctor, 
     getAllDoctors, 
@@ -14,6 +27,8 @@ import {
     getDoctor, 
     deleteDoctor 
 } from "../services/doctor.api.js";
+
+// APPOINTMENT APIS
 import { 
     getAllAppointments, 
     updateAppointmentStatus, 
@@ -21,8 +36,54 @@ import {
     rescheduleAppointment 
 } from "../services/appointment.api.js";
 
+// HOSPITAL APIS
+import {
+    createHospital,
+    getHospitalAdmin,
+    getHospital
+} from "../services/hospital.api.js"
+
+
 export const useHospital = () => {
     const dispatch = useDispatch();
+
+    
+    // ── HOSPITAL HANDLERS ─────────────────────────────────────────────
+    async function handleCreateHospital(formData) {
+        try {
+            dispatch(setHospitalLoading(true))
+            const response = await createHospital(formData)
+            dispatch(setHospital(response.data))
+        } catch (error) {
+            dispatch(setHospitalError(error.response?.data?.message || "Failed to create hospital"))
+        } finally {
+            dispatch(setHospitalLoading(false))
+        }
+    }
+
+    async function handleGetHospitalAdmin() {
+        try {
+            dispatch(setHospitalLoading(true));
+            const response = await getHospitalAdmin();
+            dispatch(setHospitalAdmin(response.data?.user));
+        } catch (error) {
+            dispatch(setHospitalError(error.response?.data?.message || "Failed to get hospital admin"));
+        } finally {
+            dispatch(setHospitalLoading(false));
+        }
+    }
+
+    async function handleGetHospital() {
+        try {
+            dispatch(setHospitalLoading(true));
+            const response = await getHospital();
+            dispatch(setHospital(response.data));
+        } catch (error) {
+            dispatch(setHospitalError(error.response?.data?.message || "Failed to get hospital"));
+        } finally {
+            dispatch(setHospitalLoading(false));
+        }
+    }
 
     // ── DOCTOR HANDLERS ─────────────────────────────────────────────
     async function handleCreateDoctor(formData) {
@@ -112,9 +173,17 @@ export const useHospital = () => {
     }
 
     return {
+        // hospital admin handlers
+        handleGetHospitalAdmin,
+        handleGetHospital,
+        handleCreateHospital,
+        
+        // doctor handlers
         handleCreateDoctor,
         handleGetAllDoctors,
         handleDeleteDoctor,
+
+        // appointment handlers
         handleGetAllAppointments,
         handleUpdateAppointmentStatus,
         handleDeleteAppointment,

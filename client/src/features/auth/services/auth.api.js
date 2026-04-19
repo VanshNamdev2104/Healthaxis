@@ -26,8 +26,7 @@ api.interceptors.response.use(
                 // If the refresh is successful, retry the original request
                 return api(originalRequest);
             } catch (refreshError) {
-                // If the refresh token has expired, force logout by redirecting to login page
-                window.location.href = "/";
+                // If the refresh token has expired or is missing, reject the promise
                 return Promise.reject(refreshError);
             }
         }

@@ -1,12 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
-import hospitalReducer from "../../features/hospital/slice/doctor.slice.js";
+import doctorReducer from "../../features/hospital/slice/doctor.slice.js";
 import appointmentReducer from "../../features/hospital/slice/appointment.slice.js";
 import authReducer from "../../features/auth/slice/auth.slice.js"
+import hospitalReducer from "../../features/hospital/slice/hospital.slice.js";
 
 export const store = configureStore({
     reducer: {
-        hospital: hospitalReducer,
+        doctor: doctorReducer,
         appointment: appointmentReducer,
         auth: authReducer,
+        hospital: hospitalReducer,
     }
 });

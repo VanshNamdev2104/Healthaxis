@@ -11,7 +11,7 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             dispatch(clearError());
             const response = await login(formData);
-            dispatch(setUser(response.data));
+            dispatch(setUser(response));
             return response;
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Login failed"));
@@ -58,7 +58,7 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             dispatch(clearError());
             const response = await getCurrentUser();
-            dispatch(setUser(response.data));
+            dispatch(setUser(response));
             return response;
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Failed to get user"));
@@ -73,7 +73,7 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             dispatch(clearError());
             const response = await updateProfile(formData);
-            dispatch(setUser(response.data));
+            dispatch(setUser(response));
             return response;
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Failed to update profile"));

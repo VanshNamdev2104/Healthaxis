@@ -7,7 +7,7 @@ import logger from "../../config/logger.js";
 //All controller related to hospitals
 async function createHospitalController(req, res) {
     const user = req.user;
-    const { hospitalName, address, city, state, country, pincode, contactNumber, email, type, speciality } = req.body;
+    const { hospitalName, address, city, state, country, pincode, contactNumber, email, type, speciality, openingTime, closingTime } = req.body;
 
     try {
         const isHospitalExists = await hospitalModel.findOne({ user: user._id });
@@ -26,18 +26,23 @@ async function createHospitalController(req, res) {
             state,
             country,
             pincode,
-            contactNumber,
-            email,
+            hospitalNumber: contactNumber,
+            hospitalEmail: email,
             type,
             speciality,
+            workTime : {
+                open : openingTime,
+                close : closingTime
+            }
         });
 
-        await userModel.updateOne({ _id: user._id }, { $set: { hospital: newHospital._id } });
-
+        const updatedUser = await userModel.findOneAndUpdate({ _id: user._id }, { $set: { hospital: newHospital._id } });
+        
         res.status(201).json({
             success: true,
             message: "Hospital created successfully",
             data: newHospital,
+            updatedUser
         });
     }
     catch (error) {
@@ -193,10 +198,35 @@ async function deleteHospitalController(req, res) {
     }
 }
 
+async function getHospitalAdmin(req, res) {
+    const user = req.user;
+    try {
+        
+        res.status(200).json({
+            success: true,
+            message: "Your Hospital fetched successfully",
+            user,
+            
+        });
+    } catch (error) {
+        logger.error("Get Hospital Admin Error", { 
+            error: error.message, 
+            stack: error.stack,
+            userId: user._id 
+        });
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Failed to fetch  hospital Admin",
+        });
+    }
+}
+
+
 export default {
     createHospitalController,
     getAllHospitalsController,
     getHospitalController,
     getYourHospitalController,
-    deleteHospitalController
+    deleteHospitalController,
+    getHospitalAdmin
 };

@@ -1,9 +1,13 @@
 "use client";
 
 import { CinematicFooter } from '../components/MotionFooter';
-import { Link } from 'react-router';
+import { Link, useParams } from 'react-router';
+import { useHospital } from '../hooks/useHospital.js';
+import { useSelector } from 'react-redux';
+import { CircleUser } from "lucide-react"
 
-function Demo() {
+
+function Demo({ hospital, admin, loading, error }) {
   
   return (
     <div className="relative w-full bg-[#f8fafc] min-h-screen font-sans selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden">
@@ -15,14 +19,15 @@ function Demo() {
       </div>
 
       <main className="relative z-10 w-full min-h-[140vh] flex flex-col items-center">
-        
+
         {/* ── Hero Section ── */}
         <section className="h-screen flex flex-col items-center justify-center p-6 text-center border-b border-emerald-50 w-full mb-32">
-          
-          <div className="mb-8 group">
-            <span className="px-6 py-2 rounded-full bg-white border border-emerald-100 text-emerald-600 text-[10px] font-black uppercase tracking-[0.4em] inline-flex items-center gap-2 shadow-sm group-hover:shadow-md transition-all">
+
+          <div className="mb-8 group absolute right-5 top-5 group">
+            <span className="px-6 py-2 rounded-full bg-white border border-emerald-100 text-blue-600 cursor-pointer active:scale-95 text-[10px] font-black uppercase tracking-[0.4em] inline-flex items-center gap-2 shadow-sm group-hover:shadow-md transition-all">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              Clinical Sanctuary v4.0
+              <CircleUser />
+              {admin?.name || "Hospital Admin"}
             </span>
           </div>
 
@@ -55,14 +60,14 @@ function Demo() {
         </section>
 
         {/* ── Bento Content ── */}
-        <section className="relative w-full max-w-7xl px-6 pb-40">
+        <section className="relative w-full max-w-6xl px-6 pb-40">
           <div className="mb-24 text-center">
-            <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 italic">The Sanctuary Units.</h2>
+            <h2 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter mb-4 itali footer-text-glow">{hospital?.data?.name}</h2>
             <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">Global Healthcare Transformation</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            
+
             {/* Card 1: Precision */}
             <div className="md:col-span-2 group relative overflow-hidden rounded-[40px] border border-emerald-50 bg-white p-10 shadow-sm hover:shadow-2xl hover:shadow-emerald-100/30 transition-all duration-500">
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-50/50 blur-2xl rounded-full" />
@@ -78,7 +83,7 @@ function Demo() {
 
             {/* Card 2: Emergency */}
             <div className="md:col-span-2 group relative overflow-hidden rounded-[40px] border border-rose-50 bg-white p-10 shadow-sm hover:shadow-2xl hover:shadow-rose-100/30 transition-all duration-500">
-               <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-8 shadow-inner group-hover:bg-rose-500 group-hover:text-white transition-all">
+              <div className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mb-8 shadow-inner group-hover:bg-rose-500 group-hover:text-white transition-all">
                 <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
               </div>
               <h3 className="text-2xl font-black text-slate-900 mb-4 tracking-tight">Rapid Pulse 24/7</h3>
@@ -115,28 +120,47 @@ function Demo() {
       </main>
 
       {/* The Cinematic Footer is injected here */}
-      <CinematicFooter />
+      <CinematicFooter 
+        hospital = {hospital}
+        admin = {admin}
+      />
 
     </div>
   );
 }
 
 import React, { useEffect } from 'react'
+import CreateHospital from '../components/CreateHospital.jsx';
+import { useAuth } from '../../auth/hooks/useAuth.js';
+import Loading from '../components/Loading.jsx';
 
 const Hospital = () => {
 
-  // const scrollToBottom = () => {
-  //   window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" })
-  // }
+  const { handleGetHospital, handleGetHospitalAdmin } = useHospital();
+
+  const { hospital, hospitalAdmin, loading, error } = useSelector((state) => state.hospital);
+
   useEffect(() => {
-    // setTimeout(() => {
-    //   scrollToBottom()
-    // }, 100)
+    handleGetHospital();
+    handleGetHospitalAdmin();
   }, [])
+
+  if(loading){
+    return <Loading/>
+  }
   return (
     <div>
-
-      <Demo />
+      {
+        (!hospital || !hospitalAdmin) ?
+          <CreateHospital />
+          :
+          <Demo
+            hospital={hospital}
+            admin={hospitalAdmin}
+            loading={loading}
+            error={error}
+          />
+      }
 
     </div>
   )

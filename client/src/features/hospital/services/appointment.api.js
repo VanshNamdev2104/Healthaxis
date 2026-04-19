@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-    baseURL: "http://localhost:5000/api/v1/hospital", // Adjust based on server config if needed
+    baseURL: "/api", // Adjust based on server config if needed
     withCredentials: true,
 });
 

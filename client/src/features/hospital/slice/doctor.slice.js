@@ -1,12 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-export const hospitalSlice = createSlice({
-    name: "hospital",
+export const doctorSlice = createSlice({
+    name: "doctor",
     initialState: {
         loading: false,
         error: null,
         doctors: [],
-        hospitalAdmin: ""
+        
     },
     reducers: {
         setDoctors: (state, action) => {
@@ -20,12 +20,10 @@ export const hospitalSlice = createSlice({
         },
         setError: (state, action) => {
             state.error = action.payload;
-        },
-        setHospitalAdmin: (state, action) => {
-            state.hospitalAdmin = action.payload;
-        },
+        }
+        
     },
 });
 
-export const { setDoctors, setLoading, setError, addDoctor, setHospitalAdmin } = hospitalSlice.actions;
-export default hospitalSlice.reducer;
+export const { setDoctors, setLoading, setError, addDoctor } = doctorSlice.actions;
+export default doctorSlice.reducer;

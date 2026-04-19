@@ -51,6 +51,11 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  hospital: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Hospital",
+    default: null,
+  }
 });
 
 UserSchema.pre("save", async function () {

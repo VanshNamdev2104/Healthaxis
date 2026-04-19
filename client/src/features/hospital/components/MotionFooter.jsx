@@ -207,9 +207,9 @@ const MagneticButton = React.forwardRef(
 MagneticButton.displayName = "MagneticButton";
 
 // ---------------- Marquee ----------------
-const MarqueeItem = () => (
+const MarqueeItem = ({hospital, admin}) => (
   <div className="flex items-center space-x-12 px-6">
-    <span>Shree Narayan Hospital</span> <span className="text-primary/60">✦</span>
+    <span>{hospital?.data?.name}</span> <span className="text-primary/60">✦</span>
     <span>Best Facilites Available</span> <span className="text-secondary/60">✦</span>
     <span>24*7 Open</span> <span className="text-primary/60">✦</span>
     <span>Multi Specialist</span> <span className="text-secondary/60">✦</span>
@@ -218,7 +218,7 @@ const MarqueeItem = () => (
 );
 
 // ---------------- Footer ----------------
-export function CinematicFooter() {
+export function CinematicFooter({hospital , admin}) {
   const wrapperRef = useRef(null);
   const giantTextRef = useRef(null);
   const headingRef = useRef(null);
@@ -302,8 +302,8 @@ export function CinematicFooter() {
           {/* Marquee */}
           <div className="absolute top-12 left-0 w-full overflow-hidden border-y border-border/50 bg-background/60 backdrop-blur-md py-4 z-10 -rotate-2 scale-110 shadow-2xl">
             <div className="flex w-max animate-footer-scroll-marquee text-xs md:text-sm font-bold tracking-[0.3em] uppercase">
-              <MarqueeItem />
-              <MarqueeItem />
+              <MarqueeItem hospital={hospital} admin={admin}/>
+              <MarqueeItem hospital={hospital} admin={admin}/>
             </div>
           </div>
 

@@ -38,14 +38,14 @@ const hospitalSchema = new mongoose.Schema({
         required: [true, "Pincode is required"],
         trim: true,
     },
-    contactNumber: {
+    hospitalNumber: {
         type: String,
-        required: [true, "Contact number is required"],
+        required: [true, "Hospital's Contact number is required"],
         trim: true,
     },
-    email: {
+    hospitalEmail: {
         type: String,
-        required: [true, "Email is required"],
+        required: [true, "Hospital's Email is required"],
         trim: true,
     },
     type : {
@@ -58,6 +58,16 @@ const hospitalSchema = new mongoose.Schema({
         type: String,
         default: "",
         trim: true
+    },
+    workTime: {
+        open : {
+            type : String,
+            required : [true, "Opening Time is required"]
+        },
+        close: {
+            type : String,
+            required: [true, "Closing Time is required"]
+        }
     },
     isVerified: {
         type: Boolean,

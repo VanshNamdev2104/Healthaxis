@@ -5,8 +5,10 @@ import DoctorCard from '../components/DoctorCard';
 import AddDoctorModal from '../components/AddDoctorModal';
 import { gsap } from 'gsap';
 
+
 const DoctorsPage = () => {
-  const { doctors, loading } = useSelector((state) => state.hospital);
+  
+  const { doctors, loading } = useSelector((state) => state.doctor);
   const { handleCreateDoctor, handleGetAllDoctors, handleDeleteDoctor } = useHospital();
 
   const [search, setSearch] = useState('');

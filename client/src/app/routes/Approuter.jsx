@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { createBrowserRouter, RouterProvider } from "react-router"
 import AuthPage from "../../features/auth/pages/AuthPage"
 import ResetPassword from "../../features/auth/components/ResetPassword"
 import Hospital from "../../features/hospital/pages/Hospital"

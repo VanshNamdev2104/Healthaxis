@@ -19,7 +19,7 @@ export const registerSchema = z.object({
     .string({ required_error: "Number is required" })
     .regex(phoneRegex, "Number must be exactly 10 digits"),
 
-  role: z.enum(["user", "admin"]).optional(),
+  role: z.enum(["user", "admin", "hospitalAdmin"]).optional(),
 
   email: z
     .string({ required_error: "Email is required" })
