@@ -83,9 +83,14 @@ export async function getCurrentUser() {
     }
 }
 
-export async function updateProfile({ name, email, number }) {
+export async function updateProfile(formData) {
     try {
-        const response = await api.put("/user/profile", { name, email, number });
+        const headers = {};
+        // Only set content-type if it's FormData (file upload)
+        if (formData instanceof FormData) {
+            headers["Content-Type"] = "multipart/form-data";
+        }
+        const response = await api.put("/user/profile", formData, { headers });
         return response.data;
     } catch (error) {
         throw error;

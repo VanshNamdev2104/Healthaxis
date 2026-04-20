@@ -26,8 +26,8 @@ export const googleCallback = async (req, res) => {
         res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
         // Redirect to frontend after successful login
-        // Update this URL to your frontend's dashboard / home page
-        return res.redirect(process.env.CLIENT_URL || "http://localhost:5173");
+        // Redirect to frontend dashboard after successful login
+        return res.redirect((process.env.CLIENT_URL || "http://localhost:5173") + "/dashboard");
     } catch (error) {
         logger.error("Google Auth Callback Error", { 
             error: error.message, 
@@ -35,7 +35,7 @@ export const googleCallback = async (req, res) => {
             userId: req.user?.id 
         });
         return res.redirect(
-            (process.env.CLIENT_URL || "http://localhost:5173") + "/login?error=google_auth_failed"
+            (process.env.CLIENT_URL || "http://localhost:5173") + "/auth?error=google_auth_failed"
         );
     }
 };

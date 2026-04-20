@@ -1,84 +1,136 @@
 import { useForm, useFieldArray } from "react-hook-form";
 import axios from "axios";
+import { useState } from "react";
 
 export default function DiseaseForm() {
   const { register, handleSubmit, control, reset } = useForm();
+  const [images, setImages] = useState([]);
 
   // Dynamic fields
-  const { fields: symptoms, append: addSymptom, remove: removeSymptom } =
-    useFieldArray({ control, name: "symptoms" });
+  const createFieldArray = (name) =>
+    useFieldArray({ control, name });
 
-  const { fields: causes, append: addCause, remove: removeCause } =
-    useFieldArray({ control, name: "causes" });
+  const symptoms = createFieldArray("symptoms");
+  const causes = createFieldArray("causes");
+  const precautions = createFieldArray("precautions");
+  const diagnosis = createFieldArray("diagnosis");
+  const remedies = createFieldArray("homeRemedies");
 
-  const { fields: precautions, append: addPrecaution, remove: removePrecaution } =
-    useFieldArray({ control, name: "precautions" });
-
-  const { fields: diagnosis, append: addDiagnosis, remove: removeDiagnosis } =
-    useFieldArray({ control, name: "diagnosis" });
-
-  const { fields: remedies, append: addRemedy, remove: removeRemedy } =
-    useFieldArray({ control, name: "homeRemedies" });
+  const handleImageChange = (e) => {
+    setImages([...e.target.files]);
+  };
 
   const onSubmit = async (data) => {
     try {
-      await axios.post("/api/disease", data);
-      alert("Disease added!");
+      const formData = new FormData();
+
+      // text fields
+      Object.keys(data).forEach((key) => {
+        if (Array.isArray(data[key])) {
+          data[key].forEach((item) => formData.append(key, item));
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      // images
+      images.forEach((img) => {
+        formData.append("images", img);
+      });
+
+      await axios.post("/api/disease", formData);
+
+      alert("Disease added ✅");
       reset();
+      setImages([]);
     } catch (err) {
       console.log(err);
     }
   };
 
+  const Section = ({ title, fieldArray, name }) => (
+    <div className="space-y-2">
+      <h3 className="text-white font-semibold">{title}</h3>
+
+      {fieldArray.fields.map((item, index) => (
+        <div key={item.id} className="flex gap-2">
+          <input
+            {...register(`${name}.${index}`)}
+            placeholder={`${title} ${index + 1}`}
+            className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => fieldArray.remove(index)}
+            className="px-3 bg-red-500/20 text-red-400 rounded-lg"
+          >
+            ✕
+          </button>
+        </div>
+      ))}
+
+      <button
+        type="button"
+        onClick={() => fieldArray.append("")}
+        className="text-sm text-cyan-400"
+      >
+        + Add {title}
+      </button>
+    </div>
+  );
+
   return (
-    <div style={{ maxWidth: "600px", margin: "auto" }}>
-      <h2>Add Disease</h2>
+    <div className="min-h-screen flex justify-center items-center bg-[#030303] p-6">
+      <div className="w-full max-w-3xl bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+        <h2 className="text-2xl font-bold text-white mb-6 text-center">
+          Add Disease
+        </h2>
 
-        {/* Name */}
-        <input
-          placeholder="Disease Name"
-          {...register("name", { required: "Name required" })}
-        />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-        {/* Description */}
-        <textarea
-          placeholder="Description"
-          {...register("description", { required: true })}
-        />
+          {/* Name */}
+          <input
+            {...register("name", { required: true })}
+            placeholder="Disease Name"
+            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
+          />
 
-        {/* Dynamic Section */}
-        {[
-          { label: "Symptoms", fields: symptoms, add: addSymptom, remove: removeSymptom, name: "symptoms" },
-          { label: "Causes", fields: causes, add: addCause, remove: removeCause, name: "causes" },
-          { label: "Precautions", fields: precautions, add: addPrecaution, remove: removePrecaution, name: "precautions" },
-          { label: "Diagnosis", fields: diagnosis, add: addDiagnosis, remove: removeDiagnosis, name: "diagnosis" },
-          { label: "Home Remedies", fields: remedies, add: addRemedy, remove: removeRemedy, name: "homeRemedies" }
-        ].map((section, idx) => (
-          <div key={idx}>
-            <h4>{section.label}</h4>
+          {/* Description */}
+          <textarea
+            {...register("description", { required: true })}
+            placeholder="Description"
+            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
+          />
 
-            {section.fields.map((item, index) => (
-              <div key={item.id}>
-                <input
-                  placeholder={`${section.label} ${index + 1}`}
-                  {...register(`${section.name}.${index}`)}
-                />
-                <button type="button" onClick={() => section.remove(index)}>
-                  ❌
-                </button>
-              </div>
-            ))}
+          {/* Dynamic Sections */}
+          <Section title="Symptoms" fieldArray={symptoms} name="symptoms" />
+          <Section title="Causes" fieldArray={causes} name="causes" />
+          <Section title="Precautions" fieldArray={precautions} name="precautions" />
+          <Section title="Diagnosis" fieldArray={diagnosis} name="diagnosis" />
+          <Section title="Home Remedies" fieldArray={remedies} name="homeRemedies" />
 
-            <button type="button" onClick={() => section.add("")}>
-              + Add {section.label}
-            </button>
+          {/* Image Upload */}
+          <div>
+            <h3 className="text-white font-semibold mb-2">Images</h3>
+            <input
+              type="file"
+              multiple
+              onChange={handleImageChange}
+              className="text-white"
+            />
           </div>
-        ))}
 
-        <button type="submit">Submit</button>
-      </form>
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition"
+          >
+            Submit Disease
+          </button>
+
+        </form>
+      </div>
     </div>
   );
 }

@@ -19,8 +19,8 @@ router.get("/disease/:diseaseId", getMedicinesByDisease);
 router.get("/:id", getMedicineById);
 
 // ─── Private Routes (Admin only) ────────────────────────────
-router.post("/", authenticate, authorizeRoles("admin"), upload.array("images", 10), createMedicine);
-router.put("/:id", authenticate, authorizeRoles("admin"), upload.array("images", 10), updateMedicine);
-router.delete("/:id", authenticate, authorizeRoles("admin"), deleteMedicine);
+router.post("/", authenticate, authorizeRoles("user", "admin"), upload.array("images", 10), createMedicine);
+router.put("/:id", authenticate, authorizeRoles("user", "admin"), upload.array("images", 10), updateMedicine);
+router.delete("/:id", authenticate, authorizeRoles("user", "admin"), deleteMedicine);
 
 export default router;

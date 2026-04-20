@@ -1,49 +1,30 @@
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { SunIcon as Sunburst } from "lucide-react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth.js";
 
 export default function Register({ toggleLogin }) {
-  const { handleRegister, handleGoogleAuth, loading } = useAuth();
-
   const {
     register,
     handleSubmit,
     formState: { errors }
   } = useForm();
 
-  const onSubmit = async (data) => {
-    const toastId = toast.loading("Creating account...");
+  const { handleRegister, loading, error } = useAuth();
 
+  const onSubmit = async (data) => {
     try {
       await handleRegister(data);
-
-      toast.update(toastId, {
-        render: "Account created successfully 🚀",
-        type: "success",
-        isLoading: false,
-        autoClose: 3000
-      });
-
-      // 👉 auto switch to login
+      toast.success("Account created successfully 🚀");
       toggleLogin();
-
-    } catch (err) {
-      const message =
-        err.response?.data?.message || "Registration failed ❌";
-
-      toast.update(toastId, {
-        render: message,
-        type: "error",
-        isLoading: false,
-        autoClose: 3000
-      });
+    } catch {
+      toast.error(error || "Registration failed ❌");
     }
   };
 
-  const onGoogleLogin = () => {
+  const handleGoogleLogin = () => {
     toast.info("Redirecting to Google...");
-    handleGoogleAuth();
+    window.location.href = "http://localhost:3000/api/auth/google";
   };
 
   return (
@@ -159,7 +140,7 @@ export default function Register({ toggleLogin }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50"
+              className="w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? "Creating Account..." : "Create Account"}
             </button>
@@ -172,7 +153,7 @@ export default function Register({ toggleLogin }) {
 
           {/* GOOGLE */}
           <button
-            onClick={onGoogleLogin}
+            onClick={handleGoogleLogin}
             className="w-full border py-2 rounded-lg flex justify-center gap-2 hover:bg-gray-50"
           >
             Continue with Google

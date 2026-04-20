@@ -4,108 +4,177 @@ import axios from "axios";
 
 export default function MedicineForm() {
   const { register, handleSubmit, control, reset } = useForm();
-
+  const [images, setImages] = useState([]);
   const [diseases, setDiseases] = useState([]);
 
-  // Dynamic side effects
+  // Dynamic sideEffects
   const { fields, append, remove } = useFieldArray({
     control,
     name: "sideEffects",
   });
 
-  // Fetch diseases for dropdown
+  // Fetch diseases (for relation)
   useEffect(() => {
     const fetchDiseases = async () => {
-      const res = await axios.get("/api/disease");
-      setDiseases(res.data);
+      try {
+        const res = await axios.get("/api/disease");
+        setDiseases(res.data.data || []);
+      } catch (err) {
+        console.log(err);
+      }
     };
     fetchDiseases();
   }, []);
 
+  const handleImageChange = (e) => {
+    setImages([...e.target.files]);
+  };
+
   const onSubmit = async (data) => {
     try {
-      await axios.post("/api/medicine", data);
-      alert("Medicine added!");
+      const formData = new FormData();
+
+      // normal fields
+      Object.keys(data).forEach((key) => {
+        if (Array.isArray(data[key])) {
+          data[key].forEach((item) => formData.append(key, item));
+        } else {
+          formData.append(key, data[key]);
+        }
+      });
+
+      // images
+      images.forEach((img) => formData.append("images", img));
+
+      await axios.post("/api/medicine", formData);
+
+      alert("Medicine added ✅");
       reset();
+      setImages([]);
     } catch (err) {
       console.log(err);
     }
   };
 
   return (
-    <div style={{ maxWidth: "600px", margin: "auto" }}>
-      <h2>Add Medicine</h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#030303] p-6">
+      <div className="w-full max-w-3xl bg-white/5 border border-white/10 backdrop-blur-xl rounded-2xl p-6 shadow-xl">
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+        <h2 className="text-2xl text-white font-bold mb-6 text-center">
+          Add Medicine
+        </h2>
 
-        {/* Name */}
-        <input
-          placeholder="Medicine Name"
-          {...register("name", { required: true })}
-        />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 
-        {/* Generic Name */}
-        <input
-          placeholder="Generic Name"
-          {...register("genericName")}
-        />
+          {/* Name */}
+          <input
+            {...register("name", { required: true })}
+            placeholder="Medicine Name"
+            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
+          />
 
-        {/* Description */}
-        <textarea
-          placeholder="Description"
-          {...register("description", { required: true })}
-        />
+          {/* Generic Name */}
+          <input
+            {...register("genericName")}
+            placeholder="Generic Name"
+            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
+          />
 
-        {/* Dosage */}
-        <input
-          placeholder="Dosage (e.g. 2 times a day)"
-          {...register("dosage", { required: true })}
-        />
+          {/* Description */}
+          <textarea
+            {...register("description", { required: true })}
+            placeholder="Description"
+            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
+          />
 
-        {/* Storage */}
-        <input
-          placeholder="Storage info"
-          {...register("storage")}
-        />
+          {/* Dosage */}
+          <input
+            {...register("dosage", { required: true })}
+            placeholder="Dosage (e.g. 2 times daily)"
+            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
+          />
 
-        {/* Prescription Required */}
-        <label>
-          <input type="checkbox" {...register("isPrescriptionRequired")} />
-          Prescription Required
-        </label>
+          {/* Storage */}
+          <input
+            {...register("storage")}
+            placeholder="Storage (e.g. Keep in cool place)"
+            className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white outline-none"
+          />
 
-        {/* Side Effects (dynamic) */}
-        <h4>Side Effects</h4>
-        {fields.map((item, index) => (
-          <div key={item.id}>
-            <input
-              placeholder={`Side Effect ${index + 1}`}
-              {...register(`sideEffects.${index}`)}
-            />
-            <button type="button" onClick={() => remove(index)}>
-              ❌
+          {/* Prescription Required */}
+          <div className="flex items-center gap-2 text-white">
+            <input type="checkbox" {...register("isPrescriptionRequired")} />
+            <label>Prescription Required</label>
+          </div>
+
+          {/* Side Effects */}
+          <div>
+            <h3 className="text-white font-semibold mb-2">Side Effects</h3>
+
+            {fields.map((item, index) => (
+              <div key={item.id} className="flex gap-2 mb-2">
+                <input
+                  {...register(`sideEffects.${index}`)}
+                  placeholder={`Side Effect ${index + 1}`}
+                  className="flex-1 px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => remove(index)}
+                  className="px-3 bg-red-500/20 text-red-400 rounded-lg"
+                >
+                  ✕
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={() => append("")}
+              className="text-cyan-400 text-sm"
+            >
+              + Add Side Effect
             </button>
           </div>
-        ))}
 
-        <button type="button" onClick={() => append("")}>
-          + Add Side Effect
-        </button>
+          {/* Diseases Multi Select */}
+          <div>
+            <h3 className="text-white font-semibold mb-2">Related Diseases</h3>
 
-        {/* Diseases Dropdown (multi-select) */}
-        <h4>Select Diseases</h4>
-        <select multiple {...register("diseases")}>
-          {diseases.map((d) => (
-            <option key={d._id} value={d._id}>
-              {d.name}
-            </option>
-          ))}
-        </select>
+            <select
+              multiple
+              {...register("diseases")}
+              className="w-full px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-white"
+            >
+              {diseases.map((d) => (
+                <option key={d._id} value={d._id}>
+                  {d.name}
+                </option>
+              ))}
+            </select>
+          </div>
 
-        <br /><br />
+          {/* Images */}
+          <div>
+            <h3 className="text-white font-semibold mb-2">Images</h3>
+            <input
+              type="file"
+              multiple
+              onChange={handleImageChange}
+              className="text-white"
+            />
+          </div>
 
-        <button type="submit">Submit</button>
-      </form>
+          {/* Submit */}
+          <button
+            type="submit"
+            className="w-full py-3 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition"
+          >
+            Submit Medicine
+          </button>
+
+        </form>
+      </div>
     </div>
   );
 }
