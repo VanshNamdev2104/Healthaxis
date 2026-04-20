@@ -7,11 +7,7 @@ import { setDoctors, setLoading as setDoctorLoading, setError as setDoctorError 
 
 // appointment slice ---------------------------
 import { 
-    setAppointments, 
-    setLoading as setAppointmentLoading, 
-    setError as setAppointmentError,
-    updateAppointmentStatusInState,
-    removeAppointmentFromState
+    setAppointments, setLoading as setAppointmentLoading, setError as setAppointmentError, updateAppointmentStatusInState, removeAppointmentFromState
 } from "../slice/appointment.slice.js";
 
 // hospital slice ---------------------------
@@ -90,7 +86,9 @@ export const useHospital = () => {
         try {
             dispatch(setDoctorLoading(true));
             const response = await createDoctor(formData);
-            dispatch(setDoctors(prev => [...prev, response.data]));
+            console.log("check", response);
+            
+            dispatch(setDoctors(response.data?.data));
         } catch (error) {
             dispatch(setDoctorError(error.response?.data?.message || "Failed to create doctor"));
         } finally {
@@ -101,7 +99,7 @@ export const useHospital = () => {
     async function handleGetAllDoctors(hospitalId) {
         try {
             dispatch(setDoctorLoading(true));
-            const response = await getAllDoctors(hospitalId);
+            const response = await getAllDoctors({hospitalId: hospitalId});
             dispatch(setDoctors(response.data));
         } catch (error) {
             dispatch(setDoctorError(error.response?.data?.message || "Failed to get doctors"));
@@ -111,10 +109,10 @@ export const useHospital = () => {
     }
 
     async function handleDeleteDoctor(doctorId) {
+        // console.log("check",doctorId)
         try {
             dispatch(setDoctorLoading(true));
             await deleteDoctor(doctorId);
-            dispatch(setDoctors((prev) => (prev.filter((doctor) => doctor._id !== doctorId))))
         } catch (error) {
             dispatch(setDoctorError(error.response?.data?.message || "Failed to delete doctor"));
         } finally {

@@ -5,7 +5,7 @@ import logger from "../../config/logger.js";
 
 async function createDoctorController(req, res) {
     const user = req.user;
-    const { name, email, contect, specialization, experience, fee } = req.body;
+    const { name, email, contact, specialization, experience, fee } = req.body;
 
     try {
         
@@ -27,7 +27,7 @@ async function createDoctorController(req, res) {
             hospital: hospitalId,
             name,
             email,
-            contect,
+            contact,
             specialization,
             experience,
             fee,

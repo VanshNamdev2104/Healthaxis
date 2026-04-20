@@ -1,13 +1,18 @@
 import React, { useRef, useEffect } from 'react';
 import { gsap } from 'gsap';
 
-const DoctorCard = ({ doctor, onDelete, onClick }) => {
+const DoctorCard = ({ doctor, onDelete, onClick, getAllDoc, hosId }) => {
    const cardRef = useRef(null);
    const glowRef = useRef(null);
 
    useEffect(() => {
       // Initial entrance if needed, or handled by parent
    }, []);
+
+   const handleDelete = async() => {
+      await onDelete(doctor?._id);
+      await getAllDoc(hosId);
+   }
 
    const handleMouseEnter = () => {
       gsap.to(cardRef.current, {
@@ -44,8 +49,8 @@ const DoctorCard = ({ doctor, onDelete, onClick }) => {
          onMouseEnter={handleMouseEnter}
          onMouseLeave={handleMouseLeave}
          onClick={() => onClick?.(doctor)}
-         className="group relative bg-[#ffffff] rounded-[32px] overflow-hidden cursor-pointer
-                 transition-shadow duration-500 shadow-[0_4px_20px_rgba(0,0,0,0.02)]
+         className="group relative bg-white border border-amber-700 backdrop-blur-2xl rounded-[32px] overflow-hidden cursor-pointer
+                 transition-shadow duration-500 shadow-amber-700 shadow-2xl
                  flex flex-col h-full"
       >
          {/* Background Glow Accent - GSAP target */}
@@ -111,16 +116,23 @@ const DoctorCard = ({ doctor, onDelete, onClick }) => {
                <p className="text-sm text-[#3c4a42] font-semibold truncate max-w-[140px]">{doctor?.email || 'N/A'}</p>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex z-10 gap-2 relative">
                <button
-                  onClick={(e) => { e.stopPropagation(); onDelete?.(doctor?._id); }}
-                  className="w-10 h-10 rounded-2xl bg-white text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all duration-300 shadow-sm border border-red-50"
+                  onClick={(e) => { 
+                     e.stopPropagation(); 
+                     if(window.confirm(`Are you sure you want to remove Dr. ${doctor?.name || 'this professional'} from the registry?`)){
+                        handleDelete()
+                        
+                     }
+                  }}
+                  className="relative z-10 w-10 h-10 rounded-2xl bg-white text-red-400 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all duration-300 shadow-sm border border-red-50"
                   title="Remove Professional"
                >
                   <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
                </button>
                <button
-                  className="h-10 px-5 rounded-2xl bg-white text-[#2563eb] font-bold text-[10px] uppercase tracking-widest border border-blue-50 shadow-sm
+                  onClick={(e) => { e.stopPropagation(); onClick?.(doctor); }}
+                  className="relative z-10 h-10 px-5 rounded-2xl bg-white text-[#2563eb] font-bold text-[10px] uppercase tracking-widest border border-blue-50 shadow-sm
                        hover:bg-[#2563eb] hover:text-white transition-all duration-300"
                >
                   Manage

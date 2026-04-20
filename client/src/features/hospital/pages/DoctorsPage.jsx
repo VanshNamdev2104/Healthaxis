@@ -1,26 +1,45 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router';
 import { useHospital } from '../hooks/useHospital';
 import DoctorCard from '../components/DoctorCard';
 import AddDoctorModal from '../components/AddDoctorModal';
 import { gsap } from 'gsap';
+import Loading from '../components/Loading';
 
 
 const DoctorsPage = () => {
   
   const { doctors, loading } = useSelector((state) => state.doctor);
+  const {hospital, loading:hospitalLoading} = useSelector((state)=> state.hospital)
+  const {handleGetHospital} = useHospital()
+  // console.log("doctors", doctors);
+  // console.log("hospital", hospital?.data?._id);
+  
   const { handleCreateDoctor, handleGetAllDoctors, handleDeleteDoctor } = useHospital();
 
   const [search, setSearch] = useState('');
   const [specFilter, setSpecFilter] = useState('All');
   const [showAddModal, setShowAddModal] = useState(false);
+  const navigate = useNavigate();
 
   const gridRef = useRef(null);
   const headerRef = useRef(null);
   const titleRef = useRef(null);
 
+  useEffect(()=>{
+    handleGetHospital()
+  },[])
+
+  useEffect(()=>{
+    if(!hospitalLoading && hospital?.data?._id) {
+      handleGetAllDoctors(hospital?.data?._id)
+    }
+  },[hospital,doctors?.data?.length])
+
+
   const filteredDoctors = useMemo(() => {
-    return (doctors || []).filter(doc => {
+    return (doctors?.data || []).filter(doc => {
       const matchSearch = doc.name?.toLowerCase().includes(search.toLowerCase()) ||
         doc.specialization?.toLowerCase().includes(search.toLowerCase());
       const matchSpec = specFilter === 'All' || doc.specialization === specFilter;
@@ -29,7 +48,7 @@ const DoctorsPage = () => {
   }, [doctors, search, specFilter]);
 
   // Extract unique specializations for the filter dropdown ex- [Cardiologist, Neurologist, etc.]
-  const specs = useMemo(() => ['All', ...new Set((doctors || []).map(d => d.specialization).filter(Boolean))], [doctors]);
+  const specs = useMemo(() => ['All', ...new Set((doctors?.data || []).map(d => d.specialization).filter(Boolean))], [doctors]);
 
   useEffect(() => {
     // Page Entrance Animations
@@ -37,15 +56,19 @@ const DoctorsPage = () => {
     const tl = gsap.timeline();
     tl.fromTo(headerRef.current, { y: -100, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'expo.out' })
       .fromTo(titleRef.current, { x: -50, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'expo.out' }, '-=0.5');
+  }, []);
 
+  useEffect(() => {
     if (!loading && filteredDoctors.length > 0) {
       gsap.fromTo('.doctor-card-anim',
-        { y: 60, opacity: 0, scale: 0.9 },
-        { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.1, ease: 'power3.out', delay: 0.2 }
+        { y: 40, opacity: 0, scale: 0.95 },
+        { y: 0, opacity: 1, scale: 1, duration: 0.5, stagger: 0.05, ease: 'power2.out' }
       );
     }
-  }, [loading, filteredDoctors.length]);
-
+  }, [loading, filteredDoctors]);
+  if(loading){
+    return <Loading/>
+  }
   return (
     <div className="min-h-screen bg-[#f6fafe] font-sans overflow-x-hidden pb-20">
       {/* ── Floating Glass Header ───────────────────────────────────── */}
@@ -66,20 +89,6 @@ const DoctorsPage = () => {
         </div>
 
         <div className="flex items-center gap-6">
-          <div className="relative group hidden lg:block">
-            <div className="absolute left-5 top-1/2 -translate-y-1/2 text-[#a0a3a5] group-focus-within:text-[#006c49] transition-colors">
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
-            </div>
-            <input
-              type="text"
-              placeholder="Search clinical staff..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="pl-12 pr-6 py-3.5 rounded-full bg-[#f0f4f8] border-2 border-transparent text-sm font-semibold outline-none transition-all
-                         focus:bg-white focus:border-[#dbe1ff] focus:ring-12 focus:ring-green-50 w-96 shadow-inner"
-            />
-          </div>
-
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-3 px-8 py-4 bg-linear-to-r from-[#006c49] to-[#10b981] text-white font-black tracking-widest uppercase text-[10px]
@@ -95,8 +104,8 @@ const DoctorsPage = () => {
       <section className="pt-40 pb-12 px-8 max-w-7xl mx-auto">
         <div ref={titleRef} className="mb-12">
           <span className="text-xs font-black text-[#006c49] uppercase tracking-[0.3em] mb-4 block">Medical Practitioner Management</span>
-          <h2 className="text-5xl md:text-7xl font-black text-[#171c1f] leading-[0.9] tracking-tighter max-w-4xl">
-            Welcome back to the <span className="text-[#10b981]">Clinical Sanctuary.</span>
+          <h2 className="text-4xl md:text-6xl font-black flex flex-col text-[#171c1f] leading-[0.9] tracking-tighter max-w-4xl">
+            Welcome back to the <span className="text-4xl md:text-5xl bg-linear-0 from-blue-700 via-blue-600 to-cyan-500 bg-clip-text text-transparent">{hospital?.data?.name}</span>
           </h2>
           <p className="mt-6 text-[#6c7a71] text-lg font-medium max-w-2xl leading-relaxed">
             Oversee your healthcare professionals with precision. Manage availability, review clinical specialties, and maintain the highest standards of care.
@@ -106,8 +115,8 @@ const DoctorsPage = () => {
         {/* ── Stats Summary Tonal Layer ───────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
           {[
-            { label: 'Staff Directory', value: doctors?.length || 0, accent: 'text-[#006c49]', bg: 'bg-[#f0fdf4]' },
-            { label: 'Active Specialists', value: doctors?.filter(d => d.availability !== false).length || 0, accent: 'text-[#2563eb]', bg: 'bg-[#f0f4ff]' },
+            { label: 'Staff Directory', value: doctors.data?.length || 0, accent: 'text-[#006c49]', bg: 'bg-[#f0fdf4]' },
+            { label: 'Active Specialists', value: doctors.data?.filter(d => d.availability !== false).length || 0, accent: 'text-[#2563eb]', bg: 'bg-[#f0f4ff]' },
             { label: 'Clinical Groups', value: specs.length - 1, accent: 'text-[#5c5f61]', bg: 'bg-[#f8fafc]' },
           ].map((stat, i) => (
             <div key={i} className={`${stat.bg} p-8 rounded-[40px] flex flex-col justify-between h-48 group hover:scale-[1.02] transition-transform duration-500`}>
@@ -120,26 +129,43 @@ const DoctorsPage = () => {
           ))}
         </div>
 
-        {/* ── Filter Navigation ───────────────────────────────────────── */}
-        <div className="mb-12 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="flex items-center gap-3 overflow-x-auto pb-4 scrollbar-none">
+        {/* ── Filter Navigation & Search ───────────────────────────────────────── */}
+        <div className="mb-12 flex flex-col xl:flex-row xl:items-center justify-between gap-6 bg-white p-4 rounded-[32px] shadow-sm border border-gray-50">
+          
+          {/* Responsive Search Bar */}
+          <div className="w-full xl:w-[450px] relative group">
+            <div className="absolute left-6 top-1/2 -translate-y-1/2 text-[#a0a3a5] group-focus-within:text-[#006c49] transition-colors">
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </div>
+            <input
+              type="text"
+              placeholder="Search by name or specialization..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="w-full pl-14 pr-6 py-4 rounded-full bg-[#f6fafe] border-2 border-transparent text-sm font-semibold outline-none transition-all
+                         focus:bg-white focus:border-[#dbe1ff] focus:ring-4 focus:ring-green-50 shadow-inner hover:shadow-md text-[#171c1f]"
+            />
+          </div>
+
+          <div className="flex items-center gap-3 overflow-x-auto scrollbar-none w-full xl:w-auto pb-2 xl:pb-0">
             {specs.map(spec => (
               <button
                 key={spec}
                 onClick={() => setSpecFilter(spec)}
-                className={`px-8 py-3 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap
+                className={`px-6 py-3.5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all duration-300 whitespace-nowrap
                            ${specFilter === spec
-                    ? 'bg-[#171c1f] text-white shadow-2xl shadow-gray-200'
-                    : 'bg-white text-[#6c7a71] hover:bg-gray-100 border border-gray-100'}`}
+                    ? 'bg-[#171c1f] text-white shadow-xl shadow-gray-300 scale-100'
+                    : 'bg-[#f6fafe] text-[#6c7a71] hover:bg-gray-100 hover:scale-[1.02]'}`}
               >
                 {spec}
               </button>
             ))}
           </div>
-          <div className="flex items-center gap-2 px-6 py-3 bg-white rounded-full border border-gray-50 shadow-sm">
+
+          <div className="flex items-center justify-center gap-2 px-6 py-3.5 bg-[#f0fdf4] rounded-full border border-green-100 shadow-sm whitespace-nowrap shrink-0 w-max">
             <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-            <p className="text-[10px] font-black text-[#171c1f] uppercase tracking-widest">
-              Live: {filteredDoctors.length} Practitioners
+            <p className="text-[10px] font-black text-[#006c49] uppercase tracking-widest">
+              Live: {filteredDoctors.length}
             </p>
           </div>
         </div>
@@ -155,11 +181,15 @@ const DoctorsPage = () => {
             ))
           ) : filteredDoctors.length > 0 ? (
             filteredDoctors.map((doc, i) => (
-              <div key={doc._id || i} className="doctor-card-anim opacity-0">
+              <div key={doc._id || i} className="doctor-card-anim">
                 <DoctorCard
                   doctor={doc}
                   onDelete={handleDeleteDoctor}
-                  onClick={(d) => console.log('Clinical Review:', d)}
+                  getAllDoc={handleGetAllDoctors}
+                  hosId={hospital?.data?._id}
+                  onClick={(d) => {
+                    navigate(`/hospital/doctors/${d._id}`);
+                  }}
                 />
               </div>
             ))

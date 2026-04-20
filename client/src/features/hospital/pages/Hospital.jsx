@@ -4,10 +4,13 @@ import { CinematicFooter } from '../components/MotionFooter';
 import { Link, useParams } from 'react-router';
 import { useHospital } from '../hooks/useHospital.js';
 import { useSelector } from 'react-redux';
-import { CircleUser } from "lucide-react"
+import { CircleUser, X, LogOut, Trash2, Mail, Shield, Phone, Hospital as HospitalIcon } from "lucide-react"
+import { useState } from 'react';
+import { useNavigate } from 'react-router';
 
-
-function Demo({ hospital, admin, loading, error }) {
+function Demo({ hospital, admin, logout, error }) {
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const navigate = useNavigate();
   
   return (
     <div className="relative w-full bg-[#f8fafc] min-h-screen font-sans selection:bg-emerald-100 selection:text-emerald-900 overflow-x-hidden">
@@ -23,10 +26,10 @@ function Demo({ hospital, admin, loading, error }) {
         {/* ── Hero Section ── */}
         <section className="h-screen flex flex-col items-center justify-center p-6 text-center border-b border-emerald-50 w-full mb-32">
 
-          <div className="mb-8 group absolute right-5 top-5 group">
-            <span className="px-6 py-2 rounded-full bg-white border border-emerald-100 text-blue-600 cursor-pointer active:scale-95 text-[10px] font-black uppercase tracking-[0.4em] inline-flex items-center gap-2 shadow-sm group-hover:shadow-md transition-all">
+          <div onClick={() => setIsProfileOpen(true)} className="mb-8 group absolute right-5 top-5 cursor-pointer z-40">
+            <span className="px-6 py-2 rounded-full bg-white/80 backdrop-blur-md border border-emerald-100 text-slate-700 hover:text-emerald-600 active:scale-95 text-[10px] font-black uppercase tracking-[0.4em] inline-flex items-center gap-2 shadow-sm hover:shadow-lg hover:border-emerald-200 transition-all">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <CircleUser />
+              <CircleUser className="w-4 h-4" />
               {admin?.name || "Hospital Admin"}
             </span>
           </div>
@@ -119,6 +122,95 @@ function Demo({ hospital, admin, loading, error }) {
 
       </main>
 
+      {/* ── Slide-Out Profile Panel ── */}
+      {/* Overlay */}
+      <div 
+        className={`fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 transition-opacity duration-300 ${isProfileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsProfileOpen(false)}
+      />
+
+      {/* Sidebar */}
+      <aside 
+        className={`fixed top-0 right-0 h-screen w-full max-w-sm bg-white shadow-[auto_0_40px_rgba(0,0,0,0.1)] z-50 transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isProfileOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
+      >
+        {/* Header */}
+        <div className="relative h-40 bg-linear-to-br from-emerald-500 to-emerald-700 flex items-center justify-center overflow-hidden shrink-0">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.2)_0%,transparent_40%)]" />
+          <button 
+            onClick={() => setIsProfileOpen(false)}
+            className="absolute top-4 right-4 p-2 bg-white/20 hover:bg-white/30 text-white rounded-full backdrop-blur-md transition-colors"
+          >
+            <X size={18} strokeWidth={3} />
+          </button>
+          
+          <div className="w-24 h-24 bg-white rounded-full p-1 shadow-2xl absolute -bottom-12 overflow-hidden border-4 border-white z-10 flex items-center justify-center text-emerald-600">
+            {admin?.avatar ? (
+              <img src={admin.avatar} alt="Admin" className="w-full h-full object-cover rounded-full" />
+            ) : (
+              <CircleUser size={48} strokeWidth={1.5} />
+            )}
+          </div>
+        </div>
+
+        {/* Profile Details */}
+        <div className="px-8 pt-16 pb-6 flex-1 overflow-y-auto">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-black text-slate-800 tracking-tight">{admin?.name || "Admin Name"}</h2>
+            <p className="text-emerald-600 text-xs font-bold uppercase tracking-widest mt-1 bg-emerald-50 inline-block px-3 py-1 rounded-full">{admin?.role || "Hospital Administrator"}</p>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-slate-100 transition-colors">
+              <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100 text-slate-400">
+                <Mail size={16} />
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Email Address</p>
+                <p className="text-slate-700 font-medium text-sm truncate">{admin?.email || "admin@hospital.com"}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-slate-100 transition-colors">
+              <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100 text-slate-400">
+                <Phone size={16} />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Contact Number</p>
+                <p className="text-slate-700 font-medium text-sm">{admin?.phone || "Not provided"}</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-100/50 hover:bg-slate-100 transition-colors">
+              <div className="p-2 bg-white rounded-xl shadow-sm border border-slate-100 text-slate-400">
+                <HospitalIcon size={16} />
+              </div>
+              <div className="overflow-hidden">
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Affiliated Hospital</p>
+                <p className="text-slate-700 font-medium text-sm truncate">{hospital?.data?.name || "Health Axis Central"}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="p-6 border-t border-slate-100 bg-slate-50 shrink-0 flex flex-col gap-3">
+          <button 
+          onClick={()=>{
+            logout();
+            navigate("/")
+          }}
+          className="w-full relative group overflow-hidden pl-4 pr-12 py-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-700 font-bold hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-[0.98]">
+            <LogOut size={16} className="text-slate-400 group-hover:text-slate-600 transition-colors" />
+            <span className="text-xs uppercase tracking-widest">Sign Out</span>
+          </button>
+          
+          <button className="w-full px-4 py-4 bg-rose-50 border border-rose-100 text-rose-600 rounded-2xl flex items-center justify-center gap-2 hover:bg-rose-100 hover:border-rose-200 transition-all font-bold group active:scale-[0.98]">
+            <Trash2 size={16} className="group-hover:scale-110 transition-transform" />
+            <span className="text-xs uppercase tracking-widest">Delete Account</span>
+          </button>
+        </div>
+      </aside>
+
       {/* The Cinematic Footer is injected here */}
       <CinematicFooter 
         hospital = {hospital}
@@ -137,7 +229,7 @@ import Loading from '../components/Loading.jsx';
 const Hospital = () => {
 
   const { handleGetHospital, handleGetHospitalAdmin } = useHospital();
-
+  const { handleLogout} = useAuth()
   const { hospital, hospitalAdmin, loading, error } = useSelector((state) => state.hospital);
 
   useEffect(() => {
@@ -157,8 +249,7 @@ const Hospital = () => {
           <Demo
             hospital={hospital}
             admin={hospitalAdmin}
-            loading={loading}
-            error={error}
+            logout = {handleLogout}
           />
       }
 

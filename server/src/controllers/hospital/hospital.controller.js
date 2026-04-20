@@ -42,7 +42,7 @@ async function createHospitalController(req, res) {
             success: true,
             message: "Hospital created successfully",
             data: newHospital,
-            updatedUser
+            
         });
     }
     catch (error) {

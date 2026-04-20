@@ -20,7 +20,7 @@ const doctorSchema = new mongoose.Schema({
     },
     contact: {
         type: String,
-        required: [true, "Phone is required"],
+        required: [true, "Contact Number is required"],
         trim: true,
     },
     specialization: {
