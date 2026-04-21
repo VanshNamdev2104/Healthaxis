@@ -13,8 +13,6 @@ async function createChatController(req, res) {
             data: newChat
         })
     } catch (error) {
-        console.error("Create Chat Error:", error); // 🔥 Debugging ke liye
-
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to create chat"
@@ -41,8 +39,6 @@ async function getChatsController(req, res) {
             data: chats
         })
     } catch (error) {
-        console.error("Get Chats Error:", error); // 🔥 Debugging ke liye
-
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch chats"
@@ -88,8 +84,6 @@ async function sendMessageController(req, res) {
             data: [newHumanMessage, newAIMessage]
         });
     } catch (error) {
-        console.error("Get Chat Error:", error); // 🔥 Debugging ke liye
-
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to send message"
@@ -131,8 +125,6 @@ async function getMessagesController(req, res) {
             data: messages
         });
     } catch (error) {
-        console.error("Get Chat Error:", error); // 🔥 Debugging ke liye
-
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to fetch messages"

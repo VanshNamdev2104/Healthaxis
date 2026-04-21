@@ -26,6 +26,8 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             dispatch(clearError());
             const response = await register(formData);
+            // Set user in Redux after successful registration
+            dispatch(setUser(response.data.user));
             return response;
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Registration failed"));

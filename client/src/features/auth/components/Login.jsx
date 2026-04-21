@@ -37,7 +37,9 @@ export default function Login({ toggleLogin, toggleForgot }) {
 
   const handleGoogleLogin = () => {
     toast.info("Redirecting to Google...");
-    window.location.href = "http://localhost:3000/api/auth/google";
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    window.location.href = `${apiUrl}/api/auth/google`;
+    
   };
 
   return (
@@ -73,10 +75,10 @@ export default function Login({ toggleLogin, toggleForgot }) {
             <button
               type="button"
               onClick={() => setLoginType("email")}
-              className={`flex-1 py-2 text-sm rounded-md ${
+              className={`flex-1 py-2 text-sm rounded-md font-medium transition-all ${
                 loginType === "email"
-                  ? "bg-white shadow"
-                  : "text-gray-500"
+                  ? "bg-white shadow text-black"
+                  : "bg-transparent text-gray-600 hover:text-gray-900"
               }`}
             >
               Email
@@ -84,10 +86,10 @@ export default function Login({ toggleLogin, toggleForgot }) {
             <button
               type="button"
               onClick={() => setLoginType("number")}
-              className={`flex-1 py-2 text-sm rounded-md ${
+              className={`flex-1 py-2 text-sm rounded-md font-medium transition-all ${
                 loginType === "number"
-                  ? "bg-white shadow"
-                  : "text-gray-500"
+                  ? "bg-white shadow text-black"
+                  : "bg-transparent text-gray-600 hover:text-gray-900"
               }`}
             >
               Phone

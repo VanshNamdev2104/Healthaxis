@@ -12,9 +12,7 @@ const DoctorsPage = () => {
   
   const { doctors, loading } = useSelector((state) => state.doctor);
   const {hospital, loading:hospitalLoading} = useSelector((state)=> state.hospital)
-  const {handleGetHospital} = useHospital()
-  // console.log("doctors", doctors);
-  // console.log("hospital", hospital?.data?._id);
+  const {handleGetHospital} = useHospital();
   
   const { handleCreateDoctor, handleGetAllDoctors, handleDeleteDoctor } = useHospital();
 

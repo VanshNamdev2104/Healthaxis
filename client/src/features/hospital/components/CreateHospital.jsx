@@ -36,9 +36,6 @@ const CreateHospital = () => {
     handleCreateHospital(formData);
   };
 
-  useEffect(()=>{
-    handleGetHospitalAdmin()
-  },[])
   return (
     <div className="min-h-screen bg-[#f6fafe] flex selection:bg-[#00846e] selection:text-white font-['Inter']">
       

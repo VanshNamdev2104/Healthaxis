@@ -1,9 +1,11 @@
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import { SunIcon as Sunburst } from "lucide-react";
+import { useNavigate } from "react-router";
 import { useAuth } from "../hooks/useAuth.js";
 
 export default function Register({ toggleLogin }) {
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -16,7 +18,8 @@ export default function Register({ toggleLogin }) {
     try {
       await handleRegister(data);
       toast.success("Account created successfully 🚀");
-      toggleLogin();
+      // Navigate to dashboard after successful registration
+      navigate("/dashboard");
     } catch {
       toast.error(error || "Registration failed ❌");
     }
@@ -24,7 +27,8 @@ export default function Register({ toggleLogin }) {
 
   const handleGoogleLogin = () => {
     toast.info("Redirecting to Google...");
-    window.location.href = "http://localhost:3000/api/auth/google";
+    const apiUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
+    window.location.href = `${apiUrl}/api/auth/google`;
   };
 
   return (

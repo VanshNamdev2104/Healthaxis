@@ -14,10 +14,10 @@ const InitAuth = ({ children }) => {
   const { handleGetCurrentUser } = useAuth();
 
   useEffect(() => {
-    // handleGetCurrentUser().catch(() => {
-    //   // If error (e.g., 401 Unauthorized), the user is just not logged in.
-    //   // The hook already handles setting error/loading state, so we just catch to avoid unhandled promise rejections.
-    // });
+    handleGetCurrentUser().catch(() => {
+      // If error (e.g., 401 Unauthorized), the user is just not logged in.
+      // The hook already handles setting error/loading state, so we just catch to avoid unhandled promise rejections.
+    });
   }, []); // Run only once on mount
 
   return children;

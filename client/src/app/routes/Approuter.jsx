@@ -49,7 +49,7 @@ export const router = createBrowserRouter([
     },
     {
         path: "/hospital/appointments",
-        element: < AppointmentPage />
+        element: <Protected role="hospitalAdmin">< AppointmentPage /></Protected>
     }
 ])
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -7,14 +7,25 @@ import { motion } from "framer-motion";
 import { useProfile } from "../hooks/useProfile.js";
 
 export default function ProfilePage() {
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
   const [editMode, setEditMode] = useState(false);
   const [changePasswordMode, setChangePasswordMode] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
+  const [completeness, setCompleteness] = useState(0);
   const fileInputRef = useRef(null);
+  const headerRef = useRef(null);
+  const cardRefs = useRef([]);
 
   const { handleUpdateProfile, handleChangePassword, loading } = useProfile();
+
+  useEffect(() => {
+    // Calculate profile completeness
+    const fields = ['name', 'email', 'number'];
+    const filled = fields.filter(field => user[field]).length;
+    setCompleteness((filled / fields.length) * 100);
+  }, [user]);
 
   // Profile edit form
   const {
@@ -79,7 +90,6 @@ export default function ProfilePage() {
       setProfileImage(null);
       setPreviewImage(null);
     } catch (error) {
-      toast.error("Failed to update profile ❌");
     }
   };
 
@@ -99,7 +109,6 @@ export default function ProfilePage() {
       setChangePasswordMode(false);
       resetPassword();
     } catch (error) {
-      toast.error("Failed to change password ❌");
     }
   };
 

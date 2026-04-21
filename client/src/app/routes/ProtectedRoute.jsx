@@ -1,5 +1,6 @@
 import { Navigate, Outlet } from "react-router";
 import { useSelector } from "react-redux";
+import Spinner from "../../components/Spinner.jsx";
 
 /**
  * Component to protect routes that require authentication.
@@ -10,9 +11,8 @@ import { useSelector } from "react-redux";
 const ProtectedRoute = () => {
   const { isAuthenticated, loading } = useSelector((state) => state.auth);
 
-  // While auth status is being determined (e.g., on app load), we can show nothing or a spinner.
-  // For simplicity, render nothing when loading is true.
-  if (loading) return null;
+  // While auth status is being determined (e.g., on app load), show a loading spinner
+  if (loading) return <Spinner />;
 
   return isAuthenticated ? <Outlet /> : <Navigate to="/" replace />;
 };

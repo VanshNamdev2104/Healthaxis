@@ -36,7 +36,12 @@ async function createHospitalController(req, res) {
             }
         });
 
-        const updatedUser = await userModel.findOneAndUpdate({ _id: user._id }, { $set: { hospital: newHospital._id } });
+        // Promote user to hospitalAdmin role on first hospital creation
+        const updatedUser = await userModel.findOneAndUpdate(
+            { _id: user._id }, 
+            { $set: { hospital: newHospital._id, role: "hospitalAdmin" } },
+            { new: true }
+        );
         
         res.status(201).json({
             success: true,

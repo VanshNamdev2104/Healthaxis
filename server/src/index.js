@@ -15,7 +15,7 @@ import diseaseRoutes from "./routes/health/disease.routes.js";
 import medicineRoutes from "./routes/health/medicine.routes.js";
 import hospitalRoutes from "./routes/hospital/hospital.routes.js";
 import doctorRoutes from "./routes/hospital/doctor.routes.js";
-import appointmentRoutes from "./routes/hospital/apointment.routes.js";
+import appointmentRoutes from "./routes/hospital/appointment.routes.js";
 import graphService from "./services/ai/graph.service.js";
 
 const app = express();

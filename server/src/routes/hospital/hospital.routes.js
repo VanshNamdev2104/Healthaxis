@@ -5,7 +5,7 @@ import hospitalController from "../../controllers/hospital/hospital.controller.j
 const hospitalRouter = Router();
 const { authenticate, authorizeRoles } = auth;
 
-hospitalRouter.post("/", authenticate, authorizeRoles("hospitalAdmin"), hospitalController.createHospitalController);
+hospitalRouter.post("/", authenticate, authorizeRoles("user", "hospitalAdmin"), hospitalController.createHospitalController);
 hospitalRouter.get("/", authenticate, authorizeRoles("user", "admin"), hospitalController.getAllHospitalsController);
 hospitalRouter.get("/me", authenticate, authorizeRoles( "hospitalAdmin"), hospitalController.getYourHospitalController);
 hospitalRouter.delete("/me", authenticate, authorizeRoles("hospitalAdmin"), hospitalController.deleteHospitalController);
