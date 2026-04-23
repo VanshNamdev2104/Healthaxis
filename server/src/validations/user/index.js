@@ -98,3 +98,30 @@ export const updateProfileSchema = z
   .refine((data) => data.name || data.number || data.email, {
     message: "At least one field must be provided to update",
   });
+
+/**
+ * Validation schema for changing password
+ */
+export const changePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string({ required_error: "Current password is required" })
+      .min(1, "Current password is required"),
+
+    newPassword: z
+      .string({ required_error: "New password is required" })
+      .min(8, "Password must be at least 8 characters")
+      .max(128, "Password must be at most 128 characters")
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+      ),
+
+    confirmPassword: z
+      .string({ required_error: "Please confirm your password" })
+      .min(1, "Please confirm your password"),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });

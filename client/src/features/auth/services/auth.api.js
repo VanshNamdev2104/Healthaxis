@@ -85,12 +85,8 @@ export async function getCurrentUser() {
 
 export async function updateProfile(formData) {
     try {
-        const headers = {};
-        // Only set content-type if it's FormData (file upload)
-        if (formData instanceof FormData) {
-            headers["Content-Type"] = "multipart/form-data";
-        }
-        const response = await api.put("/user/profile", formData, { headers });
+        // Don't manually set Content-Type for FormData - axios handles it automatically
+        const response = await api.put("/user/profile", formData);
         return response.data;
     } catch (error) {
         throw error;

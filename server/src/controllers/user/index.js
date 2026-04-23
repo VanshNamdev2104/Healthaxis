@@ -227,7 +227,7 @@ export const getProfile = async (req, res) => {
 };
 
 /**
- * @desc    Update user profile (name, email)
+ * @desc    Update user profile (name, email, profile image)
  * @route   PUT /api/user/profile
  * @access  Private
  */
@@ -246,6 +246,12 @@ export const updateProfile = async (req, res) => {
                 return conflictResponse(res, "Email is already in use");
             }
             updates.email = email;
+        }
+
+        // Handle profile image upload
+        if (req.file) {
+            const mimeType = req.file.mimetype || 'image/jpeg';
+            updates.profileImage = `data:${mimeType};base64,${req.file.buffer.toString('base64')}`;
         }
 
         const updatedUser = await User.findByIdAndUpdate(
@@ -327,5 +333,39 @@ export const resetPassword = async (req, res) => {
         return successResponse(res, null, "Password reset successfully");
     } catch (error) {
         return errorResponse(res, error, "Failed to reset password");
+    }
+}
+
+/**
+ * @desc    Change user password (authenticated)
+ * @route   PUT /api/user/change-password
+ * @access  Private
+ */
+export const changePassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return notFoundResponse(res, "User not found");
+        }
+
+        // Verify current password
+        const isMatch = await user.comparePassword(currentPassword);
+        if (!isMatch) {
+            return unauthorizedResponse(res, "Current password is incorrect");
+        }
+
+        // Update password
+        user.password = newPassword;
+        await user.save();
+
+        // Send password changed email (fire-and-forget)
+        const { subject, text, html } = passwordChangedEmail(user.name);
+        sendMail(user.email, subject, text, html);
+
+        return successResponse(res, null, "Password changed successfully");
+    } catch (error) {
+        return errorResponse(res, error, "Failed to change password");
     }
 }

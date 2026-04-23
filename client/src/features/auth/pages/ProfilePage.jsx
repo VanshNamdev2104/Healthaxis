@@ -1,422 +1,438 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
-import { Mail, Phone, User, Upload, Key, Save, X } from "lucide-react";
-import { motion } from "framer-motion";
+import {
+  Mail,
+  Phone,
+  User,
+  Upload,
+  Key,
+  Check,
+  X,
+  Camera,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useProfile } from "../hooks/useProfile.js";
 
 export default function ProfilePage() {
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+
   const [editMode, setEditMode] = useState(false);
   const [changePasswordMode, setChangePasswordMode] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
   const [completeness, setCompleteness] = useState(0);
+
   const fileInputRef = useRef(null);
-  const headerRef = useRef(null);
-  const cardRefs = useRef([]);
 
   const { handleUpdateProfile, handleChangePassword, loading } = useProfile();
 
   useEffect(() => {
-    // Calculate profile completeness
-    const fields = ['name', 'email', 'number'];
-    const filled = fields.filter(field => user[field]).length;
+    const fields = [user?.name, user?.email, user?.number, user?.profileImage];
+    const filled = fields.filter(Boolean).length;
     setCompleteness((filled / fields.length) * 100);
   }, [user]);
 
-  // Profile edit form
   const {
-    register: registerProfile,
-    handleSubmit: handleSubmitProfile,
-    formState: { errors: profileErrors },
-    reset: resetProfile,
-    watch: watchProfile,
-  } = useForm({
-    defaultValues: {
-      name: user?.name || "",
-      email: user?.email || "",
-      number: user?.number || "",
-    },
-  });
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
-  // Change password form
   const {
     register: registerPassword,
     handleSubmit: handleSubmitPassword,
-    formState: { errors: passwordErrors },
     reset: resetPassword,
-    watch: watchPassword,
-  } = useForm({
-    defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
-  });
+    getValues,
+    formState: { errors: passwordErrors },
+  } = useForm();
 
-  const newPassword = watchPassword("newPassword");
-  const confirmPassword = watchPassword("confirmPassword");
+  useEffect(() => {
+    reset({
+      name: user?.name || "",
+      email: user?.email || "",
+      number: user?.number || "",
+    });
+  }, [user, reset]);
 
-  // Handle profile image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
       setProfileImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result);
-      };
-      reader.readAsDataURL(file);
+      const preview = URL.createObjectURL(file);
+      setPreviewImage(preview);
     }
   };
 
-  // Handle profile update
-  const onSubmitProfile = async (data) => {
+  useEffect(() => {
+    return () => {
+      if (previewImage) URL.revokeObjectURL(previewImage);
+    };
+  }, [previewImage]);
+
+  const handleCancelEdit = () => {
+    setEditMode(false);
+    setProfileImage(null);
+    setPreviewImage(null);
+    reset({
+      name: user?.name || "",
+      email: user?.email || "",
+      number: user?.number || "",
+    });
+  };
+
+  const onSubmit = async (data) => {
     try {
       const formData = new FormData();
-      formData.append("name", data.name);
-      formData.append("email", data.email);
-      formData.append("number", data.number);
-      if (profileImage) {
-        formData.append("profileImage", profileImage);
-      }
+      Object.keys(data).forEach((key) => formData.append(key, data[key]));
+
+      if (profileImage) formData.append("profileImage", profileImage);
 
       await handleUpdateProfile(formData);
-      toast.success("Profile updated successfully! ✅");
+      toast.success("Profile updated ✅");
       setEditMode(false);
       setProfileImage(null);
       setPreviewImage(null);
-    } catch (error) {
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Update failed ❌");
     }
   };
 
-  // Handle password change
-  const onSubmitPassword = async (data) => {
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords do not match ❌");
-      return;
-    }
-
+  const onPasswordSubmit = async (data) => {
     try {
-      await handleChangePassword({
-        currentPassword: data.currentPassword,
-        newPassword: data.newPassword,
-      });
-      toast.success("Password changed successfully! ✅");
+      await handleChangePassword(data);
+      toast.success("Password updated 🔐");
       setChangePasswordMode(false);
       resetPassword();
-    } catch (error) {
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Error ❌");
     }
   };
 
+  const inputClass =
+    "w-full rounded-xl border border-gray-300/80 dark:border-neutral-700 bg-white dark:bg-neutral-900/80 px-4 py-3 text-gray-800 dark:text-gray-100 placeholder:text-gray-400 dark:placeholder:text-neutral-500 outline-none transition focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20";
+
+  const labelClass =
+    "mb-1 flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-neutral-300";
+
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        {/* Profile Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-white to-slate-200 dark:from-neutral-950 dark:via-neutral-900 dark:to-neutral-950 p-4 sm:p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
             My Profile
           </h1>
-          <p className="text-gray-600 dark:text-gray-400">
-            Manage your account information and settings
+          <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">
+            Manage your personal details and account security
           </p>
         </div>
 
-        {/* Profile Info Card */}
-        <motion.div
-          className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-8 mb-6"
-          whileHover={{ boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)" }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="flex flex-col md:flex-row gap-8">
-            {/* Profile Picture Section */}
-            <div className="flex flex-col items-center">
+        <div className="rounded-2xl border border-gray-200/70 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/70 backdrop-blur-md p-5 shadow-sm">
+          <div className="mb-2 flex justify-between text-sm text-gray-700 dark:text-neutral-300">
+            <span>Profile Completeness</span>
+            <span className="font-semibold">{Math.round(completeness)}%</span>
+          </div>
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-neutral-800">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-indigo-500 to-cyan-500 transition-all duration-500"
+              style={{ width: `${completeness}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-gray-200/70 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/70 backdrop-blur-md p-6 shadow-sm">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-5">
               <div className="relative">
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-400 to-cyan-400 p-1 flex items-center justify-center">
+                <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 border-white dark:border-neutral-800 bg-gradient-to-br from-indigo-500/20 to-cyan-500/20 text-2xl font-bold text-gray-800 dark:text-white shadow">
                   {previewImage ? (
                     <img
                       src={previewImage}
-                      alt="Profile"
-                      className="w-full h-full rounded-full object-cover"
+                      alt="Preview"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : user?.profileImage ? (
+                    <img
+                      src={user.profileImage}
+                      alt={user?.name || "Profile"}
+                      className="h-full w-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-4xl font-bold text-gray-400">
-                      {user?.name?.charAt(0)?.toUpperCase() || "U"}
-                    </div>
+                    user?.name?.charAt(0)?.toUpperCase() || "U"
                   )}
                 </div>
+
                 {editMode && (
                   <button
-                    onClick={() => fileInputRef.current?.click()}
-                    className="absolute bottom-0 right-0 bg-indigo-500 hover:bg-indigo-600 text-white p-2 rounded-full shadow-lg transition"
+                    type="button"
+                    aria-label="Upload profile photo"
+                    onClick={() => fileInputRef.current.click()}
+                    className="absolute bottom-0 right-0 rounded-full bg-indigo-600 p-2 text-white shadow-md transition hover:bg-indigo-700"
                   >
-                    <Upload size={16} />
+                    <Camera size={16} />
                   </button>
                 )}
+
                 <input
                   ref={fileInputRef}
                   type="file"
+                  hidden
                   accept="image/*"
                   onChange={handleImageUpload}
-                  className="hidden"
-                  disabled={!editMode}
                 />
               </div>
-              <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
-                {user?.role && (
-                  <span className="inline-block px-3 py-1 bg-indigo-100 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 rounded-full text-xs font-semibold uppercase">
-                    {user.role}
-                  </span>
-                )}
-              </p>
+
+              <div>
+                <p className="text-xl font-semibold text-gray-900 dark:text-white">
+                  {user?.name || "User"}
+                </p>
+                <p className="text-sm capitalize text-gray-500 dark:text-neutral-400">
+                  {user?.role || "Member"}
+                </p>
+              </div>
             </div>
+          </div>
 
-            {/* Profile Info Section */}
-            <div className="flex-1">
+          <div className="mt-8">
+            <AnimatePresence mode="wait">
               {!editMode ? (
-                // View Mode
-                <div className="space-y-6">
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                      <User size={16} /> Name
-                    </label>
-                    <p className="mt-2 text-lg text-gray-900 dark:text-white">
-                      {user?.name || "N/A"}
-                    </p>
-                  </div>
+                <motion.div
+                  key="view"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="space-y-4"
+                >
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-xl border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-950/60 p-4">
+                      <div className={labelClass}>
+                        <Mail size={16} />
+                        <span>Email</span>
+                      </div>
+                      <p className="text-gray-800 dark:text-neutral-100 break-all">
+                        {user?.email || "Not set"}
+                      </p>
+                    </div>
 
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                      <Mail size={16} /> Email
-                    </label>
-                    <p className="mt-2 text-lg text-gray-900 dark:text-white">
-                      {user?.email || "N/A"}
-                    </p>
-                  </div>
-
-                  <div>
-                    <label className="text-sm font-semibold text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                      <Phone size={16} /> Phone
-                    </label>
-                    <p className="mt-2 text-lg text-gray-900 dark:text-white">
-                      {user?.number || "N/A"}
-                    </p>
+                    <div className="rounded-xl border border-gray-200 dark:border-neutral-800 bg-gray-50 dark:bg-neutral-950/60 p-4">
+                      <div className={labelClass}>
+                        <Phone size={16} />
+                        <span>Phone</span>
+                      </div>
+                      <p className="text-gray-800 dark:text-neutral-100">
+                        {user?.number || "Not set"}
+                      </p>
+                    </div>
                   </div>
 
                   <button
                     onClick={() => setEditMode(true)}
-                    className="mt-6 w-full bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
+                    className="mt-2 inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-indigo-700 disabled:opacity-60"
                   >
-                    <Save size={18} /> Edit Profile
+                    <User size={16} />
+                    Edit Profile
                   </button>
-                </div>
+                </motion.div>
               ) : (
-                // Edit Mode
-                <form onSubmit={handleSubmitProfile(onSubmitProfile)} className="space-y-4">
+                <motion.form
+                  key="edit"
+                  onSubmit={handleSubmit(onSubmit)}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  className="space-y-5"
+                >
                   <div>
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Name
+                    <label className={labelClass}>
+                      <User size={16} />
+                      <span>Name</span>
                     </label>
                     <input
-                      type="text"
-                      {...registerProfile("name", {
-                        required: "Name is required",
-                      })}
-                      className="mt-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-neutral-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      {...register("name", { required: "Name is required" })}
+                      placeholder="Enter your name"
+                      className={inputClass}
                     />
-                    {profileErrors.name && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {profileErrors.name.message}
+                    {errors.name && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.name.message}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Email
+                    <label className={labelClass}>
+                      <Mail size={16} />
+                      <span>Email</span>
                     </label>
                     <input
-                      type="email"
-                      {...registerProfile("email", {
+                      {...register("email", {
                         required: "Email is required",
-                        pattern: {
-                          value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                          message: "Invalid email format",
-                        },
                       })}
-                      className="mt-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-neutral-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter your email"
+                      className={inputClass}
                     />
-                    {profileErrors.email && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {profileErrors.email.message}
+                    {errors.email && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.email.message}
                       </p>
                     )}
                   </div>
 
                   <div>
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                      Phone
+                    <label className={labelClass}>
+                      <Phone size={16} />
+                      <span>Phone</span>
                     </label>
                     <input
-                      type="text"
-                      {...registerProfile("number", {
-                        required: "Phone is required",
+                      {...register("number", {
+                        required: "Phone number is required",
                         pattern: {
                           value: /^[0-9]{10}$/,
-                          message: "Phone must be 10 digits",
+                          message: "Phone number must be 10 digits",
                         },
                       })}
-                      className="mt-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-neutral-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                      placeholder="Enter phone number"
+                      className={inputClass}
                     />
-                    {profileErrors.number && (
-                      <p className="text-red-500 text-xs mt-1">
-                        {profileErrors.number.message}
+                    {errors.number && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.number.message}
                       </p>
                     )}
                   </div>
 
-                  <div className="flex gap-3 mt-6">
+                  <div className="flex flex-wrap gap-3">
                     <button
                       type="submit"
                       disabled={loading}
-                      className="flex-1 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
+                      className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
                     >
-                      <Save size={18} />
+                      <Check size={16} />
                       {loading ? "Saving..." : "Save Changes"}
                     </button>
+
                     <button
                       type="button"
-                      onClick={() => {
-                        setEditMode(false);
-                        resetProfile();
-                        setPreviewImage(null);
-                      }}
-                      className="flex-1 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
+                      onClick={handleCancelEdit}
+                      className="inline-flex items-center gap-2 rounded-xl bg-gray-200 px-5 py-2.5 text-sm font-medium text-gray-800 transition hover:bg-gray-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
                     >
-                      <X size={18} /> Cancel
+                      <X size={16} />
+                      Cancel
                     </button>
                   </div>
-                </form>
+                </motion.form>
               )}
-            </div>
+            </AnimatePresence>
           </div>
-        </motion.div>
+        </div>
 
-        {/* Change Password Card */}
-        <motion.div
-          className="bg-white dark:bg-neutral-800 rounded-lg shadow-lg p-8"
-          whileHover={{ boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1)" }}
-          transition={{ duration: 0.2 }}
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
-              <Key size={24} /> Security
+        <div className="rounded-2xl border border-gray-200/70 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/70 backdrop-blur-md p-6 shadow-sm">
+          <div className="mb-4 flex items-center gap-2">
+            <Key className="text-red-500" size={18} />
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+              Security
             </h2>
           </div>
 
           {!changePasswordMode ? (
             <button
               onClick={() => setChangePasswordMode(true)}
-              className="w-full bg-orange-500 hover:bg-orange-600 text-white font-semibold py-2 px-4 rounded-lg transition"
+              className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
             >
+              <Key size={16} />
               Change Password
             </button>
           ) : (
             <form
-              onSubmit={handleSubmitPassword(onSubmitPassword)}
+              onSubmit={handleSubmitPassword(onPasswordSubmit)}
               className="space-y-4"
             >
               <div>
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Current Password
-                </label>
+                <label className={labelClass}>Current Password</label>
                 <input
                   type="password"
                   {...registerPassword("currentPassword", {
                     required: "Current password is required",
                   })}
-                  className="mt-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-neutral-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="Enter current password"
+                  className={inputClass}
                 />
                 {passwordErrors.currentPassword && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {passwordErrors.currentPassword.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  New Password
-                </label>
+                <label className={labelClass}>New Password</label>
                 <input
                   type="password"
                   {...registerPassword("newPassword", {
                     required: "New password is required",
                     minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters",
+                      value: 8,
+                      message: "Password must be at least 8 characters",
                     },
                   })}
-                  className="mt-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-neutral-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="Enter new password"
+                  className={inputClass}
                 />
                 {passwordErrors.newPassword && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {passwordErrors.newPassword.message}
                   </p>
                 )}
               </div>
 
               <div>
-                <label className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Confirm Password
-                </label>
+                <label className={labelClass}>Confirm Password</label>
                 <input
                   type="password"
                   {...registerPassword("confirmPassword", {
                     required: "Please confirm your password",
                     validate: (value) =>
-                      value === newPassword || "Passwords do not match",
+                      value === getValues("newPassword") ||
+                      "Passwords do not match",
                   })}
-                  className="mt-2 w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-neutral-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-orange-500"
+                  placeholder="Confirm new password"
+                  className={inputClass}
                 />
                 {passwordErrors.confirmPassword && (
-                  <p className="text-red-500 text-xs mt-1">
+                  <p className="mt-1 text-sm text-red-500">
                     {passwordErrors.confirmPassword.message}
                   </p>
                 )}
               </div>
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex flex-wrap gap-3">
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  <Key size={18} />
+                  <Check size={16} />
                   {loading ? "Updating..." : "Update Password"}
                 </button>
+
                 <button
                   type="button"
                   onClick={() => {
                     setChangePasswordMode(false);
                     resetPassword();
                   }}
-                  className="flex-1 bg-gray-300 hover:bg-gray-400 dark:bg-gray-600 dark:hover:bg-gray-700 text-gray-900 dark:text-white font-semibold py-2 px-4 rounded-lg transition flex items-center justify-center gap-2"
+                  className="inline-flex items-center gap-2 rounded-xl bg-gray-200 px-5 py-2.5 text-sm font-medium text-gray-800 transition hover:bg-gray-300 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700"
                 >
-                  <X size={18} /> Cancel
+                  <X size={16} />
+                  Cancel
                 </button>
               </div>
             </form>
           )}
-        </motion.div>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

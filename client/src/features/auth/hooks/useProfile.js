@@ -11,10 +11,12 @@ export const useProfile = () => {
       dispatch(setLoading(true));
       dispatch(clearError());
       const response = await updateProfile(formData);
-      dispatch(setUser(response.data || response.user));
+      // response.data has structure: { user: updatedUser }
+      const updatedUser = response.data?.user || response.data;
+      dispatch(setUser(updatedUser));
       
       // Update localStorage
-      localStorage.setItem("user", JSON.stringify(response.data || response.user));
+      localStorage.setItem("user", JSON.stringify(updatedUser));
       
       return response;
     } catch (error) {

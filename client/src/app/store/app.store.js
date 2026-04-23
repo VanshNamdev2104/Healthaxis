@@ -5,6 +5,7 @@ import authReducer from "../../features/auth/slice/auth.slice.js";
 import hospitalReducer from "../../features/hospital/slice/hospital.slice.js";
 import diseaseReducer from "../../features/health/slice/disease.slice.js";
 import medicineReducer from "../../features/health/slice/medicine.slice.js";
+import adminReducer from "../../features/admin/slice/admin.slice.js";
 
 export const store = configureStore({
     reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
         hospital: hospitalReducer,
         disease: diseaseReducer,
         medicine: medicineReducer,
+        admin: adminReducer,
     }
 });
