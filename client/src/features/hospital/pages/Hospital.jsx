@@ -176,7 +176,7 @@ function Demo({ hospital, admin, logout, error }) {
               </div>
               <div>
                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-0.5">Contact Number</p>
-                <p className="text-slate-700 font-medium text-sm">{admin?.phone || "Not provided"}</p>
+                <p className="text-slate-700 font-medium text-sm">{admin?.number || "Not provided"}</p>
               </div>
             </div>
             

@@ -36,9 +36,9 @@ const CreateHospital = () => {
     handleCreateHospital(formData);
   };
 
-  useEffect(()=>{
-    handleGetHospitalAdmin()
-  },[])
+  // Removed redundant handleGetHospitalAdmin call to prevent infinite loop
+  // as it is already called in the parent Hospital component.
+
   return (
     <div className="min-h-screen bg-[#f6fafe] flex selection:bg-[#00846e] selection:text-white font-['Inter']">
       
@@ -117,7 +117,7 @@ const CreateHospital = () => {
                     <input
                       type="text"
                       readOnly
-                      value={hospitalAdmin?.user?.name || ''}
+                      value={hospitalAdmin?.name || ''}
                       className="w-full pl-10 pr-4 py-3 bg-[#f0f4f8] border border-transparent rounded-2xl text-[#6d7a75] font-medium cursor-not-allowed focus:outline-none"
                     />
                   </div>
@@ -133,7 +133,7 @@ const CreateHospital = () => {
                     <input
                       type="text"
                       readOnly
-                      value={hospitalAdmin?.user?.role || 'Hospital Admin'}
+                      value={hospitalAdmin?.role || 'Hospital Admin'}
                       className="w-full pl-10 pr-4 py-3 bg-[#f0f4f8] border border-transparent rounded-2xl text-[#6d7a75] font-medium cursor-not-allowed focus:outline-none"
                     />
                   </div>
@@ -149,7 +149,7 @@ const CreateHospital = () => {
                     <input
                       type="text"
                       readOnly
-                      value={hospitalAdmin?.user?.number || ''}
+                      value={hospitalAdmin?.number || ''}
                       className="w-full pl-10 pr-4 py-3 bg-[#f0f4f8] border border-transparent rounded-2xl text-[#6d7a75] font-medium cursor-not-allowed focus:outline-none"
                     />
                   </div>
@@ -165,7 +165,7 @@ const CreateHospital = () => {
                     <input
                       type="text"
                       readOnly
-                      value={hospitalAdmin?.user?.email || ''}
+                      value={hospitalAdmin?.email || ''}
                       className="w-full pl-10 pr-4 py-3 bg-[#f0f4f8] border border-transparent rounded-2xl text-[#6d7a75] font-medium cursor-not-allowed focus:outline-none"
                     />
                   </div>

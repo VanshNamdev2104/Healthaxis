@@ -35,11 +35,11 @@ const DoctorsPage = () => {
     if(!hospitalLoading && hospital?.data?._id) {
       handleGetAllDoctors(hospital?.data?._id)
     }
-  },[hospital,doctors?.data?.length])
+  },[hospital])
 
 
   const filteredDoctors = useMemo(() => {
-    return (doctors?.data || []).filter(doc => {
+    return (doctors || []).filter(doc => {
       const matchSearch = doc.name?.toLowerCase().includes(search.toLowerCase()) ||
         doc.specialization?.toLowerCase().includes(search.toLowerCase());
       const matchSpec = specFilter === 'All' || doc.specialization === specFilter;
@@ -48,7 +48,7 @@ const DoctorsPage = () => {
   }, [doctors, search, specFilter]);
 
   // Extract unique specializations for the filter dropdown ex- [Cardiologist, Neurologist, etc.]
-  const specs = useMemo(() => ['All', ...new Set((doctors?.data || []).map(d => d.specialization).filter(Boolean))], [doctors]);
+  const specs = useMemo(() => ['All', ...new Set((doctors || []).map(d => d.specialization).filter(Boolean))], [doctors]);
 
   useEffect(() => {
     // Page Entrance Animations
@@ -115,8 +115,8 @@ const DoctorsPage = () => {
         {/* ── Stats Summary Tonal Layer ───────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
           {[
-            { label: 'Staff Directory', value: doctors.data?.length || 0, accent: 'text-[#006c49]', bg: 'bg-[#f0fdf4]' },
-            { label: 'Active Specialists', value: doctors.data?.filter(d => d.availability !== false).length || 0, accent: 'text-[#2563eb]', bg: 'bg-[#f0f4ff]' },
+            { label: 'Staff Directory', value: doctors?.length || 0, accent: 'text-[#006c49]', bg: 'bg-[#f0fdf4]' },
+            { label: 'Active Specialists', value: doctors?.filter(d => d.availability !== false).length || 0, accent: 'text-[#2563eb]', bg: 'bg-[#f0f4ff]' },
             { label: 'Clinical Groups', value: specs.length - 1, accent: 'text-[#5c5f61]', bg: 'bg-[#f8fafc]' },
           ].map((stat, i) => (
             <div key={i} className={`${stat.bg} p-8 rounded-[40px] flex flex-col justify-between h-48 group hover:scale-[1.02] transition-transform duration-500`}>
@@ -217,9 +217,13 @@ const DoctorsPage = () => {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSubmit={async (data) => {
-          console.log(data);
+          // console.log(data);
 
           await handleCreateDoctor(data);
+          // Optional: Re-fetch all doctors to ensure everything (like specialization list) is up to date
+          if (hospital?.data?._id) {
+            handleGetAllDoctors(hospital.data._id);
+          }
           setShowAddModal(false);
         }}
       />

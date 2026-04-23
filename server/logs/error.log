@@ -2373,3 +2373,11 @@ CastError: Cast to ObjectId failed for value "undefined" (type string) at path "
     at model.Query.exec (C:\Users\GALAXY PC\Desktop\Healthaxis\server\node_modules\mongoose\lib\query.js:4726:80)
     at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
     at async deleteDoctorController (file:///C:/Users/GALAXY%20PC/Desktop/Healthaxis/server/src/controllers/hospital/doctor.controller.js:161:24)
+2026-04-21 23:37:26 [ERROR]: Create Appointment Error {"service":"healthaxis-api","error":"Appointment validation failed: gender: `Male` is not a valid enum value for path `gender`.","userId":"69e7bb1cadb4504ad8e419a6","doctorId":"69e5cf8e0e082d4f5806544f"}
+ValidationError: Appointment validation failed: gender: `Male` is not a valid enum value for path `gender`.
+    at model.validate (C:\Users\GALAXY PC\Desktop\Healthaxis\server\node_modules\mongoose\lib\document.js:2864:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:103:5)
+    at async model.$__save (C:\Users\GALAXY PC\Desktop\Healthaxis\server\node_modules\mongoose\lib\model.js:393:7)
+    at async model.save (C:\Users\GALAXY PC\Desktop\Healthaxis\server\node_modules\mongoose\lib\model.js:667:5)
+    at async model.create (C:\Users\GALAXY PC\Desktop\Healthaxis\server\node_modules\mongoose\lib\model.js:2754:5)
+    at async createAppointmentController (file:///C:/Users/GALAXY%20PC/Desktop/Healthaxis/server/src/controllers/hospital/appointment.controller.js:67:32)
