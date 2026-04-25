@@ -41,7 +41,6 @@ const PremiumTextarea = ({ label, icon, ...props }) => (
 export default function MedicineForm({ isOpen, onClose, onSuccess }) {
   const { register, handleSubmit, control, reset } = useForm();
   const [images, setImages] = useState([]);
-  const [diseases, setDiseases] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
@@ -58,17 +57,6 @@ export default function MedicineForm({ isOpen, onClose, onSuccess }) {
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    const fetchDiseases = async () => {
-      try {
-        const res = await axios.get("/api/disease");
-        setDiseases(res.data.data || []);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    fetchDiseases();
-  }, []);
 
   if (!isOpen) return null;
 
@@ -79,9 +67,7 @@ export default function MedicineForm({ isOpen, onClose, onSuccess }) {
     setImages([]);
   };
 
-  const handleImageChange = (e) => {
-    setImages([...e.target.files]);
-  };
+
 
   const onSubmit = async (data) => {
     try {

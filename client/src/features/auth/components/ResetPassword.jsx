@@ -3,13 +3,12 @@ import { toast } from "react-toastify";
 import { SunIcon as Sunburst } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
 import { useState } from "react";
-import { useSearchParams, useNavigate, Link } from "react-router";
+import { useSearchParams, Link } from "react-router";
 
 export default function ResetPassword() {
   const { handleResetPassword, loading } = useAuth();
   const [isSuccess, setIsSuccess] = useState(false);  
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
   const resetToken = searchParams.get("token");
 
   const {

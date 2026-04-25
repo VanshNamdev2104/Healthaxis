@@ -23,6 +23,7 @@ const DiseasePage = () => {
 
   useEffect(() => {
     getAllDiseases();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredDiseases = useMemo(() => {

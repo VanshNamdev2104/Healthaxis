@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHospital } from '../hooks/useHospital';
-import { useAuth } from '../../auth/hooks/useAuth';
 import { Activity, ShieldPlus, HeartPulse, ShieldCheck, Mail, Phone, User, Lock, Building2, MapPin, Clock, Tag, Globe, Map } from 'lucide-react';
 import { useSelector } from 'react-redux';
 
 const CreateHospital = () => {
-  const { handleCreateHospital ,handleGetHospitalAdmin } = useHospital();
-  const { handleGetCurrentUser } = useAuth();
+  const { handleCreateHospital } = useHospital();
   const {hospitalAdmin} = useSelector((state) => state.hospital)
   
   

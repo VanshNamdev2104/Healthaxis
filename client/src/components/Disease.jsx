@@ -48,9 +48,6 @@ export default function DiseaseForm({ isOpen, onClose, onSuccess }) {
   // Dynamic fields
   const symptoms = useFieldArray({ control, name: "symptoms" });
   const causes = useFieldArray({ control, name: "causes" });
-  const precautions = useFieldArray({ control, name: "precautions" });
-  const diagnosis = useFieldArray({ control, name: "diagnosis" });
-  const remedies = useFieldArray({ control, name: "homeRemedies" });
 
   useEffect(() => {
     if (isOpen) {
@@ -68,9 +65,7 @@ export default function DiseaseForm({ isOpen, onClose, onSuccess }) {
     setImages([]);
   };
 
-  const handleImageChange = (e) => {
-    setImages([...e.target.files]);
-  };
+
 
   const onSubmit = async (data) => {
     try {
