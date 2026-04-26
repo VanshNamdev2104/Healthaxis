@@ -13,6 +13,7 @@ const DoctorProfilePage = lazy(() => import("../../features/hospital/pages/Docto
 const AppointmentPage = lazy(() => import("../../features/hospital/pages/AppointmentPage"))
 const DiseasePage = lazy(() => import("../../features/health/pages/DiseasePage"))
 const MedicinePage = lazy(() => import("../../features/health/pages/MedicinePage"))
+const ChatPage = lazy(() => import("../../features/chat/pages/ChatPage"))
 const AdminDashboard = lazy(() => import("../../features/admin/pages/AdminDashboard"))
 const UserManagement = lazy(() => import("../../features/admin/pages/UserManagement"))
 const HospitalManagement = lazy(() => import("../../features/admin/pages/HospitalManagement"))
@@ -34,6 +35,7 @@ const LazyDoctorProfilePage = Loadable(DoctorProfilePage)
 const LazyAppointmentPage = Loadable(AppointmentPage)
 const LazyDiseasePage = Loadable(DiseasePage)
 const LazyMedicinePage = Loadable(MedicinePage)
+const LazyChatPage = Loadable(ChatPage)
 const LazyAdminDashboard = Loadable(AdminDashboard)
 const LazyUserManagement = Loadable(UserManagement)
 const LazyHospitalManagement = Loadable(HospitalManagement)
@@ -103,6 +105,16 @@ const router = createBrowserRouter([
     {
         path: "/health/medicines",
         element: <Protected role="admin"><LazyMedicinePage /></Protected>
+    },
+    {
+        path: "/chat",
+        element: <ProtectedRoute />,
+        children: [
+            {
+                index: true,
+                element: <LazyChatPage />
+            }
+        ]
     }
 ])
 

@@ -12,6 +12,7 @@ import {
   Shield,
   BarChart3,
   Pill,
+  MessageCircle,
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -56,6 +57,13 @@ const USER_TAB_CONFIG = [
     id: DASHBOARD_TABS.MEDICINES,
     label: "Medicines",
     icon: Pill,
+  },
+  {
+    id: "chat",
+    label: "AI Chat",
+    icon: MessageCircle,
+    isRoute: true,
+    route: "/chat",
   },
   {
     id: DASHBOARD_TABS.SETTINGS,
@@ -118,7 +126,13 @@ export function Dashboard() {
   const sidebarLinks = tabConfig.map((tab) => ({
     label: tab.label,
     href: "#",
-    onClick: () => handleTabChange(tab.id),
+    onClick: () => {
+      if (tab.isRoute) {
+        navigate(tab.route);
+      } else {
+        handleTabChange(tab.id);
+      }
+    },
     icon: (
       <tab.icon className="text-neutral-700 dark:text-neutral-200 h-5 w-5 shrink-0" />
     ),

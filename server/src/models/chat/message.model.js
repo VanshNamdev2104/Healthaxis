@@ -11,7 +11,7 @@ const messageSchema = new mongoose.Schema({
     },
     summary : {
         type : String,
-        required : true
+        default : ""
     },
     role: {
         type: String,
