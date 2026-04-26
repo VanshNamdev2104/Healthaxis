@@ -1,8 +1,8 @@
 import React, { useRef } from 'react';
 import { gsap } from 'gsap';
-import { Check, X, Clock, Calendar, User } from 'lucide-react';
+import { Check, X, Clock, Calendar, User, Trash2 } from 'lucide-react';
 
-const AppointmentCard = ({ appointment, onStatusUpdate, onReschedule }) => {
+const AppointmentCard = ({ appointment, approve , reject , deleteAppointment, onReschedule }) => {
   const cardRef = useRef(null);
   const glowRef = useRef(null);
 
@@ -59,71 +59,78 @@ const AppointmentCard = ({ appointment, onStatusUpdate, onReschedule }) => {
         className="absolute -top-20 -right-20 w-48 h-48 bg-[#22c55e] blur-[80px] rounded-full opacity-0 pointer-events-none"
       />
 
-      <div className="p-7 flex flex-col h-full">
+      <div className="p-5 flex flex-col h-full">
         {/* Header: Status & Actions */}
-        <div className="flex justify-between items-start mb-6">
-          <div className={`flex items-center gap-2 px-4 py-1.5 rounded-full ${status.bg} ${status.text}`}>
+        <div className="flex justify-between items-center mb-5">
+          <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${status.bg} ${status.text}`}>
             {status.icon}
-            <span className="text-[10px] font-black uppercase tracking-widest">{status.label}</span>
+            <span className="text-[9px] font-black uppercase tracking-widest">{status.label}</span>
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-1.5">
             {appointment?.status === 'pending' && (
               <button
-                onClick={() => onStatusUpdate?.(appointment._id, 'approved')}
-                className="w-8 h-8 rounded-xl bg-[#f0fdf4] text-[#10b981] flex items-center justify-center hover:bg-[#10b981] hover:text-white transition-all duration-300"
+                onClick={() => approve(appointment._id)}
+                className="w-7 h-7 rounded-lg bg-[#f0fdf4] text-[#10b981] flex items-center justify-center hover:bg-[#10b981] hover:text-white transition-all duration-300 shadow-xs"
                 title="Approve"
               >
-                <Check size={16} strokeWidth={3} />
+                <Check size={14} strokeWidth={3} />
               </button>
             )}
             <button
-              onClick={() => onStatusUpdate?.(appointment._id, 'rejected')}
-              className="w-8 h-8 rounded-xl bg-[#fff1f2] text-[#f43f5e] flex items-center justify-center hover:bg-[#f43f5e] hover:text-white transition-all duration-300"
+              onClick={() => reject(appointment._id)}
+              className="w-7 h-7 rounded-lg bg-[#fff1f2] text-[#f43f5e] flex items-center justify-center hover:bg-[#f43f5e] hover:text-white transition-all duration-300 shadow-xs"
               title="Cancel"
             >
-              <X size={16} strokeWidth={3} />
+              <X size={14} strokeWidth={3} />
+            </button>
+            <button
+              onClick={() => deleteAppointment(appointment._id)}
+              className="w-7 h-7 rounded-lg bg-slate-50 text-slate-400 flex items-center justify-center hover:bg-rose-600 hover:text-white transition-all duration-300 shadow-xs"
+              title="Delete Record"
+            >
+              <Trash2 size={12} strokeWidth={2.5} />
             </button>
           </div>
         </div>
 
         {/* Patient Details */}
-        <div className="mb-6">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center text-[#171c1f]">
-              <User size={24} strokeWidth={1.5} />
+        <div className="mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[#171c1f]">
+              <User size={18} strokeWidth={2} />
             </div>
             <div>
-              <h3 className="text-[#171c1f] font-bold text-xl leading-none mb-1 group-hover:text-emerald-600 transition-colors">
+              <h3 className="text-[#171c1f] font-bold text-base leading-tight group-hover:text-emerald-600 transition-colors">
                 {appointment?.patientName}
               </h3>
-              <p className="text-[#6c7a71] text-[10px] font-bold uppercase tracking-widest">
-                Patient ({appointment?.age}y, {appointment?.gender})
+              <p className="text-[#6c7a71] text-[9px] font-bold uppercase tracking-widest">
+                {appointment?.age}y • {appointment?.gender}
               </p>
             </div>
           </div>
         </div>
 
         {/* Doctor & Dept Info */}
-        <div className="bg-[#f8fafc] rounded-2xl p-5 mb-6">
-          <div className="flex items-center gap-3 mb-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#22c55e]" />
-            <p className="text-[#171c1f] text-sm font-bold truncate">Dr. {appointment?.doctor?.name || "Assigned Doctor"}</p>
+        <div className="bg-[#f8fafc] rounded-xl p-3.5 mb-4 border border-slate-50">
+          <div className="flex items-center gap-2 mb-0.5">
+            <div className="w-1 h-1 rounded-full bg-[#22c55e]" />
+            <p className="text-[#171c1f] text-xs font-bold truncate">Dr. {appointment?.doctor?.name || "Assigned Doctor"}</p>
           </div>
-          <p className="text-[#6c7a71] text-[10px] font-bold uppercase tracking-widest ml-4">
+          <p className="text-[#6c7a71] text-[9px] font-bold uppercase tracking-widest pl-3">
             {appointment?.doctor?.specialization || "General Medicine"}
           </p>
         </div>
 
         {/* Date & Time Slot */}
-        <div className="mt-auto flex items-center justify-between">
-          <div className="flex items-center gap-3 text-[#374151]">
-            <Calendar size={16} className="text-[#6c7a71]" />
-            <span className="text-sm font-bold tracking-tight">{appointment?.date}</span>
+        <div className="mt-auto pt-4 border-t border-dashed border-slate-100 grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-2 text-[#374151]">
+            <Calendar size={13} className="text-[#6c7a71]" />
+            <span className="text-[11px] font-bold tracking-tight">{appointment?.date}</span>
           </div>
-          <div className="flex items-center gap-3 text-[#374151]">
-            <Clock size={16} className="text-[#6c7a71]" />
-            <span className="text-sm font-bold tracking-tight">{appointment?.time}</span>
+          <div className="flex items-center gap-2 text-[#374151] justify-end">
+            <Clock size={13} className="text-[#6c7a71]" />
+            <span className="text-[11px] font-bold tracking-tight">{appointment?.time}</span>
           </div>
         </div>
       </div>
@@ -131,10 +138,10 @@ const AppointmentCard = ({ appointment, onStatusUpdate, onReschedule }) => {
       {/* Reschedule Button Tier */}
       <button
         onClick={() => onReschedule?.(appointment)}
-        className="w-full py-4 bg-[#f1f5f9] hover:bg-[#e2e8f0] text-[#171c1f] font-black text-[10px] uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-2 group/btn"
+        className="w-full py-3.5 bg-slate-50 hover:bg-slate-100 text-[#6c7a71] font-black text-[9px] uppercase tracking-[0.25em] transition-all flex items-center justify-center gap-2 border-t border-slate-100"
       >
-        <Clock size={12} className="group-hover/btn:rotate-12 transition-transform" />
-        Reschedule Appointment
+        <Clock size={11} />
+        Review Schedule
       </button>
     </div>
   );

@@ -46,7 +46,7 @@ const sampleAppointments = [
 const appointmentSlice = createSlice({
     name: "appointment",
     initialState: {
-        appointments: sampleAppointments, // Injecting sample data for design verification
+        appointments: [], // Injecting sample data for design verification
         loading: false,
         error: null,
     },
@@ -60,11 +60,11 @@ const appointmentSlice = createSlice({
         setError: (state, action) => {
             state.error = action.payload;
         },
-        updateAppointmentStatusInState: (state, action) => {
-            const { id, status } = action.payload;
+        updateAppointmentInState: (state, action) => {
+            const { id, ...updates } = action.payload;
             const index = state.appointments.findIndex(app => app._id === id);
             if (index !== -1) {
-                state.appointments[index].status = status;
+                state.appointments[index] = { ...state.appointments[index], ...updates };
             }
         },
         removeAppointmentFromState: (state, action) => {
@@ -77,7 +77,7 @@ export const {
     setAppointments, 
     setLoading, 
     setError, 
-    updateAppointmentStatusInState, 
+    updateAppointmentInState, 
     removeAppointmentFromState 
 } = appointmentSlice.actions;
 

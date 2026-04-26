@@ -2,7 +2,7 @@ import appointmentModel from "../../models/hospital/appointment.model.js";
 import doctorModel from "../../models/hospital/doctor.model.js";
 import hospitalModel from "../../models/hospital/hospital.model.js";
 import sendMail from "../../services/mail.service.js";
-import { appointmentEmail, appointmentApprovedEmail } from "../../utils/emailTemplates.js";
+import { appointmentEmail, appointmentApprovedEmail, appointmentRejectedEmail } from "../../utils/emailTemplates.js";
 import mongoose from "mongoose";
 import logger from "../../config/logger.js";
 
@@ -427,7 +427,7 @@ async function approveAppointment(req, res) {
 
         const { subject, text, html } = appointmentApprovedEmail(patient.name, doctor, hospital, hospitalCity, date, time);
         await sendMail(patient.email, subject, text, html);
-
+        console.log("email approved check : ",patient.email);
         res.status(200).json({
             success: true,
             message: "Appointment approved successfully",
@@ -444,6 +444,65 @@ async function approveAppointment(req, res) {
         return res.status(500).json({
             success: false,
             message: error.message || "Failed to approve appointment",
+        });
+    }
+}
+
+async function rejectAppointment(req, res) {
+    const user = req.user;
+    const { appointmentId } = req.params;
+
+    try {
+        if (!appointmentId) {
+            return res.status(400).json({
+                success: false,
+                message: "Appointment ID is required",
+            });
+        }
+
+        const appointment = await appointmentModel.findById(appointmentId).populate("doctor").populate("hospital").populate("user");
+
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                message: "Appointment not found",
+            });
+        } 
+
+        const doctor = appointment?.doctor?.name;
+        const hospital = appointment?.hospital?.name;
+        const hospitalCity = appointment?.hospital?.city;
+        const patient = appointment?.user;
+
+        if (appointment.status !== "pending") {
+            return res.status(400).json({
+                success: false,
+                message: "Appointment is already approved/rejected",
+            });
+        }
+
+        appointment.status = "rejected";
+        await appointment.save();
+
+        const { subject, text, html } = appointmentRejectedEmail(patient.name, doctor, hospital, hospitalCity);
+        await sendMail(patient.email, subject, text, html);
+
+        res.status(200).json({
+            success: true,
+            message: "Appointment rejected successfully",
+            data: appointment,
+        });
+
+    } catch (error) {
+        logger.error("Reject Appointment Error", { 
+            error: error.message, 
+            stack: error.stack,
+            appointmentId,
+            userId: user._id 
+        });
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Failed to reject appointment",
         });
     }
 }
@@ -507,5 +566,6 @@ export default {
     getPendingAppointmentsOfUser,
     getAppointment,
     approveAppointment,
+    rejectAppointment,
     deleteAppointment
 }

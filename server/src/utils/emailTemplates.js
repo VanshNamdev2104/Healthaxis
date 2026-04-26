@@ -332,3 +332,70 @@ export const appointmentApprovedEmail = (name, doctorName, hospitalName, city, d
 
     return { subject, text, html };
 };
+
+export const appointmentRejectedEmail = (name, doctorName, hospitalName, city) => {
+    const subject = "Appointment Request Update";
+
+    const text = `Dear ${name},
+
+Thank you for choosing ${hospitalName}.
+
+We regret to inform you that your appointment request with ${doctorName} in ${city} could not be approved at this time.
+
+This may be due to scheduling constraints or availability issues.
+
+We encourage you to try booking another appointment at a different time or with another available specialist.
+
+If you need assistance, please feel free to contact our support team.
+
+We appreciate your understanding.
+
+Best regards,  
+The HealthAxis Team`;
+
+    const html = wrapHtml(`
+        <h2 style="margin:0 0 16px; color:#dc2626; font-size:22px;">
+            Appointment Request Update
+        </h2>
+
+        <p style="margin:0 0 16px; color:#475569; font-size:15px; line-height:1.6;">
+            Dear ${name},
+        </p>
+
+        <p style="margin:0 0 16px; color:#475569; font-size:15px; line-height:1.6;">
+            Thank you for choosing <strong>${hospitalName}</strong>.
+        </p>
+
+        <p style="margin:0 0 16px; color:#475569; font-size:15px; line-height:1.6;">
+            We regret to inform you that your appointment request with 
+            <strong>${doctorName}</strong> in <strong>${city}</strong> 
+            could not be approved at this time.
+        </p>
+
+        <div style="background:#fef2f2; padding:16px; border-radius:8px; margin-bottom:20px;">
+            <p style="margin:0; font-size:14px; color:#7f1d1d;">
+                This may be due to scheduling constraints or availability limitations.
+            </p>
+        </div>
+
+        <p style="margin:0 0 20px; color:#475569; font-size:15px; line-height:1.6;">
+            You may try booking another appointment at a more convenient time or consult another available specialist.
+        </p>
+
+        <table cellpadding="0" cellspacing="0" style="margin: 0 auto;">
+            <tr>
+                <td style="background-color:${brandColor}; border-radius:8px; padding:14px 32px;">
+                    <span style="color:#ffffff; font-size:15px; font-weight:600;">
+                        Book New Appointment
+                    </span>
+                </td>
+            </tr>
+        </table>
+
+        <p style="margin:24px 0 0; color:#94a3b8; font-size:13px;">
+            If you need assistance, please contact our support team.
+        </p>
+    `);
+
+    return { subject, text, html };
+};

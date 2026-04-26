@@ -2,20 +2,39 @@ import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useHospital } from '../hooks/useHospital';
 import AppointmentCard from '../components/AppointmentCard';
+import ApproveModal from '../components/ApproveModal';
+import DeleteModal from '../components/DeleteModal';
 import { gsap } from 'gsap';
 import { CalendarCheck, Search, Download, Plus, Filter, Clock, Check, X } from 'lucide-react';
 
 const AppointmentPage = () => {
-  const { appointments, loading } = useSelector((state) => state.appointment);
-  const { handleGetAllAppointments, handleUpdateAppointmentStatus, handleDeleteAppointment } = useHospital();
+  const { appointments, loading, error } = useSelector((state) => state.appointment);
+  const { hospital, loading: hospitalLoading } = useSelector((state) => state.hospital);
+  const {handleGetHospital, handleGetAllAppointments, HandleApproveAppointement, HandleRejectAppointement, handleDeleteAppointment } = useHospital();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
+  const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
 
   const headerRef = useRef(null);
   const titleRef = useRef(null);
   const statsRef = useRef(null);
   const gridRef = useRef(null);
+  const errorRef = useRef(null);
+
+  useEffect(()=>{
+    handleGetHospital();
+    // console.log("check AP.jsx 23",appointments);
+    
+  },[])
+
+  useEffect(() => {
+    if (!hospitalLoading && hospital?.data?._id) {
+      handleGetAllAppointments(hospital?.data?._id);
+    }
+  }, [hospital?.data?._id, hospitalLoading]);
 
   const displayAppointments = useMemo(() => {
     return (appointments || []).filter(app => {
@@ -36,20 +55,60 @@ const AppointmentPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const tl = gsap.timeline();
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline();
+      tl.fromTo(headerRef.current, { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out' })
+        .fromTo(titleRef.current, { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, '-=0.6')
+        .fromTo(statsRef.current?.children,
+          { y: 30, opacity: 0, scale: 0.98 },
+          { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.08, ease: 'power2.out' }, '-=0.4');
+    });
+    return () => ctx.revert();
+  }, []);
 
-    tl.fromTo(headerRef.current, { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out' })
-      .fromTo(titleRef.current, { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-      .fromTo(statsRef.current?.children,
-        { y: 30, opacity: 0, scale: 0.98 },
-        { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.08, ease: 'power2.out' }, '-=0.4')
-      .fromTo('.appointment-card-anim',
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: 'power3.out' }, '-=0.3');
-  }, [loading, displayAppointments.length]);
+  useEffect(() => {
+    if (!loading && displayAppointments.length > 0) {
+      const ctx = gsap.context(() => {
+        gsap.fromTo('.appointment-card-anim',
+          { y: 40, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: 'power3.out', delay: 0.2, overwrite: true }
+        );
+      });
+      return () => ctx.revert();
+    }
+  }, [loading, displayAppointments]);
+
+  useEffect(() => {
+    if (error) {
+      gsap.fromTo(errorRef.current, 
+        { y: 20, opacity: 0 }, 
+        { y: 0, opacity: 1, duration: 0.4, ease: 'back.out(2)' }
+      );
+      const timer = setTimeout(() => {
+        gsap.to(errorRef.current, { y: 20, opacity: 0, duration: 0.3 });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   return (
-    <div className="min-h-screen bg-[#edf5fd] font-sans selection:bg-[#22c55e]/10 pb-24 px-4 sm:px-8 lg:px-12">
+    <div className="min-h-screen bg-[#edf5fd] font-sans selection:bg-[#22c55e]/10 pb-24 px-4 sm:px-8 lg:px-12 relative">
+      
+      {/* ── Error Toast ────────────────────────────────────────────────── */}
+      {error && (
+        <div 
+          ref={errorRef}
+          className="fixed bottom-10 left-1/2 -translate-x-1/2 z-50 px-8 py-4 bg-rose-600 text-white rounded-[24px] shadow-2xl shadow-rose-200 flex items-center gap-4 border border-rose-500/20"
+        >
+          <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
+            <X size={18} strokeWidth={3} />
+          </div>
+          <div>
+            <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Clinical Alert</p>
+            <p className="text-sm font-bold">{error}</p>
+          </div>
+        </div>
+      )}
 
       {/* ── Main Content Area (Full Width) ────────────────────────────────── */}
       <main className="max-w-7xl mx-auto pt-12">
@@ -164,7 +223,15 @@ const AppointmentPage = () => {
               <div key={app._id || i} className="appointment-card-anim opacity-0">
                 <AppointmentCard
                   appointment={app}
-                  onStatusUpdate={handleUpdateAppointmentStatus}
+                  approve={(id) => {
+                    setSelectedAppointment(app);
+                    setIsApproveModalOpen(true);
+                  }}
+                  reject={HandleRejectAppointement}
+                  deleteAppointment={(id) => {
+                    setSelectedAppointment(app);
+                    setIsDeleteModalOpen(true);
+                  }}
                   onReschedule={(a) => console.log('Clinical Review:', a)}
                 />
               </div>
@@ -188,6 +255,26 @@ const AppointmentPage = () => {
           )}
         </div>
       </main>
+
+      <ApproveModal
+        isOpen={isApproveModalOpen}
+        onClose={() => setIsApproveModalOpen(false)}
+        appointment={selectedAppointment}
+        onSubmit={(id, date, time) => {
+          HandleApproveAppointement(id, date, time);
+          setIsApproveModalOpen(false);
+        }}
+      />
+
+      <DeleteModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        appointment={selectedAppointment}
+        onConfirm={(id) => {
+          handleDeleteAppointment(id);
+          setIsDeleteModalOpen(false);
+        }}
+      />
     </div>
   );
 };

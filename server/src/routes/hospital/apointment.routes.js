@@ -13,7 +13,8 @@ appointmentRouter.get("/approved/user", authenticate, authorizeRoles("user"), ap
 appointmentRouter.get("/pending/hospital", authenticate, authorizeRoles("hospitalAdmin"), appointmentController.getPendingAppointmentsOfHospital);
 appointmentRouter.get("/pending/user", authenticate, authorizeRoles("user"), appointmentController.getPendingAppointmentsOfUser);
 appointmentRouter.get("/:appointmentId", authenticate, authorizeRoles("user", "admin", "hospitalAdmin"), appointmentController.getAppointment);
-appointmentRouter.patch("/approve/:appointmentId", authenticate, authorizeRoles( "hospitalAdmin"), appointmentController.approveAppointment);
+appointmentRouter.patch("/:appointmentId/approve", authenticate, authorizeRoles("hospitalAdmin"), appointmentController.approveAppointment);
+appointmentRouter.patch("/:appointmentId/reject", authenticate, authorizeRoles("hospitalAdmin"), appointmentController.rejectAppointment);
 appointmentRouter.delete("/:appointmentId", authenticate, authorizeRoles("user", "hospitalAdmin"), appointmentController.deleteAppointment);
 
 export default appointmentRouter

@@ -13,7 +13,11 @@ export const doctorSlice = createSlice({
             state.doctors = action.payload;
         },
         addDoctor: (state, action) => {
-            state.doctors.push(action.payload);
+            if (Array.isArray(state.doctors)) {
+                state.doctors.push(action.payload);
+            } else {
+                state.doctors = [action.payload];
+            }
         },
         setLoading: (state, action) => {
             state.loading = action.payload;
@@ -21,7 +25,6 @@ export const doctorSlice = createSlice({
         setError: (state, action) => {
             state.error = action.payload;
         }
-        
     },
 });
 
