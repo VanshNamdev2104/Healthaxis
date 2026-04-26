@@ -7,7 +7,7 @@ const chatSchema = new mongoose.Schema({
     },
     title: {
         type: String,
-        default: "New Chat " + Date.now(),
+        default: function() { return "New Chat " + Date.now(); },
         trim: true
     }
 }, {

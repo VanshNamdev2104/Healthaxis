@@ -1,7 +1,7 @@
 "use client";
 
 import { CinematicFooter } from '../components/MotionFooter';
-import { Link, useParams } from 'react-router';
+import { Link } from 'react-router';
 import { useHospital } from '../hooks/useHospital.js';
 import { useSelector } from 'react-redux';
 import { CircleUser, X, LogOut, Trash2, Mail, Shield, Phone, Hospital as HospitalIcon } from "lucide-react"
@@ -230,11 +230,12 @@ const Hospital = () => {
 
   const { handleGetHospital, handleGetHospitalAdmin } = useHospital();
   const { handleLogout} = useAuth()
-  const { hospital, hospitalAdmin, loading, error } = useSelector((state) => state.hospital);
+  const { hospital, hospitalAdmin, loading } = useSelector((state) => state.hospital);
 
   useEffect(() => {
     handleGetHospital();
     handleGetHospitalAdmin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   if(loading){

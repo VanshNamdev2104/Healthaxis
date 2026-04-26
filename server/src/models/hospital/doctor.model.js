@@ -37,6 +37,11 @@ const doctorSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    verificationStatus: {
+        type: String,
+        enum: ["pending", "verified", "rejected"],
+        default: "pending",
+    },
 }, {
     timestamps: true
 })

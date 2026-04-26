@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHospital } from '../hooks/useHospital';
-import { useAuth } from '../../auth/hooks/useAuth';
 import { Activity, ShieldPlus, HeartPulse, ShieldCheck, Mail, Phone, User, Lock, Building2, MapPin, Clock, Tag, Globe, Map } from 'lucide-react';
 import { useSelector } from 'react-redux';
 
 const CreateHospital = () => {
-  const { handleCreateHospital ,handleGetHospitalAdmin } = useHospital();
-  const { handleGetCurrentUser } = useAuth();
+  const { handleCreateHospital } = useHospital();
   const {hospitalAdmin} = useSelector((state) => state.hospital)
   
   
@@ -35,9 +33,6 @@ const CreateHospital = () => {
     // Usually submit the combined data, but admin data can just be picked up by backend directly.
     handleCreateHospital(formData);
   };
-
-  // Removed redundant handleGetHospitalAdmin call to prevent infinite loop
-  // as it is already called in the parent Hospital component.
 
   return (
     <div className="min-h-screen bg-[#f6fafe] flex selection:bg-[#00846e] selection:text-white font-['Inter']">

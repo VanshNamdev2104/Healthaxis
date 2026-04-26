@@ -1,12 +1,13 @@
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { SunIcon as Sunburst } from "lucide-react";
 import { useNavigate } from "react-router";
-import { useAuth } from "../hooks/useAuth.js";
+import { SunIcon as Sunburst } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
 
 export default function Login({ toggleLogin, toggleForgot }) {
   const [loginType, setLoginType] = useState("email");
+  const { handleLogin, handleGoogleAuth, loading } = useAuth();
   const navigate = useNavigate();
 
   const {
@@ -15,9 +16,9 @@ export default function Login({ toggleLogin, toggleForgot }) {
     formState: { errors }
   } = useForm();
 
-  const { handleLogin, loading, error } = useAuth();
-
   const onSubmit = async (data) => {
+    const toastId = toast.loading("Logging in...");
+
     try {
       const payload = {
         password: data.password,
@@ -26,18 +27,39 @@ export default function Login({ toggleLogin, toggleForgot }) {
           : { number: data.number })
       };
 
-      await handleLogin(payload);
-      toast.success("Login successful 🎉");
-      // Navigate to dashboard after successful login
-      navigate("/dashboard");
-    } catch {
-      toast.error(error || "Login failed ❌");
+      const response = await handleLogin(payload);
+
+      toast.update(toastId, {
+        render: "Login successful 🎉",
+        type: "success",
+        isLoading: false,
+        autoClose: 3000
+      });
+
+      // Redirect based on user role
+      const userRole = response?.data?.user?.role;
+      if (userRole === "admin") {
+        navigate("/dashboard");
+      } else {
+        navigate("/dashboard");
+      }
+
+    } catch (err) {
+      const message =
+        err.response?.data?.message || "Login failed ❌";
+
+      toast.update(toastId, {
+        render: message,
+        type: "error",
+        isLoading: false,
+        autoClose: 3000
+      });
     }
   };
 
-  const handleGoogleLogin = () => {
+  const onGoogleLogin = () => {
     toast.info("Redirecting to Google...");
-    window.location.href = "http://localhost:3000/api/auth/google";
+    handleGoogleAuth();
   };
 
   return (
@@ -167,7 +189,7 @@ export default function Login({ toggleLogin, toggleForgot }) {
             <button
               type="submit"
               disabled={loading}
-              className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="cursor-pointer w-full bg-orange-500 text-white py-2 rounded-lg hover:bg-orange-600 disabled:opacity-50"
             >
               {loading ? "Signing In..." : "Sign In"}
             </button>
@@ -180,7 +202,7 @@ export default function Login({ toggleLogin, toggleForgot }) {
 
           {/* GOOGLE LOGIN */}
           <button
-            onClick={handleGoogleLogin}
+            onClick={onGoogleLogin}
             className="cursor-pointer w-full border py-2 rounded-lg flex justify-center gap-2 hover:bg-gray-50"
           >
             Continue with Google

@@ -29,8 +29,9 @@ export async function getHospital() {
 
 export async function createHospital(formData) {
     try {
-        const response = await api.post("/",formData)
-        withCredentials: true
+        const response = await api.post("/", formData, {
+            withCredentials: true
+        })
         return response;
     } catch (error) {
         throw error.response?.data?.message || "Failed to create new Hospital";

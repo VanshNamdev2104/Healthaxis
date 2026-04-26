@@ -51,10 +51,19 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  profileImage: {
+    type: String,
+    default: null,
+  },
   hospital: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Hospital",
     default: null,
+  },
+  status: {
+    type: String,
+    enum: ["active", "suspended"],
+    default: "active",
   }
 });
 
