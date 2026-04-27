@@ -62,7 +62,7 @@ app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/health/disease", diseaseRoutes);
-app.use("/api/health/medicines", medicineRoutes);
+app.use("/api/health/medicine", medicineRoutes);
 app.use("/api/hospital", hospitalRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);

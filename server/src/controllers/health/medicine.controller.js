@@ -13,6 +13,23 @@ import {
 } from "../../utils/responsehandler.js";
 
 /**
+ * Safely parse a field that should be an array.
+ */
+const parseArrayField = (field) => {
+    if (!field) return [];
+    if (Array.isArray(field)) return field;
+    if (typeof field === "string") {
+        try {
+            const parsed = JSON.parse(field);
+            return Array.isArray(parsed) ? parsed : [field];
+        } catch (e) {
+            return [field];
+        }
+    }
+    return [field];
+};
+
+/**
  * @desc    Create a new medicine
  * @route   POST /api/health/medicines
  * @access  Private (Admin)
@@ -22,8 +39,8 @@ export const createMedicine = async (req, res) => {
         const { name, genericName, description, dosage, sideEffects, storage, isPrescriptionRequired, diseases } = req.body;
 
         // Parse array/boolean fields that arrive as strings via form-data
-        const parsedDiseases = diseases ? (Array.isArray(diseases) ? diseases : JSON.parse(diseases)) : [];
-        const parsedSideEffects = sideEffects ? (Array.isArray(sideEffects) ? sideEffects : JSON.parse(sideEffects)) : [];
+        const parsedDiseases = parseArrayField(diseases);
+        const parsedSideEffects = parseArrayField(sideEffects);
 
         // Validate that referenced diseases exist
         if (parsedDiseases.length > 0) {
@@ -172,8 +189,8 @@ export const updateMedicine = async (req, res) => {
         }
 
         // Parse array/boolean fields that arrive as strings via form-data
-        const parsedDiseases = diseases ? (Array.isArray(diseases) ? diseases : JSON.parse(diseases)) : medicine.diseases;
-        const parsedSideEffects = sideEffects ? (Array.isArray(sideEffects) ? sideEffects : JSON.parse(sideEffects)) : medicine.sideEffects;
+        const parsedDiseases = diseases ? parseArrayField(diseases) : medicine.diseases;
+        const parsedSideEffects = sideEffects ? parseArrayField(sideEffects) : medicine.sideEffects;
 
         // Validate that referenced diseases exist
         if (Array.isArray(parsedDiseases) && parsedDiseases.length > 0) {

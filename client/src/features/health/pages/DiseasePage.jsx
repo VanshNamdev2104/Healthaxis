@@ -23,11 +23,13 @@ const DiseasePage = () => {
 
   useEffect(() => {
     getAllDiseases();
+    // console.log("check disease", diseases);
+    
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const filteredDiseases = useMemo(() => {
-    return (diseases?.data || []).filter(disease => {
+    return (diseases?.diseases || []).filter(disease => {
       const matchSearch = disease.name?.toLowerCase().includes(search.toLowerCase()) ||
         disease.description?.toLowerCase().includes(search.toLowerCase());
       return matchSearch;
@@ -36,7 +38,7 @@ const DiseasePage = () => {
 
   // Extract unique categories from disease names for filtering
   const categories = useMemo(() => {
-    return ['All', ...new Set((diseases?.data || [])
+    return ['All', ...new Set((diseases?.diseases || [])
       .map(d => d.name?.charAt(0).toUpperCase())
       .filter(Boolean))];
   }, [diseases]);
@@ -107,9 +109,9 @@ const DiseasePage = () => {
         {/* ── Stats Summary ───────────────────────────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
           {[
-            { label: 'Total Conditions', value: diseases?.data?.length || 0, accent: 'text-orange-600', bg: 'bg-orange-50' },
+            { label: 'Total Conditions', value: diseases?.diseases?.length || 0, accent: 'text-orange-600', bg: 'bg-orange-50' },
             { label: 'Active Entries', value: filteredDiseases.length, accent: 'text-[#2563eb]', bg: 'bg-[#f0f4ff]' },
-            { label: 'Health Alerts', value: diseases?.data?.length || 0, accent: 'text-red-600', bg: 'bg-red-50' },
+            { label: 'Health Alerts', value: diseases?.diseases?.length || 0, accent: 'text-red-600', bg: 'bg-red-50' },
           ].map((stat, i) => (
             <div key={i} className={`${stat.bg} p-8 rounded-[40px] flex flex-col justify-between h-48 group hover:scale-[1.02] transition-transform duration-500`}>
               <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#6c7a71]">{stat.label}</p>

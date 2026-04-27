@@ -86,7 +86,7 @@ export default function DiseaseForm({ isOpen, onClose, onSuccess }) {
         formData.append("images", img);
       });
 
-      await axios.post("/api/disease", formData);
+      await axios.post("/api/health/disease", formData);
       alert("Disease added ✅");
       onSuccess?.();
       handleClose();

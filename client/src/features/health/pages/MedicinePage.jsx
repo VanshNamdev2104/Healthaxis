@@ -24,6 +24,7 @@ const MedicinePage = () => {
 
   useEffect(() => {
     getAllMedicines();
+    console.log("check medicine", medicines);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -45,17 +46,31 @@ const MedicinePage = () => {
   }, [medicines]);
 
   useEffect(() => {
+    if (loading) return;
+
     window.scrollTo(0, 0);
     const tl = gsap.timeline();
 
-    tl.fromTo(headerRef.current, { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out' })
-      .fromTo(titleRef.current, { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, '-=0.6')
-      .fromTo(statsRef.current?.children,
+    if (headerRef.current) {
+      tl.fromTo(headerRef.current, { y: -50, opacity: 0 }, { y: 0, opacity: 1, duration: 1, ease: 'expo.out' });
+    }
+
+    if (titleRef.current) {
+      tl.fromTo(titleRef.current, { x: -30, opacity: 0 }, { x: 0, opacity: 1, duration: 0.8, ease: 'power3.out' }, '-=0.6');
+    }
+
+    if (statsRef.current?.children?.length > 0) {
+      tl.fromTo(statsRef.current.children,
         { y: 30, opacity: 0, scale: 0.98 },
-        { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.08, ease: 'power2.out' }, '-=0.4')
-      .fromTo('.medicine-card-anim',
+        { y: 0, opacity: 1, scale: 1, duration: 0.6, stagger: 0.08, ease: 'power2.out' }, '-=0.4');
+    }
+
+    const cards = gsap.utils.toArray('.medicine-card-anim');
+    if (cards.length > 0) {
+      tl.fromTo(cards,
         { y: 40, opacity: 0 },
         { y: 0, opacity: 1, duration: 0.6, stagger: 0.05, ease: 'power3.out' }, '-=0.3');
+    }
   }, [loading, displayMedicines.length]);
 
   if (loading) {

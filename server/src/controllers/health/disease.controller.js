@@ -12,6 +12,28 @@ import {
 } from "../../utils/responsehandler.js";
 
 /**
+ * Safely parse a field that should be an array.
+ * Handles:
+ * 1. Already an array
+ * 2. A single string
+ * 3. A JSON string representing an array
+ * 4. Undefined/Null
+ */
+const parseArrayField = (field) => {
+    if (!field) return [];
+    if (Array.isArray(field)) return field;
+    if (typeof field === "string") {
+        try {
+            const parsed = JSON.parse(field);
+            return Array.isArray(parsed) ? parsed : [field];
+        } catch (e) {
+            return [field];
+        }
+    }
+    return [field];
+};
+
+/**
  * @desc    Create a new disease
  * @route   POST /api/health/diseases
  * @access  Private (Admin)
@@ -35,11 +57,11 @@ export const createDisease = async (req, res) => {
         const disease = await Disease.create({
             name,
             description,
-            symptoms: symptoms ? (Array.isArray(symptoms) ? symptoms : JSON.parse(symptoms)) : [],
-            causes: causes ? (Array.isArray(causes) ? causes : JSON.parse(causes)) : [],
-            precautions: precautions ? (Array.isArray(precautions) ? precautions : JSON.parse(precautions)) : [],
-            diagnosis: diagnosis ? (Array.isArray(diagnosis) ? diagnosis : JSON.parse(diagnosis)) : [],
-            homeRemedies: homeRemedies ? (Array.isArray(homeRemedies) ? homeRemedies : JSON.parse(homeRemedies)) : [],
+            symptoms: parseArrayField(symptoms),
+            causes: parseArrayField(causes),
+            precautions: parseArrayField(precautions),
+            diagnosis: parseArrayField(diagnosis),
+            homeRemedies: parseArrayField(homeRemedies),
             images,
         });
 
@@ -137,11 +159,11 @@ export const updateDisease = async (req, res) => {
         const updateData = {
             name,
             description,
-            symptoms: symptoms ? (Array.isArray(symptoms) ? symptoms : JSON.parse(symptoms)) : disease.symptoms,
-            causes: causes ? (Array.isArray(causes) ? causes : JSON.parse(causes)) : disease.causes,
-            precautions: precautions ? (Array.isArray(precautions) ? precautions : JSON.parse(precautions)) : disease.precautions,
-            diagnosis: diagnosis ? (Array.isArray(diagnosis) ? diagnosis : JSON.parse(diagnosis)) : disease.diagnosis,
-            homeRemedies: homeRemedies ? (Array.isArray(homeRemedies) ? homeRemedies : JSON.parse(homeRemedies)) : disease.homeRemedies,
+            symptoms: symptoms ? parseArrayField(symptoms) : disease.symptoms,
+            causes: causes ? parseArrayField(causes) : disease.causes,
+            precautions: precautions ? parseArrayField(precautions) : disease.precautions,
+            diagnosis: diagnosis ? parseArrayField(diagnosis) : disease.diagnosis,
+            homeRemedies: homeRemedies ? parseArrayField(homeRemedies) : disease.homeRemedies,
         };
 
         // Handle multiple image uploads — delete all old images, then upload new ones
