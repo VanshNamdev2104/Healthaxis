@@ -55,14 +55,14 @@ const TabContentRenderer = memo(({ activeTab, user }) => {
     [DASHBOARD_TABS.DISEASES]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          {user.role === "admin" ? <DiseasePage /> : <Disease_user />}
+          {user.role !== "admin" ? <DiseasePage /> : <Disease_user />}
         </Suspense>
       </ErrorBoundary>
     ),
     [DASHBOARD_TABS.MEDICINES]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          {user.role === "admin" ? <MedicinePage /> : <Medicine_user />}
+          {user.role !== "admin" ? <MedicinePage /> : <Medicine_user />}
         </Suspense>
       </ErrorBoundary>
     ),
