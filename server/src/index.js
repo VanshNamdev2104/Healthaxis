@@ -61,7 +61,7 @@ app.set("trust proxy", true);
 app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/auth", authRoutes);
-app.use("/api/health/diseases", diseaseRoutes);
+app.use("/api/health/disease", diseaseRoutes);
 app.use("/api/health/medicines", medicineRoutes);
 app.use("/api/hospital", hospitalRoutes);
 app.use("/api/doctors", doctorRoutes);
@@ -70,11 +70,7 @@ app.use("/api/admin", adminRoutes);
 
 // 404 handler
 app.use((req, res) => {
-    return notFoundResponse(res, {
-        ip: req.ip,
-        method: req.method,
-        url: `${req.protocol}://${req.get("host")}${req.originalUrl}`
-    });
+    return notFoundResponse(res, "Requested resource not found");
 });
 
 // error middleware

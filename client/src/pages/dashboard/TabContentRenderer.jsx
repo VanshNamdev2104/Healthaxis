@@ -7,13 +7,16 @@ import ErrorBoundary from "../../components/ErrorBoundary";
 import LoadingFallback from "./LoadingFallback.jsx";
 import DashboardWelcome from "./DashboardWelcome.jsx";
 import SettingsPage from "./SettingsPage.jsx";
+import Disease_user from "../../features/user/pages/Disease_user.jsx";
+import Medicine_user from "../../features/user/pages/Medicine_user.jsx";
+import AccessDenied from "./components/AccessDenied.jsx";
 
 // Lazy load feature pages
 const Hospital = lazy(() => import("../../features/hospital/pages/Hospital"));
 const DoctorsPage = lazy(() => import("../../features/hospital/pages/DoctorsPage"));
 const AppointmentPage = lazy(() => import("../../features/hospital/pages/AppointmentPage"));
 const DiseasePage = lazy(() => import("../../features/health/pages/DiseasePage"));
-const MedicinePage = lazy(() => import("../../features/health/pages/MedicinePage")); 
+const MedicinePage = lazy(() => import("../../features/health/pages/MedicinePage"));
 const ProfilePage = lazy(() => import("../../features/auth/pages/ProfilePage"));
 
 // Lazy load admin pages
@@ -22,7 +25,10 @@ const UserManagement = lazy(() => import("../../features/admin/pages/UserManagem
 const HospitalManagement = lazy(() => import("../../features/admin/pages/HospitalManagement"));
 const DoctorManagement = lazy(() => import("../../features/admin/pages/DoctorManagement"));
 
+
+
 const TabContentRenderer = memo(({ activeTab, user }) => {
+
   const contentMap = {
     [DASHBOARD_TABS.DASHBOARD]: <DashboardWelcome user={useSelector((state) => state.auth.user)} />,
     [DASHBOARD_TABS.HOSPITALS]: (
@@ -35,28 +41,28 @@ const TabContentRenderer = memo(({ activeTab, user }) => {
     [DASHBOARD_TABS.DOCTORS]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          <DoctorsPage />
+          {(user.role === "hospitalAdmin") ? <DoctorsPage /> : <AccessDenied />}
         </Suspense>
       </ErrorBoundary>
     ),
     [DASHBOARD_TABS.APPOINTMENTS]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          <AppointmentPage />
+          {(user.role === "hospitalAdmin") ? <AppointmentPage /> : <AccessDenied />}
         </Suspense>
       </ErrorBoundary>
     ),
     [DASHBOARD_TABS.DISEASES]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          <DiseasePage />
+          {user.role === "admin" ? <DiseasePage /> : <Disease_user />}
         </Suspense>
       </ErrorBoundary>
     ),
     [DASHBOARD_TABS.MEDICINES]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          <MedicinePage />
+          {user.role === "admin" ? <MedicinePage /> : <Medicine_user />}
         </Suspense>
       </ErrorBoundary>
     ),

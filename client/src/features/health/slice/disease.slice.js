@@ -7,7 +7,9 @@ export const fetchAllDiseases = createAsyncThunk(
   async (filters = {}, { rejectWithValue }) => {
     try {
       const response = await diseaseAPI.getAllDiseases(filters);
+      
       return response.data;
+      
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || "Failed to fetch diseases");
     }

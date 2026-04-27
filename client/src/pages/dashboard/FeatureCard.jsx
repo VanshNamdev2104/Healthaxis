@@ -15,14 +15,14 @@ const FeatureCard = memo(({ feature, index }) => {
         boxShadow: "0 20px 40px rgba(99, 102, 241, 0.3)",
       }}
       whileTap={{ scale: 0.95 }}
-      className="group relative bg-gradient-to-br from-white to-gray-50 dark:from-neutral-700 dark:to-neutral-800 backdrop-blur-xl p-8 rounded-2xl border border-white/50 dark:border-neutral-600/50 shadow-xl hover:shadow-2xl transition-all cursor-pointer"
+      className="group relative bg-linear-to-br from-white to-gray-50 dark:from-neutral-700 dark:to-neutral-800 backdrop-blur-xl p-8 rounded-2xl border border-white/50 dark:border-neutral-600/50 shadow-xl hover:shadow-2xl transition-all cursor-pointer"
       role="button"
       tabIndex={0}
       aria-label={`${title}: ${description}`}
     >
       <div className="relative z-10">
         <motion.div
-          className={`w-16 h-16 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mx-auto mb-4 shadow-lg`}
+          className={`w-16 h-16 rounded-xl bg-linear-to-br ${color} flex items-center justify-center mx-auto mb-4 shadow-lg`}
           whileHover={{ scale: 1.2, rotate: 10 }}
           transition={{ type: "spring", stiffness: 400, damping: 10 }}
         >

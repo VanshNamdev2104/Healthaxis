@@ -105,7 +105,7 @@ const AppointmentPage = () => {
           </div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest opacity-70">Clinical Alert</p>
-            <p className="text-sm font-bold">{error}</p>
+            <p className="text-sm font-bold">{typeof error === 'string' ? error : 'An unexpected error occurred'}</p>
           </div>
         </div>
       )}

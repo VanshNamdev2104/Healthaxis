@@ -8,6 +8,7 @@ export const diseaseAPI = {
     const response = await axios.get(`${API_URL}/api/health/disease`, {
       params: filters,
     });
+    console.log("Check Disease api 11", response.data);
     return response.data;
   },
 
