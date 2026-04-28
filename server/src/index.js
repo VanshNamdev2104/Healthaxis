@@ -82,10 +82,15 @@ app.use("/health", healthRoutes);
 // ─── Static Files ─────────────────────────────────────────
 app.use(express.static(path.join(__dirname, "public")));
 
-app.get("*", (req, res, next) => {
+app.get("/{*path}", (req, res, next) => {
   if (req.path.startsWith("/api")) return next();
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
+
+
+
+
+
 
 // 404 handler
 app.use((req, res) => {
