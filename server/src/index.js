@@ -62,6 +62,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(passport.initialize());
 app.set("trust proxy", true);
+app.use(express.static("./public"));
 
 // ─── API Routes ──────────────────────────────────────────────
 app.use("/api/user", userRoutes);
