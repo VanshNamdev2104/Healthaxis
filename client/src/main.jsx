@@ -28,8 +28,7 @@ const InitAuth = ({ children }) => {
   return children;
 } // Run only once on mount — handleGetCurrentUser is not memoized, so it must be excluded
 
-  return children;
-}
+
 
 createRoot(document.getElementById('root')).render(
  
