@@ -75,7 +75,7 @@ export const useChat = () => {
   );
 
   const activeChat = chats.find((chat) => chat._id === activeChatId) || null;
-
+  console.log(activeChat);
   const handleDeleteChat = useCallback(
     async (chatId) => {
       try {
@@ -109,4 +109,5 @@ export const useChat = () => {
 };
 
 export default useChat;
+
 

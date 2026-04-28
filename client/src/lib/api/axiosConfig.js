@@ -37,7 +37,7 @@ axiosInstance.interceptors.response.use(
       // Clear auth data
       localStorage.removeItem("token");
       localStorage.removeItem("user");
-      
+
       // Redirect to login (optional - can be handled by Redux)
       console.warn("Unauthorized: Redirecting to login");
     }
