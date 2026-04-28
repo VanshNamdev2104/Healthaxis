@@ -5,29 +5,31 @@ import {
 } from "../../constant.js";
 import logger from "../../config/logger.js";
 
-/**
- * @desc    Handle Google OAuth callback — issue JWTs and redirect
- * @route   GET /api/auth/google/callback
- * @access  Public (called by Google after consent)
- */
 export const googleCallback = async (req, res) => {
     try {
-        const user = req.user; // set by Passport after successful Google auth
+        const user = req.user;
 
-        // Generate JWT tokens
         const { accessToken, refreshToken } = generateTokens(user);
 
-        // Persist refresh token in DB
         user.refreshToken = refreshToken;
         await user.save();
 
-        // Set tokens as httpOnly cookies
+        
+        res.clearCookie("accessToken", { ...ACCESS_TOKEN_COOKIE_OPTIONS });
+        res.clearCookie("refreshToken", { ...REFRESH_TOKEN_COOKIE_OPTIONS });
+
+    
         res.cookie("accessToken", accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
         res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
-        // Redirect to frontend after successful login
-        // Redirect to frontend dashboard after successful login
-        return res.redirect((process.env.CLIENT_URL || "http://localhost:5173") + "/dashboard");
+        // ✅ Role based redirect
+        const redirectPath = user.role === "admin" ? "/admin/dashboard"
+            : user.role === "hospitalAdmin" ? "/hospital/dashboard"
+            : "/dashboard";
+
+        return res.redirect(
+            `${process.env.CLIENT_URL || "https://healthaxis-plum.vercel.app"}${redirectPath}`
+        );
     } catch (error) {
         logger.error("Google Auth Callback Error", { 
             error: error.message, 
@@ -35,7 +37,7 @@ export const googleCallback = async (req, res) => {
             userId: req.user?.id 
         });
         return res.redirect(
-            (process.env.CLIENT_URL || "http://localhost:5173") + "/auth?error=google_auth_failed"
+            `${process.env.CLIENT_URL || "https://healthaxis-plum.vercel.app"}/auth?error=google_auth_failed`
         );
     }
 };
