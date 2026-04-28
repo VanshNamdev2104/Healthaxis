@@ -18,15 +18,22 @@ const InitAuth = ({ children }) => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    // ✅ Google OAuth ke baad purana state clear karo
-    dispatch(logout());
-    
+    // ✅ URL se token lo agar Google OAuth se aaya hai
+    const params = new URLSearchParams(window.location.search);
+    const accessToken = params.get("accessToken");
+    const refreshToken = params.get("refreshToken");
+
+    if (accessToken) {
+      // URL clean karo
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     handleGetCurrentUser().catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return children;
-} // Run only once on mount — handleGetCurrentUser is not memoized, so it must be excluded
+}// Run only once on mount — handleGetCurrentUser is not memoized, so it must be excluded
 
 
 

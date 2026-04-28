@@ -14,21 +14,13 @@ export const googleCallback = async (req, res) => {
         user.refreshToken = refreshToken;
         await user.save();
 
-        
-        res.clearCookie("accessToken", { ...ACCESS_TOKEN_COOKIE_OPTIONS });
-        res.clearCookie("refreshToken", { ...REFRESH_TOKEN_COOKIE_OPTIONS });
-
-    
-        res.cookie("accessToken", accessToken, ACCESS_TOKEN_COOKIE_OPTIONS);
-        res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
-
-        // ✅ Role based redirect
+        // ✅ Token URL mein bhejo
         const redirectPath = user.role === "admin" ? "/admin/dashboard"
             : user.role === "hospitalAdmin" ? "/hospital/dashboard"
             : "/dashboard";
 
         return res.redirect(
-            `${process.env.CLIENT_URL || "https://healthaxis-plum.vercel.app"}${redirectPath}`
+            `${process.env.CLIENT_URL || "https://healthaxis-plum.vercel.app"}${redirectPath}?accessToken=${accessToken}&refreshToken=${refreshToken}`
         );
     } catch (error) {
         logger.error("Google Auth Callback Error", { 
