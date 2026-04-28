@@ -77,6 +77,9 @@ app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/admin", adminRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Server is running");
+});
 // 404 handler
 app.use((req, res) => {
     return notFoundResponse(res, "Requested resource not found");
