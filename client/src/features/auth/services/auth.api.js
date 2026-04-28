@@ -1,7 +1,9 @@
 import axios from "axios";
 
+const BASE_URL = import.meta.env.VITE_API_URL || "https://healthaxis-14r9.onrender.com";
+
 const api = axios.create({
-    baseURL: `${import.meta.env.VITE_API_URL || "https://healthaxis-14r9.onrender.com"}/api`,
+    baseURL: `${BASE_URL}/api`,
     withCredentials: true
 });
 
@@ -11,7 +13,6 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // If the error is 401, we haven't retried yet, and it's not the login or refresh routes themselves
         if (
             error.response?.status === 401 &&
             !originalRequest._retry &&
@@ -20,13 +21,15 @@ api.interceptors.response.use(
         ) {
             originalRequest._retry = true;
             try {
-                // Make a call to refresh the token using the base axios to avoid infinite loops
-                await axios.post("/api/user/refresh-token", {}, { withCredentials: true });
+                // ✅ Fix — Render URL use karo
+                await axios.post(
+                    `${BASE_URL}/api/user/refresh-token`,
+                    {},
+                    { withCredentials: true }
+                );
                 
-                // If the refresh is successful, retry the original request
                 return api(originalRequest);
             } catch (refreshError) {
-                // If the refresh token has expired, just reject the promise. Let the application handle the unauthenticated state.
                 if (window.location.pathname !== '/') {
                     window.location.href = "/";
                 }
@@ -61,8 +64,7 @@ export async function register({ name, email, number, password }) {
 }
 
 export function googleAuth() {
-    // Google OAuth requires full page redirect, not an AJAX call
-    window.location.href = "https://healthaxis-14r9.onrender.com/api/auth/google";
+    window.location.href = `${BASE_URL}/api/auth/google`;
 }
 
 export async function logout() {
@@ -85,7 +87,6 @@ export async function getCurrentUser() {
 
 export async function updateProfile(formData) {
     try {
-        // Don't manually set Content-Type for FormData - axios handles it automatically
         const response = await api.put("/user/profile", formData);
         return response.data;
     } catch (error) {
