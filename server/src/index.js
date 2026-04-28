@@ -30,25 +30,30 @@ const corsOptions = {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    // In development, allow localhost
+    // In development, allow all localhost variations
     if (process.env.NODE_ENV !== 'production') {
-      if (origin.includes('localhost') || origin.includes('127.0.0.1')) {
-        return callback(null, true);
-      }
+      return callback(null, true);
     }
     
-    // Allow the configured client URL and production Vercel URL
-    const allowedOrigins = [env.CLIENT_URL, 'https://healthaxis-plum.vercel.app'];
+    // In production, allow specific origins
+    const allowedOrigins = [
+      env.CLIENT_URL,
+      'https://healthaxis-plum.vercel.app',
+      'https://healthaxis-14r9.onrender.com'
+    ];
+    
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     
+    logger.warn(`CORS request blocked from origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  exposedHeaders: ['X-Total-Count', 'X-Page-Count']
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
+  optionsSuccessStatus: 200
 };
 
 app.use(cors(corsOptions));
