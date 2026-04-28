@@ -62,7 +62,7 @@ export async function register({ name, email, number, password }) {
 
 export function googleAuth() {
     // Google OAuth requires full page redirect, not an AJAX call
-    window.location.href = "/api/auth/google";
+    window.location.href = "https://healthaxis-14r9.onrender.com/api/auth/google";
 }
 
 export async function logout() {
