@@ -1,8 +1,8 @@
 import axios from "axios";
 
-const API = axios.create({
-    baseURL: "/api",
-    withCredentials: true,
+const api = axios.create({
+    baseURL: `${import.meta.env.VITE_API_URL || "https://healthaxis-14r9.onrender.com"}/api`,
+    withCredentials: true
 });
 
 export const getAllAppointments = async (hospitalId) => {
