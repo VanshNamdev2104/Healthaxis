@@ -33,15 +33,12 @@ app.use(compression());
 // CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    // In development, allow all localhost variations
     if (process.env.NODE_ENV !== 'production') {
       return callback(null, true);
     }
     
-    // In production, allow specific origins
     const allowedOrigins = [
       env.CLIENT_URL,
       'https://healthaxis-plum.vercel.app',
@@ -52,7 +49,6 @@ const corsOptions = {
       return callback(null, true);
     }
     
-    logger.warn(`CORS request blocked from origin: ${origin}`);
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
@@ -74,9 +70,9 @@ app.use("/api/user", userRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/health/disease", diseaseRoutes);
-app.use("/api/health/diseases", diseaseRoutes); // alias
+app.use("/api/health/diseases", diseaseRoutes);
 app.use("/api/health/medicine", medicineRoutes);
-app.use("/api/health/medicines", medicineRoutes); // alias
+app.use("/api/health/medicines", medicineRoutes);
 app.use("/api/hospital", hospitalRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
@@ -84,12 +80,10 @@ app.use("/api/admin", adminRoutes);
 app.use("/health", healthRoutes);
 
 // ─── Static Files ─────────────────────────────────────────
-// Serve static files from the 'public' directory
 app.use(express.static(path.join(__dirname, "public")));
 
-// Handle all other routes by serving the client's index.html
-// This enables client-side routing (React Router)
-app.get("*", (req, res) => {
+app.get("*", (req, res, next) => {
+  if (req.path.startsWith("/api")) return next();
   res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
