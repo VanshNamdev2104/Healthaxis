@@ -37,8 +37,9 @@ const corsOptions = {
       }
     }
     
-    // Allow the configured client URL
-    if (origin === env.CLIENT_URL) {
+    // Allow the configured client URL and production Vercel URL
+    const allowedOrigins = [env.CLIENT_URL, 'https://healthaxis-plum.vercel.app'];
+    if (allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
     
