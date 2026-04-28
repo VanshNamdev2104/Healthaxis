@@ -8,19 +8,25 @@ import Approuter from './app/routes/Approuter.jsx'
 import { Provider } from "react-redux";
 import { store } from './app/store/app.store.js'
 import { useAuth } from './features/auth/hooks/useAuth.js'
+import { logout } from './features/auth/slice/auth.slice.js'
+import { useDispatch } from 'react-redux'
 
 // This component runs once when the app starts.
 // It checks with the backend if the user's cookies are still valid.
 const InitAuth = ({ children }) => {
   const { handleGetCurrentUser } = useAuth();
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    handleGetCurrentUser().catch(() => {
-      // If error (e.g., 401 Unauthorized), the user is just not logged in.
-      // The hook already handles setting error/loading state, so we just catch to avoid unhandled promise rejections.
-    });
+    // ✅ Google OAuth ke baad purana state clear karo
+    dispatch(logout());
+    
+    handleGetCurrentUser().catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Run only once on mount — handleGetCurrentUser is not memoized, so it must be excluded
+  }, []);
+
+  return children;
+} // Run only once on mount — handleGetCurrentUser is not memoized, so it must be excluded
 
   return children;
 }
