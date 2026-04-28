@@ -18,6 +18,7 @@ import doctorRoutes from "./routes/hospital/doctor.routes.js";
 import appointmentRoutes from "./routes/hospital/appointment.routes.js";
 import adminRoutes from "./routes/admin/admin.routes.js";
 import graphService from "./services/ai/graph.service.js";
+import healthRoutes from "../health.js";
 
 const app = express();
 
@@ -76,6 +77,7 @@ app.use("/api/hospital", hospitalRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/health", healthRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is running");

@@ -1,11 +1,34 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-const Env = ["PORT" , "MONGO_URI" , "ACCESS_TOKEN_SECRET" , "REFRESH_TOKEN_SECRET" , "MAIL_CLIENT_ID" , "MAIL_CLIENT_SECRET" , "MAIL_REFRESH" , "MAIL_USER", "GEMINI_API_KEY", "MISTRAL_API_KEY", "GROQ_API_KEY", "GOOGLE_CLIENT", "GOOGLE_SECRET", "CLIENT_URL","IMAGEKIT_PUBLIC_KEY","IMAGEKIT_PRIVATE_KEY","IMAGEKIT_URL_ENDPOINT"];
+const requiredEnv = ["PORT", "MONGO_URI"];
+const optionalEnv = [
+    "ACCESS_TOKEN_SECRET",
+    "REFRESH_TOKEN_SECRET",
+    "MAIL_CLIENT_ID",
+    "MAIL_CLIENT_SECRET",
+    "MAIL_REFRESH",
+    "MAIL_USER",
+    "GEMINI_API_KEY",
+    "MISTRAL_API_KEY",
+    "GROQ_API_KEY",
+    "GOOGLE_CLIENT",
+    "GOOGLE_SECRET",
+    "CLIENT_URL",
+    "IMAGEKIT_PUBLIC_KEY",
+    "IMAGEKIT_PRIVATE_KEY",
+    "IMAGEKIT_URL_ENDPOINT"
+];
 
-Env.forEach((key) => {
+requiredEnv.forEach((key) => {
     if (!process.env[key]) {
-        throw new Error(`Environment variable ${key} is not defined`);
+        throw new Error(`Required environment variable ${key} is not defined`);
+    }
+});
+
+optionalEnv.forEach((key) => {
+    if (!process.env[key]) {
+        console.warn(`[Config] Optional environment variable ${key} is not defined. Related features may be disabled.`);
     }
 });
 
