@@ -7,6 +7,11 @@ import passport from "./config/passport.js";
 import env from "./config/dotenv.js";
 import { notFoundResponse } from "./utils/responsehandler.js";
 import errorhandlerMiddleware from "./utils/errorhandler.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 import userRoutes from "./routes/user/index.js";
 import chatRoutes from "./routes/chat/chat.routes.js";
@@ -63,7 +68,6 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
 app.use(passport.initialize());
 app.set("trust proxy", true);
-app.use(express.static("./public"));
 
 // ─── API Routes ──────────────────────────────────────────────
 app.use("/api/user", userRoutes);
@@ -79,9 +83,16 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/health", healthRoutes);
 
-app.get("/", (req, res) => {
-  res.send("Server is running");
+// ─── Static Files ─────────────────────────────────────────
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, "public")));
+
+// Handle all other routes by serving the client's index.html
+// This enables client-side routing (React Router)
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public/index.html"));
 });
+
 // 404 handler
 app.use((req, res) => {
     return notFoundResponse(res, "Requested resource not found");
