@@ -139,7 +139,7 @@ export default function HeroGeometric() {
                 Your Health, Simplified
               </span>
               <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-300 via-white/90 to-blue-300">
+              <span className="bg-clip-text text-transparent bg-linear-to-r from-cyan-300 via-white/90 to-blue-300">
                 With HealthAxis
               </span>
             </h1>
@@ -166,7 +166,7 @@ export default function HeroGeometric() {
             {isAuthenticated ? (
               <div className="flex justify-center gap-4 flex-wrap">
                 <Link to="/dashboard">
-                  <button className="px-8 py-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition shadow-xl">
+                  <button className="px-8 py-3 rounded-full bg-linear-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition shadow-xl">
                     Dashboard
                   </button>
                 </Link>
@@ -181,7 +181,7 @@ export default function HeroGeometric() {
             ) : (
               <div className="flex justify-center gap-4 flex-wrap">
                 <Link to="/auth">
-                  <button className="px-8 py-3 rounded-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition shadow-xl">
+                  <button className="px-8 py-3 rounded-full bg-linear-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition shadow-xl">
                     Get Started
                   </button>
                 </Link>
@@ -195,7 +195,7 @@ export default function HeroGeometric() {
       </div>
 
       {/* bottom fade */}
-      <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-[#030303]/80 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-t from-[#030303] via-transparent to-[#030303]/80 pointer-events-none" />
 
       <LogoutConfirmDialog
         isOpen={showLogoutDialog}

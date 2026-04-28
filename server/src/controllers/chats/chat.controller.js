@@ -75,8 +75,8 @@ async function sendMessageController(req, res) {
             }
         });
 
-        const AIResponse = await graphService( JSON.stringify(msgArr));
-        const newAIMessage = await messageModel.create({ chat: chatId, content: JSON.stringify(AIResponse), summary: AIResponse?.final_solution?.Summary || "No summary available" , role: "ai" });
+        const AIResponse = await graphService(JSON.stringify(msgArr));
+        const newAIMessage = await messageModel.create({ chat: chatId, content: JSON.stringify(AIResponse), summary: AIResponse?.final_solution?.Summary || "No summary available", role: "ai" });
 
         res.status(201).json({
             success: true,

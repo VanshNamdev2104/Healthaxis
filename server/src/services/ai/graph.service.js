@@ -51,7 +51,7 @@ const stateSchema = z.object({
         severity: z.enum(["low", "medium", "high"]).default("low"),
         explanation: z.string().default(""),
         Summary: z.string().default(""),
-        
+
         medical_sol: z.array(
             z.object({
                 medicine_name: z.string(),
@@ -372,10 +372,10 @@ const judgeNode = async (state) => {
 
     // const { judge_solution, final_solution } = judgeResponse.structuredResponse
     logger.info("Judge response received", { responseLength: judgeResponse?.messages?.[1]?.content?.length });
-    
+
     const parsed = extractJson(judgeResponse.messages[1].content);
     const result = stateSchema.parse(parsed);
-    const {judge_solution, final_solution} = result
+    const { judge_solution, final_solution } = result
     return {
         judge_solution,
         final_solution
