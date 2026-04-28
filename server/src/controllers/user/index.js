@@ -32,7 +32,7 @@ import {
 
 export const register = async (req, res) => {
     try {
-        const { name, email, password, number, role } = req.body;
+        const { name, email, password, number } = req.body;
 
         // Check if user already exists
         const existingUser = await User.findOne({ email });
@@ -41,7 +41,8 @@ export const register = async (req, res) => {
         }
 
         // Create the user (password is hashed via pre-save hook)
-        const user = await User.create({ name, email, password, number, role });
+        // Always set role to "user" during registration - no privilege escalation
+        const user = await User.create({ name, email, password, number, role: "user" });
 
         // Generate tokens
         const { accessToken, refreshToken } = generateTokens(user);
@@ -68,8 +69,6 @@ export const register = async (req, res) => {
                     number: user.number,
                     role: user.role,
                 },
-                accessToken,
-                refreshToken,
             },
             "User registered successfully",
             201
@@ -136,8 +135,6 @@ export const login = async (req, res) => {
                     number: user.number,
                     role: user.role,
                 },
-                accessToken,
-                refreshToken,
             },
             "Login successful"
         );
@@ -202,7 +199,7 @@ export const refreshToken = async (req, res) => {
 
         return successResponse(
             res,
-            { accessToken, refreshToken: newRefreshToken },
+            null,
             "Token refreshed successfully"
         );
     } catch (error) {
@@ -239,12 +236,15 @@ export const updateProfile = async (req, res) => {
         if (name) updates.name = name;
         if (number) updates.number = number;
 
-        // If email is being changed, check for duplicates
+        // If email is being changed, check for duplicates and require verification
         if (email && email !== req.user.email) {
             const existingUser = await User.findOne({ email });
             if (existingUser) {
                 return conflictResponse(res, "Email is already in use");
             }
+            // ⚠️ TODO: Send verification email and require confirmation before updating
+            // For now, we only allow email update if it's unique
+            // In production: Create a pendingEmail field and send verification link
             updates.email = email;
         }
 

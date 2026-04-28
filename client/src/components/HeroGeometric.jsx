@@ -1,9 +1,10 @@
 import { motion } from "framer-motion";
 import { Circle } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../features/auth/slice/auth.slice";
+import LogoutConfirmDialog from "./LogoutConfirmDialog";
 
 /* helper */
 function cn(...classes) {
@@ -53,6 +54,11 @@ function ElegantShape({
 export default function HeroGeometric() {
   const { isAuthenticated } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+
+  const performLogout = () => {
+    dispatch(logout());
+  };
 
   const fadeUpVariants = {
     hidden: { opacity: 0, y: 30 },
@@ -166,7 +172,7 @@ export default function HeroGeometric() {
                 </Link>
 
                 <button
-                  onClick={() => dispatch(logout())}
+                  onClick={() => setShowLogoutDialog(true)}
                   className="px-8 py-3 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 text-white transition"
                 >
                   Logout
@@ -190,6 +196,12 @@ export default function HeroGeometric() {
 
       {/* bottom fade */}
       <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-transparent to-[#030303]/80 pointer-events-none" />
+
+      <LogoutConfirmDialog
+        isOpen={showLogoutDialog}
+        onClose={() => setShowLogoutDialog(false)}
+        onConfirm={performLogout}
+      />
     </div>
   );
 }

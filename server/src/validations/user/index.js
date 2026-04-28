@@ -19,8 +19,6 @@ export const registerSchema = z.object({
     .string({ required_error: "Number is required" })
     .regex(phoneRegex, "Number must be exactly 10 digits"),
 
-  role: z.enum(["user", "admin", "hospitalAdmin"]).optional(),
-
   email: z
     .string({ required_error: "Email is required" })
     .trim()
@@ -32,7 +30,7 @@ export const registerSchema = z.object({
     .min(8, "Password must be at least 8 characters")
     .max(128, "Password must be at most 128 characters")
     .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
       "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
     ),
 });
@@ -113,7 +111,7 @@ export const changePasswordSchema = z
       .min(8, "Password must be at least 8 characters")
       .max(128, "Password must be at most 128 characters")
       .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
         "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
       ),
 

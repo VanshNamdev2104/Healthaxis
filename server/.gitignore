@@ -8,3 +8,5 @@ dist/
 build/
 server/logs/
 *.log
+seed/
+

@@ -6,6 +6,7 @@ import { Search, Sparkles, Pill, Activity } from 'lucide-react';
 
 const Medicine_user = () => {
   const { medicines, loading, getAllMedicines } = useMedicine();
+  const [searchTerm, setSearchTerm] = React.useState('');
   
   const headerRef = useRef(null);
   const titleRef = useRef(null);
@@ -102,6 +103,8 @@ const Medicine_user = () => {
           <input 
             type="text" 
             placeholder="Search for medications, generic names..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-16 pr-8 py-6 rounded-[32px] bg-white border border-[#553722]/5 shadow-[0_20px_40px_rgba(85,55,34,0.03)] focus:shadow-[0_20px_40px_rgba(85,55,34,0.08)] outline-none transition-all text-lg font-medium text-[#1a1c19] placeholder-[#553722]/30"
           />
         </div>
@@ -120,7 +123,13 @@ const Medicine_user = () => {
             className="grid grid-cols-1 gap-12"
           >
             {medicines?.medicines?.length > 0 ? (
-              medicines.medicines.map((med, i) => (
+              medicines.medicines
+                .filter(med => 
+                  med.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  med.genericName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  med.description?.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((med, i) => (
                 <div key={med._id || i} className="user-medicine-card">
                   <MedicineUserCard medicine={med} />
                 </div>
@@ -130,9 +139,11 @@ const Medicine_user = () => {
                 <div className="w-24 h-24 rounded-full bg-[#f4f4ef] flex items-center justify-center mx-auto text-4xl">
                   💊
                 </div>
-                <h3 className="text-3xl font-serif font-bold text-[#1a1c19]">No medications found in this library</h3>
+                <h3 className="text-3xl font-serif font-bold text-[#1a1c19]">
+                  {searchTerm ? 'No medications match your search' : 'No medications found in this library'}
+                </h3>
                 <p className="text-[#50453e] max-w-md mx-auto">
-                  Try searching for a different name or check back later as we update our medical database.
+                  {searchTerm ? 'Try searching for a different name' : 'Check back later as we update our medical database.'}
                 </p>
               </div>
             )}

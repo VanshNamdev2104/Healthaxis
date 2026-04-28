@@ -16,6 +16,10 @@ import {
     getActivityFeed,
     getRevenueAnalytics,
     getGrowthAnalytics,
+    getPendingProviders,
+    getHospitalById,
+    getDoctorById,
+    updateProviderStatus,
 } from "../../controllers/admin/admin.controller.js";
 import auth from "../../middlewares/auth.js";
 const { authenticate, authorizeRoles } = auth;
@@ -31,6 +35,12 @@ router.get("/users/:userId", authenticate, authorizeRoles("admin"), getUserById)
 router.put("/users/:userId", authenticate, authorizeRoles("admin"), updateUser);
 router.patch("/users/:userId/suspend", authenticate, authorizeRoles("admin"), suspendUser);
 router.delete("/users/:userId", authenticate, authorizeRoles("admin"), deleteUser);
+
+// ─── Provider Approval Workflow ─────────────────────────────────────
+router.get("/providers/pending", authenticate, authorizeRoles("admin"), getPendingProviders);
+router.get("/hospitals/:id", authenticate, authorizeRoles("admin"), getHospitalById);
+router.get("/doctors/:id", authenticate, authorizeRoles("admin"), getDoctorById);
+router.put("/providers/:id/status", authenticate, authorizeRoles("admin"), updateProviderStatus);
 
 // ─── Hospital Management ────────────────────────────────────────────
 router.get("/hospitals", authenticate, authorizeRoles("admin"), getAllHospitals);

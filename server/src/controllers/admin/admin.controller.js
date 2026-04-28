@@ -12,6 +12,7 @@ import {
     errorResponse,
     notFoundResponse,
 } from "../../utils/responsehandler.js";
+import sendMail from "../../services/mail.service.js";
 
 /**
  * @desc    Get dashboard statistics
@@ -238,7 +239,7 @@ export const getAllHospitals = async (req, res) => {
         }
 
         if (status) {
-            query.verificationStatus = status;
+            query.status = status;
         }
 
         const hospitals = await Hospital.find(query)
@@ -360,7 +361,7 @@ export const getAllDoctors = async (req, res) => {
         }
 
         if (status) {
-            query.verificationStatus = status;
+            query.status = status;
         }
 
         const doctors = await Doctor.find(query)
@@ -548,5 +549,98 @@ export const getGrowthAnalytics = async (req, res) => {
     } catch (error) {
         logger.error("Get Growth Analytics Error", { error: error.message });
         return errorResponse(res, error, "Failed to fetch growth analytics");
+    }
+};
+
+export const getPendingProviders = async (req, res) => {
+    try {
+        const [hospitals, doctors] = await Promise.all([
+            Hospital.find({ status: 'PENDING' }).sort({ createdAt: -1 }),
+            Doctor.find({ status: 'PENDING' }).populate('hospital', 'name').sort({ createdAt: -1 })
+        ]);
+        return successResponse(res, { hospitals, doctors }, "Pending providers fetched successfully");
+    } catch (error) {
+        logger.error("Get Pending Providers Error", { error: error.message });
+        return errorResponse(res, error, "Failed to fetch pending providers");
+    }
+};
+
+export const getHospitalById = async (req, res) => {
+    try {
+        const hospital = await Hospital.findById(req.params.id);
+        if (!hospital) return notFoundResponse(res, "Hospital not found");
+        return successResponse(res, hospital, "Hospital fetched successfully");
+    } catch (error) {
+        logger.error("Get Hospital Error", { error: error.message });
+        return errorResponse(res, error, "Failed to fetch hospital");
+    }
+};
+
+export const getDoctorById = async (req, res) => {
+    try {
+        const doctor = await Doctor.findById(req.params.id).populate('hospital', 'name email hospitalEmail contact hospitalNumber');
+        if (!doctor) return notFoundResponse(res, "Doctor not found");
+        return successResponse(res, doctor, "Doctor fetched successfully");
+    } catch (error) {
+        logger.error("Get Doctor Error", { error: error.message });
+        return errorResponse(res, error, "Failed to fetch doctor");
+    }
+};
+
+export const updateProviderStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status, reason } = req.body;
+
+        if (!['APPROVED', 'REJECTED', 'SUSPENDED'].includes(status)) {
+            return errorResponse(res, { message: "Invalid status" }, "Invalid status provided");
+        }
+
+        if (status === 'REJECTED' && !reason) {
+            return errorResponse(res, { message: "Rejection reason is required" }, "Reason is required when rejecting");
+        }
+
+        const updateData = { status };
+        if (status === 'REJECTED') {
+            updateData.rejectionReason = reason;
+        } else {
+            updateData.rejectionReason = "";
+        }
+
+        let provider = await Hospital.findByIdAndUpdate(id, updateData, { new: true }).populate("user");
+        let type = 'hospital';
+
+        if (!provider) {
+            provider = await Doctor.findByIdAndUpdate(id, updateData, { new: true });
+            type = 'doctor';
+        }
+
+        if (!provider) {
+            return notFoundResponse(res, "Provider not found");
+        }
+
+        const email = type === 'hospital' ? (provider.hospitalEmail || provider.user?.email) : provider.email;
+        if (email) {
+            const subject = `HealthAxis Provider Status Update: ${status}`;
+            const text = `Hello ${provider.name},\n\nYour provider account status has been updated to ${status}.` + 
+                         (status === 'REJECTED' ? `\n\nReason: ${reason}\n\nYou can update your profile and resubmit from your dashboard.` : '') +
+                         `\n\nThank you,\nHealthAxis Team`;
+            
+            sendMail(email, subject, text).catch(err => logger.error("Failed to send notification email", { error: err.message }));
+        }
+
+        // Dynamically update user role based on approval status
+        if (type === 'hospital' && provider.user) {
+            if (status === 'APPROVED') {
+                await User.findByIdAndUpdate(provider.user._id, { role: 'hospitalAdmin' });
+            } else if (status === 'REJECTED' || status === 'SUSPENDED') {
+                await User.findByIdAndUpdate(provider.user._id, { role: 'user' });
+            }
+        }
+
+        return successResponse(res, { provider, type }, `Provider status updated to ${status}`);
+    } catch (error) {
+        logger.error("Update Provider Status Error", { error: error.message });
+        return errorResponse(res, error, "Failed to update provider status");
     }
 };

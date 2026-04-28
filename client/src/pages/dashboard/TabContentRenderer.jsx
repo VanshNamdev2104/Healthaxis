@@ -13,6 +13,7 @@ import AccessDenied from "./components/AccessDenied.jsx";
 
 // Lazy load feature pages
 const Hospital = lazy(() => import("../../features/hospital/pages/Hospital"));
+const HospitalList = lazy(() => import("../../features/hospital/pages/HospitalList"));
 const DoctorsPage = lazy(() => import("../../features/hospital/pages/DoctorsPage"));
 const AppointmentPage = lazy(() => import("../../features/hospital/pages/AppointmentPage"));
 const DiseasePage = lazy(() => import("../../features/health/pages/DiseasePage"));
@@ -21,17 +22,25 @@ const ProfilePage = lazy(() => import("../../features/auth/pages/ProfilePage"));
 
 // Lazy load admin pages
 const AdminDashboard = lazy(() => import("../../features/admin/pages/AdminDashboard"));
+const VerificationQueue = lazy(() => import("../../features/admin/pages/VerificationQueue"));
 const UserManagement = lazy(() => import("../../features/admin/pages/UserManagement"));
 const HospitalManagement = lazy(() => import("../../features/admin/pages/HospitalManagement"));
 const DoctorManagement = lazy(() => import("../../features/admin/pages/DoctorManagement"));
 
 
 
-const TabContentRenderer = memo(({ activeTab, user }) => {
+const TabContentRenderer = memo(({ activeTab, user, setActiveTab }) => {
 
   const contentMap = {
     [DASHBOARD_TABS.DASHBOARD]: <DashboardWelcome user={useSelector((state) => state.auth.user)} />,
     [DASHBOARD_TABS.HOSPITALS]: (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <HospitalList setActiveTab={setActiveTab} />
+        </Suspense>
+      </ErrorBoundary>
+    ),
+    [DASHBOARD_TABS.MY_HOSPITAL]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <Hospital />
@@ -55,14 +64,14 @@ const TabContentRenderer = memo(({ activeTab, user }) => {
     [DASHBOARD_TABS.DISEASES]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          {user.role !== "admin" ? <DiseasePage /> : <Disease_user />}
+          {user.role === "admin" ? <DiseasePage /> : <Disease_user />}
         </Suspense>
       </ErrorBoundary>
     ),
     [DASHBOARD_TABS.MEDICINES]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          {user.role !== "admin" ? <MedicinePage /> : <Medicine_user />}
+          {user.role === "admin" ? <MedicinePage /> : <Medicine_user />}
         </Suspense>
       </ErrorBoundary>
     ),
@@ -79,6 +88,13 @@ const TabContentRenderer = memo(({ activeTab, user }) => {
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <AdminDashboard />
+        </Suspense>
+      </ErrorBoundary>
+    ),
+    [DASHBOARD_TABS.VERIFICATION_QUEUE]: (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <VerificationQueue />
         </Suspense>
       </ErrorBoundary>
     ),

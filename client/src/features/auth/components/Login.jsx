@@ -1,14 +1,50 @@
 import { useForm } from "react-hook-form";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router";
-import { SunIcon as Sunburst } from "lucide-react";
+import { SunIcon as Sunburst, Heart, Activity, Zap } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { gsap } from "gsap";
 
 export default function Login({ toggleLogin, toggleForgot }) {
   const [loginType, setLoginType] = useState("email");
   const { handleLogin, handleGoogleAuth, loading } = useAuth();
   const navigate = useNavigate();
+  const leftSideRef = useRef(null);
+  const heartRef = useRef(null);
+  const floatingElementsRef = useRef([]);
+
+  useEffect(() => {
+    // Heartbeat animation
+    if (heartRef.current) {
+      gsap.to(heartRef.current, {
+        scale: 1.3,
+        duration: 0.5,
+        repeat: -1,
+        yoyo: true,
+        ease: "power1.inOut"
+      });
+    }
+
+    // Floating animation for background elements
+    floatingElementsRef.current.forEach((el, i) => {
+      if (el) {
+        gsap.to(el, {
+          y: "random(-30, 30)",
+          x: "random(-20, 20)",
+          rotation: "random(-360, 360)",
+          duration: "random(4, 8)",
+          repeat: -1,
+          yoyo: true,
+          ease: "sine.inOut",
+          delay: i * 0.3
+        });
+      }
+    });
+
+    // Fade in animation
+    gsap.fromTo(leftSideRef.current, { opacity: 0 }, { opacity: 1, duration: 1 });
+  }, []);
 
   const {
     register,
@@ -67,13 +103,59 @@ export default function Login({ toggleLogin, toggleForgot }) {
       <div className="w-full relative max-w-5xl overflow-hidden flex flex-col md:flex-row shadow-xl rounded-2xl">
 
         {/* LEFT SIDE DESIGN */}
-        <div className="bg-black text-white p-8 md:p-12 md:w-1/2 relative">
-          <h1 className="text-2xl md:text-3xl font-medium leading-tight tracking-tight">
-            Welcome back to HealthAxis 🚀
-          </h1>
-          <p className="mt-4 text-sm opacity-80">
-            Manage your health system with ease.
-          </p>
+        <div ref={leftSideRef} className="bg-gradient-to-br from-[#0f172a] via-[#1a2847] to-[#0d1f3c] text-white p-8 md:p-12 md:w-1/2 relative overflow-hidden flex flex-col justify-between">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 opacity-10 pointer-events-none">
+            <div ref={el => floatingElementsRef.current[0] = el} className="absolute top-10 left-10">
+              <Heart className="w-24 h-24 text-orange-400" strokeWidth={1} />
+            </div>
+            <div ref={el => floatingElementsRef.current[1] = el} className="absolute bottom-20 right-10">
+              <Activity className="w-20 h-20 text-blue-400" strokeWidth={1} />
+            </div>
+            <div ref={el => floatingElementsRef.current[2] = el} className="absolute top-1/2 right-20">
+              <Zap className="w-16 h-16 text-green-400" strokeWidth={1} />
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div ref={heartRef} className="text-red-500">
+                <Heart className="w-8 h-8 fill-current" />
+              </div>
+              <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                HealthAxis
+              </h1>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-medium leading-tight tracking-tight">
+              Welcome back 👋
+            </h2>
+            <p className="mt-4 text-sm opacity-80 leading-relaxed">
+              Your personal health companion. Manage appointments, track health records, and access quality healthcare services all in one place.
+            </p>
+          </div>
+
+          {/* Bottom info cards */}
+          <div className="relative z-10 space-y-3">
+            <div className="flex items-center gap-3 text-xs">
+              <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
+                <Heart className="w-4 h-4 text-orange-400" />
+              </div>
+              <span className="opacity-80">Secure & HIPAA Compliant</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                <Activity className="w-4 h-4 text-blue-400" />
+              </div>
+              <span className="opacity-80">Real-time Health Monitoring</span>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
+                <Zap className="w-4 h-4 text-green-400" />
+              </div>
+              <span className="opacity-80">24/7 Doctor Access</span>
+            </div>
+          </div>
         </div>
 
         {/* RIGHT SIDE FORM */}

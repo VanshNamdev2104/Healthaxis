@@ -15,6 +15,7 @@ const DiseasePage = lazy(() => import("../../features/health/pages/DiseasePage")
 const MedicinePage = lazy(() => import("../../features/health/pages/MedicinePage"))
 const ChatPage = lazy(() => import("../../features/chat/pages/ChatPage"))
 const Disease_user = lazy(() => import("../../features/user/pages/Disease_user"))
+const Medicine_user = lazy(() => import("../../features/user/pages/Medicine_user"))
 const AdminDashboard = lazy(() => import("../../features/admin/pages/AdminDashboard"))
 const UserManagement = lazy(() => import("../../features/admin/pages/UserManagement"))
 const HospitalManagement = lazy(() => import("../../features/admin/pages/HospitalManagement"))
@@ -38,6 +39,7 @@ const LazyDiseasePage = Loadable(DiseasePage)
 const LazyMedicinePage = Loadable(MedicinePage)
 const LazyChatPage = Loadable(ChatPage)
 const LazyDisease_user = Loadable(Disease_user)
+const LazyMedicine_user = Loadable(Medicine_user)
 const LazyAdminDashboard = Loadable(AdminDashboard)
 const LazyUserManagement = Loadable(UserManagement)
 const LazyHospitalManagement = Loadable(HospitalManagement)
@@ -46,6 +48,11 @@ const LazyDoctorManagement = Loadable(DoctorManagement)
 const diseaseRouteMap = {
     user: LazyDisease_user,
     admin: LazyDiseasePage
+}
+
+const medicineRouteMap = {
+    user: LazyMedicine_user,
+    admin: LazyMedicinePage
 }
 
 // Define the router with a protected layout for authenticated routes
@@ -110,7 +117,7 @@ const router = createBrowserRouter([
     },
     {
         path: "/health/medicines",
-        element: <Protected role="admin"><LazyMedicinePage /></Protected>
+        element: <Protected roleComponentMap={medicineRouteMap}></Protected>
     },
     // {
     //     path: "/diseases",

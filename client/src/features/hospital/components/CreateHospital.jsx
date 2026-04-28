@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { useHospital } from '../hooks/useHospital';
 import { Activity, ShieldPlus, HeartPulse, ShieldCheck, Mail, Phone, User, Lock, Building2, MapPin, Clock, Tag, Globe, Map } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import { useAuth } from '../../auth/hooks/useAuth';
 
-const CreateHospital = () => {
-  const { handleCreateHospital } = useHospital();
+const CreateHospital = ({ isResubmitting = false }) => {
+  const { handleCreateHospital, handleResubmitHospital, handleGetHospitalAdmin, handleGetHospital } = useHospital();
+  const { handleGetCurrentUser } = useAuth();
   const {hospitalAdmin} = useSelector((state) => state.hospital)
   
   
@@ -28,10 +30,16 @@ const CreateHospital = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Usually submit the combined data, but admin data can just be picked up by backend directly.
-    handleCreateHospital(formData);
+    if (isResubmitting) {
+      await handleResubmitHospital(formData);
+    } else {
+      await handleCreateHospital(formData);
+      await handleGetCurrentUser(); // Refresh user to get the new hospitalAdmin role
+      await handleGetHospitalAdmin(); // Fetch admin info
+      await handleGetHospital(); // Fetch the newly created hospital
+    }
   };
 
   return (
@@ -88,7 +96,9 @@ const CreateHospital = () => {
           </div>
 
           <div className="mb-10">
-            <h2 className="text-3xl font-['Manrope'] font-bold text-[#171c1f] mb-2 tracking-tight">Create Hospital Account</h2>
+            <h2 className="text-3xl font-['Manrope'] font-bold text-[#171c1f] mb-2 tracking-tight">
+              {isResubmitting ? 'Update Profile' : 'Create Hospital Account'}
+            </h2>
             <p className="text-[#4f6a5f] text-base">Register your medical facility into the HealthAxis network down below.</p>
           </div>
 
@@ -407,7 +417,7 @@ const CreateHospital = () => {
               type="submit"
               className="mt-8 w-full py-4 px-6 bg-linear-to-r from-[#006857] to-[#00846e] text-white font-bold tracking-wide text-lg rounded-4xl hover:shadow-lg hover:shadow-[#00846e]/30 hover:-translate-y-0.5 transition-all duration-300 focus:outline-none focus:ring-4 focus:ring-[#8cf6da]/50 border border-[#8cf6da]/20 sticky bottom-6 z-20"
             >
-              Create Hospital Account
+              {isResubmitting ? 'Update & Resubmit Profile' : 'Create Hospital Account'}
             </button>
             
           </form>

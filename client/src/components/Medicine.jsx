@@ -86,7 +86,9 @@ export default function MedicineForm({ isOpen, onClose, onSuccess }) {
 
       images.forEach((img) => formData.append("images", img));
 
-      await axios.post("/api/health/medicine", formData);
+      await axios.post("/api/health/medicine", formData, {
+        withCredentials: true
+      });
       alert("Medicine added ✅");
       onSuccess?.();
       handleClose();

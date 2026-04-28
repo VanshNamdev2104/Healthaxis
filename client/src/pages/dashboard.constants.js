@@ -2,6 +2,7 @@
 export const DASHBOARD_TABS = {
   DASHBOARD: "Dashboard",
   HOSPITALS: "Hospitals",
+  MY_HOSPITAL: "MyHospital",
   DOCTORS: "Doctors",
   APPOINTMENTS: "Appointments",
   DISEASES: "Diseases",
@@ -10,6 +11,7 @@ export const DASHBOARD_TABS = {
   PROFILE: "Profile",
   // Admin tabs
   ADMIN_DASHBOARD: "AdminDashboard",
+  VERIFICATION_QUEUE: "VerificationQueue",
   USER_MANAGEMENT: "UserManagement",
   HOSPITAL_MANAGEMENT: "HospitalManagement",
   DOCTOR_MANAGEMENT: "DoctorManagement",

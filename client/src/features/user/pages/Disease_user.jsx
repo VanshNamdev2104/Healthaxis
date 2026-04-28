@@ -6,6 +6,7 @@ import { Search, Sparkles, Activity } from 'lucide-react';
 
 const Disease_user = () => {
   const { diseases, loading, getAllDiseases } = useDisease();
+  const [searchTerm, setSearchTerm] = React.useState('');
 //   console.log("check Disease_user 9", diseases);
   
   const headerRef = useRef(null);
@@ -101,6 +102,8 @@ const Disease_user = () => {
           <input 
             type="text" 
             placeholder="Search for conditions, symptoms..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-16 pr-8 py-6 rounded-[32px] bg-white border border-[#553722]/5 shadow-[0_20px_40px_rgba(85,55,34,0.03)] focus:shadow-[0_20px_40px_rgba(85,55,34,0.08)] outline-none transition-all text-lg font-medium text-[#1a1c19] placeholder-[#553722]/30"
           />
         </div>
@@ -119,7 +122,12 @@ const Disease_user = () => {
             className="grid grid-cols-1 gap-12"
           >
             {diseases?.diseases?.length > 0 ? (
-              diseases.diseases.map((disease, i) => (
+              diseases.diseases
+                .filter(disease => 
+                  disease.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                  disease.description?.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+                .map((disease, i) => (
                 <div key={disease._id || i} className="user-disease-card">
                   <DiseaseUserCard disease={disease} />
                 </div>
@@ -129,9 +137,11 @@ const Disease_user = () => {
                 <div className="w-24 h-24 rounded-full bg-[#f4f4ef] flex items-center justify-center mx-auto text-4xl">
                   🌿
                 </div>
-                <h3 className="text-3xl font-serif font-bold text-[#1a1c19]">No conditions found in this sanctuary</h3>
+                <h3 className="text-3xl font-serif font-bold text-[#1a1c19]">
+                  {searchTerm ? 'No conditions match your search' : 'No conditions found in this sanctuary'}
+                </h3>
                 <p className="text-[#50453e] max-w-md mx-auto">
-                  Perhaps try a different search term or check back later as we expand our library.
+                  {searchTerm ? 'Try a different search term' : 'Perhaps check back later as we expand our library.'}
                 </p>
               </div>
             )}

@@ -64,11 +64,21 @@ async function getAllDoctorsController(req, res) {
                 message: "Hospital not found",
             });
         }
-        const doctors = await doctorModel.find({ hospital: hospitalId }).populate("hospital");
+        let query = { hospital: hospitalId };
+        if (user && user.role === 'user') {
+            query.status = 'APPROVED';
+        }
+        const doctors = await doctorModel.find(query).populate({
+            path: 'hospital',
+            match: (user && user.role === 'user') ? { status: 'APPROVED' } : {}
+        });
+        
+        const filteredDoctors = (user && user.role === 'user') ? doctors.filter(d => d.hospital !== null) : doctors;
+
         res.status(200).json({
             success: true,
             message: "Doctors fetched successfully",
-            data: doctors,
+            data: filteredDoctors,
         });
     }
     catch (error) {
@@ -118,6 +128,7 @@ async function getDoctorController(req, res) {
 }
 
 async function getDoctorsBySpecialization(req, res) {
+    const user = req.user;
     const specialization = req.params.specialization;
     try {
         if (!specialization) {
@@ -127,11 +138,22 @@ async function getDoctorsBySpecialization(req, res) {
             });
         }
         
-        const doctors = await doctorModel.find({ specialization: specialization });
+        let query = { specialization: specialization };
+        if (!user || user.role === 'user') {
+            query.status = 'APPROVED';
+        }
+        
+        const doctors = await doctorModel.find(query).populate({
+            path: 'hospital',
+            match: (!user || user.role === 'user') ? { status: 'APPROVED' } : {}
+        });
+
+        const filteredDoctors = (!user || user.role === 'user') ? doctors.filter(d => d.hospital !== null) : doctors;
+
         res.status(200).json({
             success: true,
             message: "Doctors fetched successfully",
-            data: doctors,
+            data: filteredDoctors,
         });
     }
     catch (error) {

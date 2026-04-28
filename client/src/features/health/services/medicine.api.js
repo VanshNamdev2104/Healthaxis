@@ -21,6 +21,7 @@ export const medicineAPI = {
   createMedicine: async (formData) => {
     const response = await axios.post(`${API_URL}/api/health/medicine`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true
     });
     return response.data;
   },
@@ -29,13 +30,16 @@ export const medicineAPI = {
   updateMedicine: async (id, formData) => {
     const response = await axios.put(`${API_URL}/api/health/medicine/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
+      withCredentials: true
     });
     return response.data;
   },
 
   // Delete medicine
   deleteMedicine: async (id) => {
-    const response = await axios.delete(`${API_URL}/api/health/medicine/${id}`);
+    const response = await axios.delete(`${API_URL}/api/health/medicine/${id}`, {
+      withCredentials: true
+    });
     return response.data;
   },
 

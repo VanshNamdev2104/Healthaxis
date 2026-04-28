@@ -7,8 +7,9 @@ import { useSelector } from 'react-redux';
 import { CircleUser, X, LogOut, Trash2, Mail, Shield, Phone, Hospital as HospitalIcon } from "lucide-react"
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import LogoutConfirmDialog from '../../../components/LogoutConfirmDialog.jsx';
 
-function Demo({ hospital, admin, logout, error }) {
+function Demo({ hospital, admin, logout, error, onLogoutClick }) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const navigate = useNavigate();
   
@@ -195,10 +196,7 @@ function Demo({ hospital, admin, logout, error }) {
         {/* Footer Actions */}
         <div className="p-6 border-t border-slate-100 bg-slate-50 shrink-0 flex flex-col gap-3">
           <button 
-          onClick={()=>{
-            logout();
-            navigate("/")
-          }}
+          onClick={onLogoutClick}
           className="w-full relative group overflow-hidden pl-4 pr-12 py-4 bg-white border border-slate-200 rounded-2xl flex items-center justify-center gap-2 text-slate-700 font-bold hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-[0.98]">
             <LogOut size={16} className="text-slate-400 group-hover:text-slate-600 transition-colors" />
             <span className="text-xs uppercase tracking-widest">Sign Out</span>
@@ -231,6 +229,9 @@ const Hospital = () => {
   const { handleGetHospital, handleGetHospitalAdmin } = useHospital();
   const { handleLogout} = useAuth()
   const { hospital, hospitalAdmin, loading } = useSelector((state) => state.hospital);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [isResubmitting, setIsResubmitting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     handleGetHospital();
@@ -241,19 +242,86 @@ const Hospital = () => {
   if(loading){
     return <Loading/>
   }
+
+  const status = hospital?.data?.status;
+  const reason = hospital?.data?.rejectionReason;
+
+  if (hospital && hospitalAdmin && !isResubmitting) {
+      if (status === 'PENDING') {
+          return (
+              <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 relative z-50">
+                  <div className="bg-white p-8 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.05)] max-w-md w-full text-center border border-slate-100">
+                      <div className="w-20 h-20 bg-amber-50 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                          <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      </div>
+                      <h2 className="text-2xl font-black text-slate-800 mb-2">Profile Under Review</h2>
+                      <p className="text-slate-500 mb-6 font-medium">Your registration has been submitted and is currently being reviewed by our administration team. Estimated wait time is 24-48 hours.</p>
+                      <button onClick={() => setShowLogoutDialog(true)} className="text-amber-600 font-bold hover:text-amber-700 transition-colors uppercase tracking-widest text-xs">Sign Out</button>
+                  </div>
+                  <LogoutConfirmDialog isOpen={showLogoutDialog} onClose={() => setShowLogoutDialog(false)} onConfirm={() => { handleLogout(); navigate("/"); }} />
+              </div>
+          );
+      }
+      if (status === 'REJECTED') {
+          return (
+              <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 relative z-50">
+                  <div className="bg-white p-8 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.05)] max-w-md w-full text-center border-t-4 border-rose-500">
+                      <div className="w-20 h-20 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                          <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                      </div>
+                      <h2 className="text-2xl font-black text-slate-800 mb-2">Registration Rejected</h2>
+                      <p className="text-slate-500 mb-4 font-medium">Unfortunately, your profile registration was not approved.</p>
+                      <div className="bg-rose-50 border border-rose-100 text-rose-700 p-4 rounded-xl mb-8 text-sm text-left">
+                          <strong className="block mb-1 text-rose-800">Reason for rejection:</strong> {reason || "No reason provided."}
+                      </div>
+                      <div className="flex flex-col gap-4">
+                          <button onClick={() => setIsResubmitting(true)} className="w-full bg-slate-900 text-white font-black uppercase tracking-widest text-xs py-4 rounded-full hover:scale-105 transition-all shadow-xl shadow-slate-200">Update & Resubmit</button>
+                          <button onClick={() => setShowLogoutDialog(true)} className="text-slate-400 font-bold hover:text-slate-600 uppercase tracking-widest text-xs transition-colors">Sign Out</button>
+                      </div>
+                  </div>
+                  <LogoutConfirmDialog isOpen={showLogoutDialog} onClose={() => setShowLogoutDialog(false)} onConfirm={() => { handleLogout(); navigate("/"); }} />
+              </div>
+          );
+      }
+      if (status === 'SUSPENDED') {
+          return (
+              <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 relative z-50">
+                  <div className="bg-white p-8 rounded-3xl shadow-[0_20px_40px_rgba(0,0,0,0.05)] max-w-md w-full text-center border-t-4 border-red-600">
+                      <div className="w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
+                          <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                      </div>
+                      <h2 className="text-2xl font-black text-slate-800 mb-2">Account Suspended</h2>
+                      <p className="text-slate-500 mb-6 font-medium">Your account has been suspended due to policy violations. Please contact support for more information.</p>
+                      <button onClick={() => setShowLogoutDialog(true)} className="text-red-600 font-bold hover:text-red-700 transition-colors uppercase tracking-widest text-xs">Sign Out</button>
+                  </div>
+                  <LogoutConfirmDialog isOpen={showLogoutDialog} onClose={() => setShowLogoutDialog(false)} onConfirm={() => { handleLogout(); navigate("/"); }} />
+              </div>
+          );
+      }
+  }
+
   return (
     <div>
       {
-        (!hospital || !hospitalAdmin) ?
-          <CreateHospital />
+        (!hospital || !hospitalAdmin || isResubmitting) ?
+          <CreateHospital isResubmitting={isResubmitting} />
           :
           <Demo
             hospital={hospital}
             admin={hospitalAdmin}
             logout = {handleLogout}
+            onLogoutClick = {() => setShowLogoutDialog(true)}
           />
       }
 
+      <LogoutConfirmDialog
+        isOpen={showLogoutDialog}
+        onClose={() => setShowLogoutDialog(false)}
+        onConfirm={() => {
+          handleLogout();
+          navigate("/");
+        }}
+      />
     </div>
   )
 }

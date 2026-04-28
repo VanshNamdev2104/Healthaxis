@@ -37,3 +37,13 @@ export async function createHospital(formData) {
         throw error.response?.data?.message || "Failed to create new Hospital";
     }
 }
+export async function resubmitHospital(formData) {
+    try {
+        const response = await api.put("/resubmit", formData, {
+            withCredentials: true
+        })
+        return response;
+    } catch (error) {
+        throw error.response?.data?.message || "Failed to resubmit Hospital";
+    }
+}

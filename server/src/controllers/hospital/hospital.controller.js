@@ -36,10 +36,10 @@ async function createHospitalController(req, res) {
             }
         });
 
-        // Promote user to hospitalAdmin role on first hospital creation
+        // Associate hospital with user, but role remains 'user' until approved by admin
         const updatedUser = await userModel.findOneAndUpdate(
             { _id: user._id }, 
-            { $set: { hospital: newHospital._id, role: "hospitalAdmin" } },
+            { $set: { hospital: newHospital._id } },
             { new: true }
         );
         
@@ -68,7 +68,7 @@ async function getAllHospitalsController(req, res) {
 
     try {
 
-        const hospitals = await hospitalModel.find().populate("user");
+        const hospitals = await hospitalModel.find({ status: 'APPROVED' }).populate("user");
         res.status(200).json({
             success: true,
             message: "Hospitals fetched successfully",
@@ -227,11 +227,55 @@ async function getHospitalAdmin(req, res) {
 }
 
 
+async function resubmitHospitalController(req, res) {
+    const user = req.user;
+    const { hospitalName, address, city, state, country, pincode, contactNumber, email, type, speciality, openingTime, closingTime } = req.body;
+
+    try {
+        const hospital = await hospitalModel.findOne({ user: user._id });
+        if (!hospital) {
+            return res.status(404).json({ success: false, message: "Hospital not found" });
+        }
+
+        if (hospital.status !== 'REJECTED') {
+            return res.status(400).json({ success: false, message: "Only rejected profiles can be resubmitted" });
+        }
+
+        const updatedHospital = await hospitalModel.findByIdAndUpdate(hospital._id, {
+            name: hospitalName,
+            address,
+            city,
+            state,
+            country,
+            pincode,
+            hospitalNumber: contactNumber,
+            hospitalEmail: email,
+            type,
+            speciality,
+            workTime : { open : openingTime, close : closingTime },
+            status: 'PENDING',
+            resubmittedAt: new Date(),
+            rejectionReason: ""
+        }, { new: true });
+
+        res.status(200).json({
+            success: true,
+            message: "Hospital resubmitted successfully",
+            data: updatedHospital,
+        });
+    } catch (error) {
+        logger.error("Resubmit Hospital Error", { error: error.message, userId: user._id });
+        return res.status(500).json({ success: false, message: error.message || "Failed to resubmit hospital" });
+    }
+}
+
+
 export default {
     createHospitalController,
     getAllHospitalsController,
     getHospitalController,
     getYourHospitalController,
     deleteHospitalController,
-    getHospitalAdmin
+    getHospitalAdmin,
+    resubmitHospitalController
 };

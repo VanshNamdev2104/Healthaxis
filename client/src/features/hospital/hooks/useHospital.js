@@ -38,7 +38,8 @@ import {
 import {
     createHospital,
     getHospitalAdmin,
-    getHospital
+    getHospital,
+    resubmitHospital
 } from "../services/hospital.api.js"
 
 
@@ -54,6 +55,18 @@ export const useHospital = () => {
             dispatch(setHospital(response.data))
         } catch (error) {
             dispatch(setHospitalError(error.response?.data?.message || "Failed to create hospital"))
+        } finally {
+            dispatch(setHospitalLoading(false))
+        }
+    }
+
+    async function handleResubmitHospital(formData) {
+        try {
+            dispatch(setHospitalLoading(true))
+            const response = await resubmitHospital(formData)
+            dispatch(setHospital(response.data))
+        } catch (error) {
+            dispatch(setHospitalError(error.response?.data?.message || "Failed to resubmit hospital"))
         } finally {
             dispatch(setHospitalLoading(false))
         }
@@ -211,6 +224,7 @@ export const useHospital = () => {
         handleGetHospitalAdmin,
         handleGetHospital,
         handleCreateHospital,
+        handleResubmitHospital,
 
         // doctor handlers
         handleCreateDoctor,

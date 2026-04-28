@@ -13,6 +13,7 @@ import {
   BarChart3,
   Pill,
   MessageCircle,
+  Building2
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
@@ -26,8 +27,9 @@ import {
 import Logo from "./dashboard/Logo.jsx";
 import LogoIcon from "./dashboard/LogoIcon.jsx";
 import DashboardContent from "./dashboard/DashboardContent.jsx";
+import LogoutConfirmDialog from "../components/LogoutConfirmDialog.jsx";
 
-const USER_TAB_CONFIG = [
+const BASE_USER_TAB_CONFIG = [
   {
     id: DASHBOARD_TABS.DASHBOARD,
     label: "Dashboard",
@@ -37,16 +39,6 @@ const USER_TAB_CONFIG = [
     id: DASHBOARD_TABS.HOSPITALS,
     label: "Hospitals",
     icon: Users,
-  },
-  {
-    id: DASHBOARD_TABS.DOCTORS,
-    label: "Doctors",
-    icon: Stethoscope,
-  },
-  {
-    id: DASHBOARD_TABS.APPOINTMENTS,
-    label: "Appointments",
-    icon: Calendar,
   },
   {
     id: DASHBOARD_TABS.DISEASES,
@@ -79,6 +71,11 @@ const ADMIN_TAB_CONFIG = [
     icon: LayoutDashboard,
   },
   {
+    id: DASHBOARD_TABS.VERIFICATION_QUEUE,
+    label: "Verification Queue",
+    icon: Shield,
+  },
+  {
     id: DASHBOARD_TABS.USER_MANAGEMENT,
     label: "Users",
     icon: Users,
@@ -94,6 +91,16 @@ const ADMIN_TAB_CONFIG = [
     icon: Stethoscope,
   },
   {
+    id: DASHBOARD_TABS.DISEASES,
+    label: "Diseases",
+    icon: Brain,
+  },
+  {
+    id: DASHBOARD_TABS.MEDICINES,
+    label: "Medicines",
+    icon: Pill,
+  },
+  {
     id: DASHBOARD_TABS.SETTINGS,
     label: "Settings",
     icon: Settings,
@@ -105,19 +112,35 @@ export function Dashboard() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-  // Determine tab config based on user role
+  // Determine tab config based on user role dynamically
+  const USER_TAB_CONFIG = [
+    BASE_USER_TAB_CONFIG[0], // Dashboard
+    BASE_USER_TAB_CONFIG[1], // Hospitals
+    ...(user?.hospital || user?.role === 'hospitalAdmin' ? [{ id: DASHBOARD_TABS.MY_HOSPITAL, label: "My Hospital", icon: Building2 }] : []),
+    ...(user?.role === 'hospitalAdmin' ? [
+      { id: DASHBOARD_TABS.DOCTORS, label: "Doctors", icon: Stethoscope },
+      { id: DASHBOARD_TABS.APPOINTMENTS, label: "Appointments", icon: Calendar }
+    ] : []),
+    ...BASE_USER_TAB_CONFIG.slice(2)
+  ];
+
   const tabConfig = user?.role === "admin" ? ADMIN_TAB_CONFIG : USER_TAB_CONFIG;
   const initialTab = user?.role === "admin" ? DASHBOARD_TABS.ADMIN_DASHBOARD : DASHBOARD_TABS.DASHBOARD;
 
   const [open, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(initialTab);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  const handleLogout = useCallback(() => {
+  const performLogout = useCallback(() => {
     localStorage.removeItem(STORAGE_KEYS.TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER);
     dispatch(logout());
     navigate(ROUTES.AUTH);
   }, [dispatch, navigate]);
+
+  const handleLogout = useCallback(() => {
+    setShowLogoutDialog(true);
+  }, []);
 
   const handleTabChange = useCallback((tabId) => {
     setActiveTab(tabId);
@@ -184,7 +207,13 @@ export function Dashboard() {
       </Sidebar>
 
       {/* Main Content Area */}
-      <DashboardContent activeTab={activeTab} user={user} />
+      <DashboardContent activeTab={activeTab} user={user} setActiveTab={setActiveTab} />
+
+      <LogoutConfirmDialog
+        isOpen={showLogoutDialog}
+        onClose={() => setShowLogoutDialog(false)}
+        onConfirm={performLogout}
+      />
     </div>
   );
 }

@@ -13,6 +13,11 @@ passport.use(
         },
         async (accessToken, refreshToken, profile, done) => {
             try {
+                // Validate email exists from Google profile
+                if (!profile.emails || !profile.emails[0] || !profile.emails[0].value) {
+                    return done(new Error("Email not provided by Google. Please ensure your Google account has an email address associated."), null);
+                }
+
                 const email = profile.emails[0].value;
                 const googleId = profile.id;
 
@@ -34,10 +39,13 @@ passport.use(
                 }
 
                 // 3. Create a new user for first-time Google sign-in
+                // Generate a random 10-digit phone number for Google users (they can update it later)
+                const randomPhone = Math.floor(1000000000 + Math.random() * 9000000000).toString();
                 user = await User.create({
                     name: profile.displayName,
                     email,
                     googleId,
+                    number: randomPhone,
                 });
 
                 return done(null, user);
