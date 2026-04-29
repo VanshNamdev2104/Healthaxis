@@ -64,7 +64,7 @@ export async function register({ name, email, number, password }) {
 }
 
 export function googleAuth() {
-    window.location.href = `${BASE_URL}/api/auth/google`;
+    window.location.href = `${BASE_URL}/api/auth/google?prompt=select_account`;
 }
 
 export async function logout() {
