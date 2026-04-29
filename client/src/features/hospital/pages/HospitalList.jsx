@@ -9,10 +9,19 @@ const HospitalList = ({ setActiveTab }) => {
     const [loading, setLoading] = useState(true);
     const [selectedHospital, setSelectedHospital] = useState(null);
 
-    useEffect(() => {
+useEffect(() => {
+        console.log('Fetching hospitals...');
         axios.get('/api/hospital', { withCredentials: true })
-            .then(res => { setHospitals(res.data.data); setLoading(false); })
-            .catch(err => { console.error(err); setLoading(false); });
+            .then(res => { 
+                console.log('Hospital API response:', res.data);
+                setHospitals(Array.isArray(res.data?.data) ? res.data.data : []);
+                setLoading(false); 
+            })
+            .catch(err => { 
+                console.error('Hospital fetch error:', err.response?.data || err);
+                setHospitals([]);
+                setLoading(false); 
+            });
     }, []);
 
     if (selectedHospital) {
@@ -39,7 +48,7 @@ const HospitalList = ({ setActiveTab }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {hospitals.map(h => (
+                {Array.isArray(hospitals) ? hospitals.map(h => (
                     <div key={h._id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-slate-100 flex flex-col group cursor-pointer">
                         <div className="h-48 bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl mb-6 flex items-center justify-center border border-indigo-100/50 group-hover:scale-[1.02] transition-transform overflow-hidden relative">
                             <HeartPulse size={64} className="text-indigo-200 absolute opacity-50 -right-4 -bottom-4 scale-150" />
@@ -57,10 +66,9 @@ const HospitalList = ({ setActiveTab }) => {
                             View Doctors <ArrowRight size={18} />
                         </button>
                     </div>
-                ))}
-                {hospitals.length === 0 && (
+                )) : (
                     <div className="col-span-full py-20 text-center text-slate-400 font-medium text-lg bg-white rounded-3xl border border-slate-100">
-                        No approved hospitals found. Check back later!
+                        Error loading hospitals. Please refresh.
                     </div>
                 )}
             </div>
