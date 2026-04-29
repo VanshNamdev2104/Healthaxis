@@ -23,12 +23,19 @@ const InitAuth = ({ children }) => {
     const accessToken = params.get("accessToken");
     const refreshToken = params.get("refreshToken");
 
-    if (accessToken) {
+    if (accessToken && refreshToken) {
+      // Store tokens in cookies
+      document.cookie = `accessToken=${accessToken}; path=/; secure; samesite=strict`;
+      document.cookie = `refreshToken=${refreshToken}; path=/; secure; samesite=strict`;
+      
       // URL clean karo
       window.history.replaceState({}, document.title, window.location.pathname);
+      
+      // Fetch user data with the new tokens
+      handleGetCurrentUser().catch(() => {});
+    } else {
+      handleGetCurrentUser().catch(() => {});
     }
-
-    handleGetCurrentUser().catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

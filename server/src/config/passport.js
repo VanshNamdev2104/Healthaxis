@@ -9,7 +9,7 @@ if (env.GOOGLE_CLIENT && env.GOOGLE_SECRET) {
             {
                 clientID: env.GOOGLE_CLIENT,
                 clientSecret: env.GOOGLE_SECRET,
-                callbackURL: "https://healthaxis-14r9.onrender.com/api/auth/google/callback",
+                callbackURL: `${process.env.SERVER_URL || "https://healthaxis-14r9.onrender.com"}/api/auth/google/callback`,
                 scope: ["profile", "email"],
             },
             async (accessToken, refreshToken, profile, done) => {
