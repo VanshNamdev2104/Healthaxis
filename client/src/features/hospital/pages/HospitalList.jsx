@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getAllHospitals } from '../services/hospital.api.js';
 import { Building2, MapPin, Phone, Mail, ArrowRight, UserPlus, HeartPulse } from 'lucide-react';
 import { DASHBOARD_TABS } from '../../../pages/dashboard.constants';
 import HospitalDetails from './HospitalDetails';
@@ -11,14 +11,14 @@ const HospitalList = ({ setActiveTab }) => {
 
 useEffect(() => {
         console.log('Fetching hospitals...');
-        axios.get('/api/hospital', { withCredentials: true })
+        getAllHospitals()
             .then(res => { 
                 console.log('Hospital API response:', res.data);
                 setHospitals(Array.isArray(res.data?.data) ? res.data.data : []);
                 setLoading(false); 
             })
             .catch(err => { 
-                console.error('Hospital fetch error:', err.response?.data || err);
+                console.error('Hospital fetch error:', err);
                 setHospitals([]);
                 setLoading(false); 
             });

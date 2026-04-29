@@ -37,6 +37,17 @@ export async function createHospital(formData) {
         throw error.response?.data?.message || "Failed to create new Hospital";
     }
 }
+export async function getAllHospitals() {
+    try {
+        const response = await api.get("/", {
+            withCredentials: true
+        });
+        return response;
+    } catch (error) {
+        throw error.response?.data?.message || "Failed to fetch hospitals";
+    }
+}
+
 export async function resubmitHospital(formData) {
     try {
         const response = await api.put("/resubmit", formData, {
