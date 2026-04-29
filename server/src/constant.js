@@ -14,7 +14,7 @@ const REFRESH_TOKEN_COOKIE_OPTIONS = {
     secure: true,
     sameSite: "none",  // ✅ Cross-origin ke liye
     maxAge: 7 * 24 * 60 * 60 * 1000, 
-    path: "/api/user/refresh-token",
+    path: "/",
 };
 
 export {

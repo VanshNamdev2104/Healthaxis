@@ -8,41 +8,17 @@ import Approuter from './app/routes/Approuter.jsx'
 import { Provider } from "react-redux";
 import { store } from './app/store/app.store.js'
 import { useAuth } from './features/auth/hooks/useAuth.js'
-import { logout } from './features/auth/slice/auth.slice.js'
-import { useDispatch } from 'react-redux'
+
 
 // This component runs once when the app starts.
 // It checks with the backend if the user's cookies are still valid.
 const InitAuth = ({ children }) => {
   const { handleGetCurrentUser } = useAuth();
-  const dispatch = useDispatch();
+
 
   useEffect(() => {
-    // ✅ URL se token lo agar Google OAuth se aaya hai
-    const params = new URLSearchParams(window.location.search);
-    const accessToken = params.get("accessToken");
-    const refreshToken = params.get("refreshToken");
-
-    if (accessToken && refreshToken) {
-      // Clear existing cookies first to avoid session conflicts
-      document.cookie = `accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-      document.cookie = `refreshToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
-      
-      // Store tokens in cookies (use secure only in production)
-      const isProduction = import.meta.env.PROD;
-      document.cookie = `accessToken=${accessToken}; path=/; ${isProduction ? 'secure;' : ''} samesite=strict`;
-      document.cookie = `refreshToken=${refreshToken}; path=/; ${isProduction ? 'secure;' : ''} samesite=strict`;
-      
-      // URL clean karo
-      window.history.replaceState({}, document.title, window.location.pathname);
-      
-      // Small delay to ensure cookies are set before fetching user
-      setTimeout(() => {
-        handleGetCurrentUser().catch(() => {});
-      }, 100);
-    } else {
-      handleGetCurrentUser().catch(() => {});
-    }
+    // ✅ Server sets cookies directly, just fetch current user
+    handleGetCurrentUser().catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
