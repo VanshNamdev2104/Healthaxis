@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { getAllDoctors } from '../services/doctor.api.js';
 import { Building2, MapPin, Phone, Mail, ArrowLeft, Stethoscope, Clock, Star, IndianRupee, Calendar } from 'lucide-react';
 
 const HospitalDetails = ({ hospital, onBack }) => {
@@ -8,9 +8,18 @@ const HospitalDetails = ({ hospital, onBack }) => {
     const [selectedDoctor, setSelectedDoctor] = useState(null); // For booking modal
 
     useEffect(() => {
-        axios.get(`/api/doctors/hospital/${hospital._id}`, { withCredentials: true })
-            .then(res => { setDoctors(res.data.data); setLoading(false); })
-            .catch(err => { console.error(err); setLoading(false); });
+        console.log('Fetching doctors for hospital:', hospital._id);
+        getAllDoctors({ hospitalId: hospital._id })
+            .then(res => { 
+                console.log('Doctors API response:', res.data);
+                setDoctors(Array.isArray(res.data?.data) ? res.data.data : []);
+                setLoading(false); 
+            })
+            .catch(err => { 
+                console.error('Doctors fetch error:', err);
+                setDoctors([]);
+                setLoading(false); 
+            });
     }, [hospital._id]);
 
     return (
@@ -44,7 +53,7 @@ const HospitalDetails = ({ hospital, onBack }) => {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                    {doctors.map((doc, idx) => (
+                    {Array.isArray(doctors) ? doctors.map((doc, idx) => (
                         <div key={doc._id} className="bg-white p-6 rounded-3xl shadow-sm hover:shadow-xl transition-all border border-slate-100 flex flex-col animate-in fade-in slide-in-from-bottom-4" style={{ animationDelay: `${idx * 100}ms`, animationFillMode: 'both' }}>
                             <div className="flex items-start gap-4 mb-6">
                                 <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 font-black text-2xl shrink-0">
@@ -66,10 +75,9 @@ const HospitalDetails = ({ hospital, onBack }) => {
                                 <Calendar size={20} /> Book Appointment
                             </button>
                         </div>
-                    ))}
-                    {doctors.length === 0 && (
+                    )) : (
                         <div className="col-span-full py-16 text-center text-slate-400 font-medium text-lg bg-white rounded-3xl border border-slate-100">
-                            No doctors available at this hospital yet.
+                            Error loading doctors.
                         </div>
                     )}
                 </div>
