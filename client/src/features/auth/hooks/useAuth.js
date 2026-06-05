@@ -76,7 +76,7 @@ export const useAuth = () => {
             dispatch(setLoading(true));
             dispatch(clearError());
             const response = await updateProfile(formData);
-            dispatch(setUser(response));
+            dispatch(setUser(response.data.user));
             return response;
         } catch (error) {
             dispatch(setError(error.response?.data?.message || "Failed to update profile"));

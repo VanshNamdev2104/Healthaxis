@@ -27,6 +27,7 @@ import {
 // APPOINTMENT APIS
 import {
     getAllAppointments,
+    getUserAppointments,
     updateAppointmentStatus,
     deleteAppointment,
     rescheduleAppointment,
@@ -154,6 +155,18 @@ export const useHospital = () => {
         }
     }
 
+    async function handleGetUserAppointments() {
+        try {
+            dispatch(setAppointmentLoading(true));
+            const response = await getUserAppointments();
+            dispatch(setAppointments(response.data?.data));
+        } catch (error) {
+            dispatch(setAppointmentError(error.response?.data?.message || "Failed to fetch appointments"));
+        } finally {
+            dispatch(setAppointmentLoading(false));
+        }
+    }
+
     async function handleUpdateAppointmentStatus(id, status) {
         try {
             dispatch(setAppointmentError(null));
@@ -233,6 +246,7 @@ export const useHospital = () => {
 
         // appointment handlers
         handleGetAllAppointments,
+        handleGetUserAppointments,
         handleUpdateAppointmentStatus,
         handleDeleteAppointment,
         handleReschedule,

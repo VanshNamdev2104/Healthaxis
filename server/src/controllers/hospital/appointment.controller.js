@@ -266,7 +266,7 @@ async function getPendingAppointmentsOfHospital(req, res) {
             });
         }
 
-        const appointments = await appointmentModel.find({ hospital: hospital._id, status: "pending" }).populate("doctor").populate("hospital");
+        const appointments = await appointmentModel.find({ hospital: hospital, status: "pending" }).populate("doctor").populate("hospital");
 
         res.status(200).json({
             success: true,
@@ -346,7 +346,7 @@ async function getAppointment(req, res) {
         }
         if (
             (user.role === "user" && appointment.user._id.toString() !== user._id.toString()) ||
-            (user.role === "hospitalAdmin" && appointment.hospital._id.toString() !== user.hospitalId.toString())
+            (user.role === "hospitalAdmin" && appointment.hospital._id.toString() !== user.hospital.toString())
         ) {
             return res.status(403).json({
                 success: false,

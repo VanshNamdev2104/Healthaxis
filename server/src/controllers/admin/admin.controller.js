@@ -274,7 +274,7 @@ export const approveHospital = async (req, res) => {
         const { hospitalId } = req.params;
         const hospital = await Hospital.findByIdAndUpdate(
             hospitalId,
-            { verificationStatus: "verified" },
+            { status: "APPROVED" },
             { new: true }
         );
 
@@ -299,7 +299,7 @@ export const rejectHospital = async (req, res) => {
         const { hospitalId } = req.params;
         const hospital = await Hospital.findByIdAndUpdate(
             hospitalId,
-            { verificationStatus: "rejected" },
+            { status: "REJECTED" },
             { new: true }
         );
 
@@ -397,7 +397,7 @@ export const approveDoctor = async (req, res) => {
         const { doctorId } = req.params;
         const doctor = await Doctor.findByIdAndUpdate(
             doctorId,
-            { verificationStatus: "verified" },
+            { status: "APPROVED" },
             { new: true }
         );
 

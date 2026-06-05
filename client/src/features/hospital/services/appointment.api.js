@@ -5,26 +5,34 @@ const api = axios.create({
     withCredentials: true
 });
 
+export const createAppointment = async (doctorId, formData) => {
+    return await api.post(`/appointments/${doctorId}`, formData);
+};
+
+export const getUserAppointments = async () => {
+    return await api.get(`/appointments/user`);
+};
+
 export const getAllAppointments = async (hospitalId) => {
-    return await API.get(`/appointments/hospital`);
+    return await api.get(`/appointments/hospital`);
 };
 
 export const updateAppointmentStatus = async (appointmentId, status) => {
-    return await API.patch(`/appointments/${appointmentId}/status`, { status });
+    return await api.patch(`/appointments/${appointmentId}/status`, { status });
 };
 
-export const approveAppointment = async (appointmentId,date,time) => {
-    return await API.patch(`/appointments/${appointmentId}/approve`,{date ,time});
+export const approveAppointment = async (appointmentId, date, time) => {
+    return await api.patch(`/appointments/${appointmentId}/approve`, { date, time });
 };
 
 export const rejectAppointment = async (appointmentId) => {
-    return await API.patch(`/appointments/${appointmentId}/reject`);
+    return await api.patch(`/appointments/${appointmentId}/reject`);
 };
 
 export const deleteAppointment = async (appointmentId) => {
-    return await API.delete(`/appointments/${appointmentId}`);
+    return await api.delete(`/appointments/${appointmentId}`);
 };
 
 export const rescheduleAppointment = async (appointmentId, date, time) => {
-    return await API.patch(`/appointments/${appointmentId}/reschedule`, { date, time });
+    return await api.patch(`/appointments/${appointmentId}/reschedule`, { date, time });
 };

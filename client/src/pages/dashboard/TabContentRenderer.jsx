@@ -19,6 +19,7 @@ const AppointmentPage = lazy(() => import("../../features/hospital/pages/Appoint
 const DiseasePage = lazy(() => import("../../features/health/pages/DiseasePage"));
 const MedicinePage = lazy(() => import("../../features/health/pages/MedicinePage"));
 const ProfilePage = lazy(() => import("../../features/auth/pages/ProfilePage"));
+const Appointments_user = lazy(() => import("../../features/user/pages/Appointments_user"));
 
 // Lazy load admin pages
 const AdminDashboard = lazy(() => import("../../features/admin/pages/AdminDashboard"));
@@ -57,7 +58,13 @@ const TabContentRenderer = memo(({ activeTab, user, setActiveTab }) => {
     [DASHBOARD_TABS.APPOINTMENTS]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          {(user.role === "hospitalAdmin") ? <AppointmentPage /> : <AccessDenied />}
+          {user.role === "hospitalAdmin" ? (
+            <AppointmentPage />
+          ) : user.role === "user" ? (
+            <Appointments_user />
+          ) : (
+            <AccessDenied />
+          )}
         </Suspense>
       </ErrorBoundary>
     ),

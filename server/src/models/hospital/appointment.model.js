@@ -23,6 +23,7 @@ const appointmentSchema = new mongoose.Schema({
         enum: ["male", "female", "other"],
         required: [true, "Gender is required"],
         trim: true,
+        lowercase: true,
     },
     phoneNo: {
         type: String,
@@ -31,7 +32,6 @@ const appointmentSchema = new mongoose.Schema({
     },
     alternateNo: {
         type: String,
-        required: [true, "Alternate No is required"],
         trim: true,
     },
     doctor: {

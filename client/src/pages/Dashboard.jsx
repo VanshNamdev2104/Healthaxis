@@ -112,10 +112,10 @@ export function Dashboard() {
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-  // Determine tab config based on user role dynamically
   const USER_TAB_CONFIG = [
     BASE_USER_TAB_CONFIG[0], // Dashboard
     BASE_USER_TAB_CONFIG[1], // Hospitals
+    ...(user?.role === 'user' ? [{ id: DASHBOARD_TABS.APPOINTMENTS, label: "My Appointments", icon: Calendar }] : []),
     ...(user?.hospital || user?.role === 'hospitalAdmin' ? [{ id: DASHBOARD_TABS.MY_HOSPITAL, label: "My Hospital", icon: Building2 }] : []),
     ...(user?.role === 'hospitalAdmin' ? [
       { id: DASHBOARD_TABS.DOCTORS, label: "Doctors", icon: Stethoscope },

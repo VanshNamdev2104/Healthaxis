@@ -25,7 +25,7 @@ useEffect(() => {
     }, []);
 
     if (selectedHospital) {
-        return <HospitalDetails hospital={selectedHospital} onBack={() => setSelectedHospital(null)} />;
+        return <HospitalDetails hospital={selectedHospital} onBack={() => setSelectedHospital(null)} setActiveTab={setActiveTab} />;
     }
 
     if (loading) return <div className="p-8 text-slate-500 font-bold animate-pulse">Loading directory...</div>;

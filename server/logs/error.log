@@ -2381,3 +2381,17 @@ ValidationError: Appointment validation failed: gender: `Male` is not a valid en
     at async model.save (C:\Users\GALAXY PC\Desktop\Healthaxis\server\node_modules\mongoose\lib\model.js:667:5)
     at async model.create (C:\Users\GALAXY PC\Desktop\Healthaxis\server\node_modules\mongoose\lib\model.js:2754:5)
     at async createAppointmentController (file:///C:/Users/GALAXY%20PC/Desktop/Healthaxis/server/src/controllers/hospital/appointment.controller.js:67:32)
+2026-05-31 10:39:21 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
+2026-06-04 21:22:28 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
+2026-06-04 21:23:34 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
+2026-06-04 21:23:49 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
+2026-06-04 21:35:26 [ERROR]: ❌ DB Connection Error: {"service":"healthaxis-api"}
+2026-06-04 21:38:54 [ERROR]:  DB Connection Error: {"service":"healthaxis-api"}
+2026-06-04 22:54:09 [ERROR]: Create Appointment Error {"service":"healthaxis-api","error":"Appointment validation failed: alternateNo: Alternate No is required","userId":"69ea26bb0b79bac5ceac5076","doctorId":"69e61ab9cfb6820b865c660b"}
+ValidationError: Appointment validation failed: alternateNo: Alternate No is required
+    at model.validate (C:\Users\Windows11\Desktop\HealthAxis\server\node_modules\mongoose\lib\document.js:2864:36)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async model.$__save (C:\Users\Windows11\Desktop\HealthAxis\server\node_modules\mongoose\lib\model.js:393:7)
+    at async model.save (C:\Users\Windows11\Desktop\HealthAxis\server\node_modules\mongoose\lib\model.js:667:5)
+    at async Function.create (C:\Users\Windows11\Desktop\HealthAxis\server\node_modules\mongoose\lib\model.js:2754:5)
+    at async createAppointmentController (file:///C:/Users/Windows11/Desktop/HealthAxis/server/src/controllers/hospital/appointment.controller.js:67:32)

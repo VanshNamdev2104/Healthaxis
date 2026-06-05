@@ -1,10 +1,10 @@
 import { START, END, StateSchema, StateGraph, CompiledStateGraph } from "@langchain/langgraph"
 import * as z from "zod";
 import { geminiModel, mistalModel, groqModel } from "./model.service.js";
-import { HumanMessage, AIMessage, SystemMessage, createAgent, providerStrategy } from "langchain"
+import { HumanMessage, SystemMessage } from "@langchain/core/messages"
 import logger from "../../config/logger.js"
 
-const language = "hinglish" // default ai response language
+const language = "hinglish" 
 
 const extractJson = (text) => {
     const match = text.match(/\{[\s\S]*\}/);
@@ -159,12 +159,7 @@ const solutionNode = async (state) => {
 const judgeNode = async (state) => {
     const { problem, solution_1, solution_2 } = state;
 
-    const judge = createAgent({
-        model: geminiModel,
-        // responseFormat: providerStrategy(z.object({
-
-        // })),
-        systemPrompt: `
+    const systemPrompt = `
         You are an expert Medical AI Judge and Clinical Decision Evaluator.
         use only clear ${language} language.
 
@@ -349,31 +344,29 @@ const judgeNode = async (state) => {
         ━━━━━━━━━━━━━━━━━━━━━━
         This system is for informational support only and does not replace a real doctor.
         Always prioritize safe, conservative medical advice.
-        `
-    })
+        `;
 
-    const judgeResponse = await judge.invoke({
-        messages: [
-            new HumanMessage(`
-                Problem: ${problem}
+    const judgeResponse = await geminiModel.invoke([
+        new SystemMessage(systemPrompt),
+        new HumanMessage(`
+            Problem: ${problem}
 
-                Solution 1: ${solution_1}
+            Solution 1: ${solution_1}
 
-                Solution 2: ${solution_2}
+            Solution 2: ${solution_2}
 
-                Task:
-                Evaluate both solutions strictly according to the system instructions.
+            Task:
+            Evaluate both solutions strictly according to the system instructions.
 
-                Be strict about medical safety and do not mix both solutions.
-                use only ${language} language.
-                `)
-        ]
-    })
+            Be strict about medical safety and do not mix both solutions.
+            use only ${language} language.
+        `)
+    ]);
 
-    // const { judge_solution, final_solution } = judgeResponse.structuredResponse
-    logger.info("Judge response received", { responseLength: judgeResponse?.messages?.[1]?.content?.length });
+    const responseContent = judgeResponse?.content || String(judgeResponse);
+    logger.info("Judge response received", { responseLength: responseContent?.length });
 
-    const parsed = extractJson(judgeResponse.messages[1].content);
+    const parsed = extractJson(responseContent);
     const result = stateSchema.parse(parsed);
     const { judge_solution, final_solution } = result
     return {

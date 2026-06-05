@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { getAllDoctors } from '../services/doctor.api.js';
+import { createAppointment } from '../services/appointment.api.js';
 import { Building2, MapPin, Phone, Mail, ArrowLeft, Stethoscope, Clock, Star, IndianRupee, Calendar } from 'lucide-react';
+import { DASHBOARD_TABS } from '../../../pages/dashboard.constants';
 
-const HospitalDetails = ({ hospital, onBack }) => {
+const HospitalDetails = ({ hospital, onBack, setActiveTab }) => {
     const [doctors, setDoctors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedDoctor, setSelectedDoctor] = useState(null); // For booking modal
@@ -84,13 +86,13 @@ const HospitalDetails = ({ hospital, onBack }) => {
             )}
 
             {selectedDoctor && (
-                <BookingModal doctor={selectedDoctor} hospital={hospital} onClose={() => setSelectedDoctor(null)} />
+                <BookingModal doctor={selectedDoctor} hospital={hospital} onClose={() => setSelectedDoctor(null)} setActiveTab={setActiveTab} />
             )}
         </div>
     );
 };
 
-const BookingModal = ({ doctor, hospital, onClose }) => {
+const BookingModal = ({ doctor, hospital, onClose, setActiveTab }) => {
     const [formData, setFormData] = useState({
         name: '', reason: '', date: '', time: '', age: '', gender: '', phoneNo: '', alternateNo: ''
     });
@@ -103,10 +105,10 @@ const BookingModal = ({ doctor, hospital, onClose }) => {
         setLoading(true);
         setError(null);
         try {
-            await axios.post(`/api/appointments/${doctor._id}`, formData, { withCredentials: true });
+            await createAppointment(doctor._id, formData);
             setSuccess(true);
         } catch (err) {
-            setError(err.response?.data?.message || "Failed to book appointment");
+            setError(err.response?.data?.message || err.message || (typeof err === 'string' ? err : "Failed to book appointment"));
         } finally {
             setLoading(false);
         }
@@ -121,7 +123,12 @@ const BookingModal = ({ doctor, hospital, onClose }) => {
                     </div>
                     <h3 className="text-3xl font-black text-slate-800 mb-3">Booking Requested!</h3>
                     <p className="text-slate-500 font-medium mb-8 leading-relaxed">Your appointment with <strong className="text-slate-700">{doctor.name}</strong> at <strong className="text-slate-700">{hospital.name}</strong> has been submitted. You will receive an email confirmation once it is approved by the hospital.</p>
-                    <button onClick={onClose} className="w-full bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 font-bold py-4 rounded-2xl transition-colors">Close</button>
+                    <button onClick={() => {
+                        onClose();
+                        if (setActiveTab) {
+                            setActiveTab(DASHBOARD_TABS.APPOINTMENTS);
+                        }
+                    }} className="w-full bg-slate-100 text-slate-700 hover:bg-slate-200 hover:text-slate-900 font-bold py-4 rounded-2xl transition-colors">Close</button>
                 </div>
             </div>
         );

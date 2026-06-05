@@ -46,8 +46,7 @@ const diseaseSchema = new mongoose.Schema({
 
 // Database indexes for better performance
 // Note: name field already has unique index from schema definition
-diseaseSchema.index({ name: "text", description: "text" }); // Text index for search
-diseaseSchema.index({ symptoms: "text" }); // Text index for symptom search
+diseaseSchema.index({ name: "text", description: "text", symptoms: "text" }); // Single compound text index for search
 diseaseSchema.index({ createdAt: -1 }); // Index for sorting by creation date
 
 export default mongoose.model("Disease", diseaseSchema);
