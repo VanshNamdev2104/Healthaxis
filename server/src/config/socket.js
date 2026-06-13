@@ -33,6 +33,23 @@ export const initSocket = (httpServer) => {
             logger.info(`Socket ${socket.id} left room: ${room}`);
         });
 
+        // ─── WebRTC Signaling Listeners ──────────────────────────
+        socket.on("call-user", ({ to, offer }) => {
+            socket.to(to).emit("incoming-call", { from: socket.id, offer });
+        });
+
+        socket.on("call-accepted", ({ to, answer }) => {
+            socket.to(to).emit("call-connected", { answer });
+        });
+
+        socket.on("ice-candidate", ({ to, candidate }) => {
+            socket.to(to).emit("ice-candidate", { candidate });
+        });
+
+        socket.on("end-call", ({ to }) => {
+            socket.to(to).emit("call-ended");
+        });
+
         // ─── Disconnect ─────────────────────────────────────────
         socket.on("disconnect", (reason) => {
             logger.info(`Socket disconnected: ${socket.id} | Reason: ${reason}`);

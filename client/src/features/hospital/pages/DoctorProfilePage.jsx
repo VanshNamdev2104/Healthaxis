@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router';
 import { getDoctor } from '../services/doctor.api';
 import { gsap } from 'gsap';
 import Loading from '../components/Loading';
+import EditDoctorModal from '../components/EditDoctorModal';
+import { useHospital } from '../hooks/useHospital';
 
 const DoctorProfilePage = () => {
     const { doctorId } = useParams();
@@ -10,7 +12,9 @@ const DoctorProfilePage = () => {
     const [doctor, setDoctor] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const containerRef = useRef(null);
+    const { handleUpdateDoctor } = useHospital();
 
     useEffect(() => {
         const fetchDoctor = async () => {
@@ -84,12 +88,20 @@ const DoctorProfilePage = () => {
                                 )}
                             </div>
                             
-                            <div className="flex-1 pb-2">
-                                <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">Dr. {doctor.name}</h1>
-                                <p className="text-green-100 font-bold tracking-widest uppercase text-sm md:text-base flex items-center justify-center md:justify-start gap-2">
-                                    <span className="w-2 h-2 rounded-full bg-white"></span>
-                                    {doctor.specialization} Focus
-                                </p>
+                            <div className="flex-1 pb-2 flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
+                                <div>
+                                    <h1 className="text-4xl md:text-6xl font-black text-white tracking-tighter mb-2">Dr. {doctor.name}</h1>
+                                    <p className="text-green-100 font-bold tracking-widest uppercase text-sm md:text-base flex items-center justify-center md:justify-start gap-2">
+                                        <span className="w-2 h-2 rounded-full bg-white"></span>
+                                        {doctor.specialization} Focus
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() => setIsEditModalOpen(true)}
+                                    className="px-6 py-3.5 bg-white text-[#006c49] hover:bg-[#f0fdf4] active:scale-95 transition-all text-xs font-black uppercase tracking-widest rounded-2xl shadow-lg w-max self-center md:self-end z-20"
+                                >
+                                    Edit Details
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -184,6 +196,16 @@ const DoctorProfilePage = () => {
                     </div>
                 </div>
             </div>
+            
+            <EditDoctorModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                doctor={doctor}
+                onSubmit={async (id, data) => {
+                    await handleUpdateDoctor(id, data);
+                    setDoctor(prev => ({ ...prev, ...data }));
+                }}
+            />
         </div>
     );
 };

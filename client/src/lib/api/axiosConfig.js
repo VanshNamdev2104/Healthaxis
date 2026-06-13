@@ -26,20 +26,37 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-// Response interceptor - Handle errors globally
+// Response interceptor - Handle errors globally and perform token refresh
 axiosInstance.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
-    // Handle 401 Unauthorized
-    if (error.response?.status === 401) {
-      // Clear auth data
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
+  async (error) => {
+    const originalRequest = error.config;
 
-      // Redirect to login (optional - can be handled by Redux)
-      console.warn("Unauthorized: Redirecting to login");
+    // Handle 401 Unauthorized by trying to refresh tokens
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== "/api/user/login" &&
+      originalRequest.url !== "/api/user/refresh-token"
+    ) {
+      originalRequest._retry = true;
+      try {
+        await axios.post(
+          `${API_URL}/api/user/refresh-token`,
+          {},
+          { withCredentials: true }
+        );
+        return axiosInstance(originalRequest);
+      } catch (refreshError) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        if (window.location.pathname !== "/auth" && window.location.pathname !== "/") {
+          window.location.href = "/auth";
+        }
+        return Promise.reject(refreshError);
+      }
     }
 
     // Handle 403 Forbidden

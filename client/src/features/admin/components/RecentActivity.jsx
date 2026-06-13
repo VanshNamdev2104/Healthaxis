@@ -8,7 +8,6 @@ const RecentActivity = () => {
 
   useEffect(() => {
     handleGetActivityFeed(20);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleGetActivityFeed]);
 
   const getActivityIcon = (type) => {

@@ -24,9 +24,17 @@ export const doctorSlice = createSlice({
         },
         setError: (state, action) => {
             state.error = action.payload;
+        },
+        updateDoctorInState: (state, action) => {
+            if (Array.isArray(state.doctors)) {
+                const index = state.doctors.findIndex(d => d._id === action.payload._id);
+                if (index !== -1) {
+                    state.doctors[index] = action.payload;
+                }
+            }
         }
     },
 });
 
-export const { setDoctors, setLoading, setError, addDoctor } = doctorSlice.actions;
+export const { setDoctors, setLoading, setError, addDoctor, updateDoctorInState } = doctorSlice.actions;
 export default doctorSlice.reducer;

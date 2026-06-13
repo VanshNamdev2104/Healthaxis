@@ -12,6 +12,7 @@ const Protected = ({ children, role, roleComponentMap = null }) => {
     // Fetch user only once
     useEffect(() => {
         handleGetCurrentUser();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     // Handle auth logic

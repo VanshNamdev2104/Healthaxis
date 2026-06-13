@@ -1,9 +1,10 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { useCallback } from "react";
 
 // ------------------------- Import SLICES -------------------------
 
 // doctor slice ---------------------------
-import { setDoctors, setLoading as setDoctorLoading, setError as setDoctorError, addDoctor } from "../slice/doctor.slice.js";
+import { setDoctors, setLoading as setDoctorLoading, setError as setDoctorError, addDoctor, updateDoctorInState } from "../slice/doctor.slice.js";
 
 // appointment slice ---------------------------
 import { 
@@ -19,9 +20,10 @@ import { setHospitalAdmin, setHospital, setLoading as setHospitalLoading, setErr
 import {
     createDoctor,
     getAllDoctors,
-    getAllDoctorBySpecialization,
-    getDoctor,
-    deleteDoctor
+    // getAllDoctorBySpecialization,
+    // getDoctor,
+    deleteDoctor,
+    updateDoctor
 } from "../services/doctor.api.js";
 
 // APPOINTMENT APIS
@@ -49,7 +51,7 @@ export const useHospital = () => {
 
 
     // ── HOSPITAL HANDLERS ─────────────────────────────────────────────
-    async function handleCreateHospital(formData) {
+    const handleCreateHospital = useCallback(async (formData) => {
         try {
             dispatch(setHospitalLoading(true))
             const response = await createHospital(formData)
@@ -59,9 +61,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setHospitalLoading(false))
         }
-    }
+    }, [dispatch]);
 
-    async function handleResubmitHospital(formData) {
+    const handleResubmitHospital = useCallback(async (formData) => {
         try {
             dispatch(setHospitalLoading(true))
             const response = await resubmitHospital(formData)
@@ -71,9 +73,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setHospitalLoading(false))
         }
-    }
+    }, [dispatch]);
 
-    async function handleGetHospitalAdmin() {
+    const handleGetHospitalAdmin = useCallback(async () => {
         try {
             dispatch(setHospitalLoading(true));
             const response = await getHospitalAdmin();
@@ -83,9 +85,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setHospitalLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function handleGetHospital() {
+    const handleGetHospital = useCallback(async () => {
         try {
             dispatch(setHospitalLoading(true));
             const response = await getHospital();
@@ -95,14 +97,13 @@ export const useHospital = () => {
         } finally {
             dispatch(setHospitalLoading(false));
         }
-    }
+    }, [dispatch]);
 
     // ── DOCTOR HANDLERS ─────────────────────────────────────────────
-    async function handleCreateDoctor(formData) {
+    const handleCreateDoctor = useCallback(async (formData) => {
         try {
             dispatch(setDoctorLoading(true));
             const response = await createDoctor(formData);
-            // console.log("check", response);
 
             if (response.data?.success) {
                 dispatch(addDoctor(response.data.data));
@@ -112,9 +113,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setDoctorLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function handleGetAllDoctors(hospitalId) {
+    const handleGetAllDoctors = useCallback(async (hospitalId) => {
         try {
             dispatch(setDoctorLoading(true));
             const response = await getAllDoctors({ hospitalId: hospitalId });
@@ -124,10 +125,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setDoctorLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function handleDeleteDoctor(doctorId) {
-        // console.log("check",doctorId)
+    const handleDeleteDoctor = useCallback(async (doctorId) => {
         try {
             dispatch(setDoctorLoading(true));
             await deleteDoctor(doctorId);
@@ -136,26 +136,22 @@ export const useHospital = () => {
         } finally {
             dispatch(setDoctorLoading(false));
         }
-    }
+    }, [dispatch]);
 
     // ── APPOINTMENT HANDLERS ────────────────────────────────────────
-    async function handleGetAllAppointments(hospitalId) {
+    const handleGetAllAppointments = useCallback(async (hospitalId) => {
         try {
-            // console.log("check useHospital.js 128",hospitalId);
             dispatch(setAppointmentLoading(true));
             const response = await getAllAppointments(hospitalId);
-
-            // console.log("check useHospital.js 128",response);
-
             dispatch(setAppointments(response.data?.data));
         } catch (error) {
             dispatch(setAppointmentError(error.response?.data?.message || "Failed to fetch appointments"));
         } finally {
             dispatch(setAppointmentLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function handleGetUserAppointments() {
+    const handleGetUserAppointments = useCallback(async () => {
         try {
             dispatch(setAppointmentLoading(true));
             const response = await getUserAppointments();
@@ -165,9 +161,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setAppointmentLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function handleUpdateAppointmentStatus(id, status) {
+    const handleUpdateAppointmentStatus = useCallback(async (id, status) => {
         try {
             dispatch(setAppointmentError(null));
             dispatch(setAppointmentLoading(true));
@@ -178,9 +174,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setAppointmentLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function HandleApproveAppointement(appointmentId, date, time) {
+    const HandleApproveAppointement = useCallback(async (appointmentId, date, time) => {
         try {
             dispatch(setAppointmentError(null));
             dispatch(setAppointmentLoading(true));
@@ -191,9 +187,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setAppointmentLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function HandleRejectAppointement(appointmentId) {
+    const HandleRejectAppointement = useCallback(async (appointmentId) => {
         try {
             dispatch(setAppointmentError(null));
             dispatch(setAppointmentLoading(true));
@@ -204,9 +200,9 @@ export const useHospital = () => {
         } finally {
             dispatch(setAppointmentLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function handleDeleteAppointment(id) {
+    const handleDeleteAppointment = useCallback(async (id) => {
         try {
             dispatch(setAppointmentError(null));
             dispatch(setAppointmentLoading(true));
@@ -217,20 +213,36 @@ export const useHospital = () => {
         } finally {
             dispatch(setAppointmentLoading(false));
         }
-    }
+    }, [dispatch]);
 
-    async function handleReschedule(id, date, time) {
+    const handleReschedule = useCallback(async (id, date, time) => {
         try {
+            dispatch(setAppointmentError(null));
             dispatch(setAppointmentLoading(true));
             await rescheduleAppointment(id, date, time);
-            // Refreshing all appointments for simplicity or update state if needed
-            // For now, let's assume we fetch again or update specifically
+            dispatch(updateAppointmentInState({ id, date, time }));
         } catch (error) {
             dispatch(setAppointmentError(error.response?.data?.message || "Failed to reschedule"));
         } finally {
             dispatch(setAppointmentLoading(false));
         }
-    }
+    }, [dispatch]);
+
+    const handleUpdateDoctor = useCallback(async (doctorId, formData) => {
+        try {
+            dispatch(setDoctorError(null));
+            dispatch(setDoctorLoading(true));
+            const response = await updateDoctor(doctorId, formData);
+            if (response.data?.success) {
+                dispatch(updateDoctorInState(response.data.data));
+            }
+        } catch (error) {
+            dispatch(setDoctorError(error.response?.data?.message || "Failed to update doctor"));
+            throw error;
+        } finally {
+            dispatch(setDoctorLoading(false));
+        }
+    }, [dispatch]);
 
     return {
         // hospital admin handlers
@@ -243,6 +255,7 @@ export const useHospital = () => {
         handleCreateDoctor,
         handleGetAllDoctors,
         handleDeleteDoctor,
+        handleUpdateDoctor,
 
         // appointment handlers
         handleGetAllAppointments,

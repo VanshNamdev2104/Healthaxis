@@ -10,19 +10,18 @@ const VerificationQueue = () => {
     const [selectedProvider, setSelectedProvider] = useState(null);
     const [rejectReason, setRejectReason] = useState('');
 
-    const fetchPending = async () => {
-        try {
-            const res = await axios.get('/api/admin/providers/pending', { withCredentials: true });
-            setHospitals(res.data.data.hospitals);
-            setDoctors(res.data.data.doctors);
-            setLoading(false);
-        } catch (e) {
-            console.error(e);
-            setLoading(false);
-        }
-    };
-
     useEffect(() => {
+        const fetchPending = async () => {
+            try {
+                const res = await axios.get('/api/admin/providers/pending', { withCredentials: true });
+                setHospitals(res.data.data.hospitals);
+                setDoctors(res.data.data.doctors);
+                setLoading(false);
+            } catch (e) {
+                console.error(e);
+                setLoading(false);
+            }
+        };
         fetchPending();
     }, []);
 

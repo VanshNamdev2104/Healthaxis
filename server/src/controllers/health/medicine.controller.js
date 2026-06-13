@@ -29,6 +29,10 @@ const parseArrayField = (field) => {
     return [field];
 };
 
+const escapeRegExp = (string) => {
+    return string ? string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : "";
+};
+
 /**
  * @desc    Create a new medicine
  * @route   POST /api/health/medicines
@@ -89,9 +93,10 @@ export const getAllMedicines = async (req, res) => {
         const query = {};
 
         if (search) {
+            const escapedSearch = escapeRegExp(search);
             query.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { genericName: { $regex: search, $options: "i" } },
+                { name: { $regex: escapedSearch, $options: "i" } },
+                { genericName: { $regex: escapedSearch, $options: "i" } },
             ];
         }
 

@@ -1,38 +1,33 @@
-import axios from "axios";
-
-const api = axios.create({
-    baseURL: `${import.meta.env.VITE_API_URL || "https://healthaxis-14r9.onrender.com"}/api`,
-    withCredentials: true
-});
+import axiosInstance from "../../../lib/api/axiosConfig.js";
 
 export const createAppointment = async (doctorId, formData) => {
-    return await api.post(`/appointments/${doctorId}`, formData);
+    return await axiosInstance.post(`/api/appointments/${doctorId}`, formData);
 };
 
 export const getUserAppointments = async () => {
-    return await api.get(`/appointments/user`);
+    return await axiosInstance.get(`/api/appointments/user`);
 };
 
-export const getAllAppointments = async (hospitalId) => {
-    return await api.get(`/appointments/hospital`);
+export const getAllAppointments = async () => {
+    return await axiosInstance.get(`/api/appointments/hospital`);
 };
 
 export const updateAppointmentStatus = async (appointmentId, status) => {
-    return await api.patch(`/appointments/${appointmentId}/status`, { status });
+    return await axiosInstance.patch(`/api/appointments/${appointmentId}/status`, { status });
 };
 
 export const approveAppointment = async (appointmentId, date, time) => {
-    return await api.patch(`/appointments/${appointmentId}/approve`, { date, time });
+    return await axiosInstance.patch(`/api/appointments/${appointmentId}/approve`, { date, time });
 };
 
 export const rejectAppointment = async (appointmentId) => {
-    return await api.patch(`/appointments/${appointmentId}/reject`);
+    return await axiosInstance.patch(`/api/appointments/${appointmentId}/reject`);
 };
 
 export const deleteAppointment = async (appointmentId) => {
-    return await api.delete(`/appointments/${appointmentId}`);
+    return await axiosInstance.delete(`/api/appointments/${appointmentId}`);
 };
 
 export const rescheduleAppointment = async (appointmentId, date, time) => {
-    return await api.patch(`/appointments/${appointmentId}/reschedule`, { date, time });
+    return await axiosInstance.patch(`/api/appointments/${appointmentId}/reschedule`, { date, time });
 };

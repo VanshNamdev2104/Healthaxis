@@ -14,6 +14,10 @@ import {
 } from "../../utils/responsehandler.js";
 import sendMail from "../../services/mail.service.js";
 
+const escapeRegExp = (string) => {
+    return string ? string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : "";
+};
+
 /**
  * @desc    Get dashboard statistics
  * @route   GET /api/admin/dashboard/stats
@@ -86,9 +90,10 @@ export const getAllUsers = async (req, res) => {
         const query = {};
         
         if (search) {
+            const escapedSearch = escapeRegExp(search);
             query.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } },
+                { name: { $regex: escapedSearch, $options: "i" } },
+                { email: { $regex: escapedSearch, $options: "i" } },
             ];
         }
 
@@ -232,9 +237,10 @@ export const getAllHospitals = async (req, res) => {
         const query = {};
         
         if (search) {
+            const escapedSearch = escapeRegExp(search);
             query.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { city: { $regex: search, $options: "i" } },
+                { name: { $regex: escapedSearch, $options: "i" } },
+                { city: { $regex: escapedSearch, $options: "i" } },
             ];
         }
 
@@ -328,10 +334,17 @@ export const deleteHospital = async (req, res) => {
             return notFoundResponse(res, "Hospital not found");
         }
 
-        // Delete associated doctors
+        // Delete associated doctors and appointments
         await Doctor.deleteMany({ hospital: hospitalId });
+        await Appointment.deleteMany({ hospital: hospitalId });
 
-        return successResponse(res, null, "Hospital deleted successfully");
+        // Reset user hospital references and roles to default "user"
+        await User.updateMany(
+            { hospital: hospitalId },
+            { $set: { hospital: null, role: "user" } }
+        );
+
+        return successResponse(res, null, "Hospital and associated records deleted successfully");
     } catch (error) {
         logger.error("Delete Hospital Error", { error: error.message });
         return errorResponse(res, error, "Failed to delete hospital");
@@ -350,9 +363,10 @@ export const getAllDoctors = async (req, res) => {
         const query = {};
         
         if (search) {
+            const escapedSearch = escapeRegExp(search);
             query.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { email: { $regex: search, $options: "i" } },
+                { name: { $regex: escapedSearch, $options: "i" } },
+                { email: { $regex: escapedSearch, $options: "i" } },
             ];
         }
 
@@ -426,7 +440,10 @@ export const deleteDoctor = async (req, res) => {
             return notFoundResponse(res, "Doctor not found");
         }
 
-        return successResponse(res, null, "Doctor deleted successfully");
+        // Cascade delete appointments scheduled with this doctor
+        await Appointment.deleteMany({ doctor: doctorId });
+
+        return successResponse(res, null, "Doctor and associated appointments deleted successfully");
     } catch (error) {
         logger.error("Delete Doctor Error", { error: error.message });
         return errorResponse(res, error, "Failed to delete doctor");

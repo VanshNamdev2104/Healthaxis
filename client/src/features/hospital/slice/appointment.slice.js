@@ -1,47 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const sampleAppointments = [
-    {
-        _id: "1",
-        patientName: "Alice Henderson",
-        age: 28,
-        gender: "female",
-        doctor: { name: "Ananya Sharma", specialization: "Cardiology" },
-        date: "2026-04-18",
-        time: "10:30 AM",
-        status: "pending"
-    },
-    {
-        _id: "2",
-        patientName: "Michael Scott",
-        age: 45,
-        gender: "male",
-        doctor: { name: "Rajat Verma", specialization: "Orthopedics" },
-        date: "2026-04-18",
-        time: "11:45 AM",
-        status: "approved"
-    },
-    {
-        _id: "3",
-        patientName: "Sarah Connor",
-        age: 35,
-        gender: "female",
-        doctor: { name: "Sneha Patel", specialization: "Pediatrics" },
-        date: "2026-04-19",
-        time: "09:15 AM",
-        status: "rejected"
-    },
-    {
-        _id: "4",
-        patientName: "John Doe",
-        age: 52,
-        gender: "male",
-        doctor: { name: "Ananya Sharma", specialization: "Cardiology" },
-        date: "2026-04-19",
-        time: "02:00 PM",
-        status: "approved"
-    }
-];
+
 
 const appointmentSlice = createSlice({
     name: "appointment",

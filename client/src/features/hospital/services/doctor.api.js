@@ -1,14 +1,9 @@
-import axios from "axios";
-
-const api = axios.create({
-    baseURL: `${import.meta.env.VITE_API_URL || "https://healthaxis-14r9.onrender.com"}/api`,
-    withCredentials: true
-});
+import axiosInstance from "../../../lib/api/axiosConfig.js";
 
 export async function createDoctor({name, email, contact, specialization, experience, fee, isAvailable}) {
     try {
-        const response = await api.post("/doctors", {name, email, contact, specialization, experience, fee, isAvailable});
-        return response
+        const response = await axiosInstance.post("/api/doctors", {name, email, contact, specialization, experience, fee, isAvailable});
+        return response;
     } catch (error) {
         throw error.response?.data?.message || "Failed to create doctor";
     }
@@ -16,8 +11,8 @@ export async function createDoctor({name, email, contact, specialization, experi
 
 export async function getAllDoctors({ hospitalId }) {
     try {
-        const response = await api.get(`/doctors/hospital/${hospitalId}`)
-        return response
+        const response = await axiosInstance.get(`/api/doctors/hospital/${hospitalId}`);
+        return response;
     } catch (error) {
         throw error || "Failed to fetch doctors";
     }
@@ -25,8 +20,8 @@ export async function getAllDoctors({ hospitalId }) {
 
 export async function getAllDoctorBySpecialization({ specialization }) {
     try {
-        const response = await api.get(`/doctors/specialization/${specialization}`);
-        return response
+        const response = await axiosInstance.get(`/api/doctors/specialization/${specialization}`);
+        return response;
     } catch (error) {
         throw error || "Failed to fetch doctors of specialization";
     }
@@ -34,8 +29,8 @@ export async function getAllDoctorBySpecialization({ specialization }) {
 
 export async function getDoctor({ doctorId }) {
     try {
-        const response = await api.get(`/doctors/${doctorId}`);
-        return response
+        const response = await axiosInstance.get(`/api/doctors/${doctorId}`);
+        return response;
     } catch (error) {
         throw error || "Failed to fetch doctor";
     }
@@ -43,9 +38,18 @@ export async function getDoctor({ doctorId }) {
 
 export async function deleteDoctor( doctorId ) {
     try {
-        const response = await api.delete(`/doctors/${doctorId}`);
-        return response
+        const response = await axiosInstance.delete(`/api/doctors/${doctorId}`);
+        return response;
     } catch (error) {
         throw error || "Failed to delete doctor";
+    }
+}
+
+export async function updateDoctor( doctorId, {name, email, contact, specialization, experience, fee} ) {
+    try {
+        const response = await axiosInstance.put(`/api/doctors/${doctorId}`, {name, email, contact, specialization, experience, fee});
+        return response;
+    } catch (error) {
+        throw error.response?.data?.message || "Failed to update doctor";
     }
 }

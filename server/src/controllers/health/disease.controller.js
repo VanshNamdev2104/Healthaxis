@@ -33,6 +33,10 @@ const parseArrayField = (field) => {
     return [field];
 };
 
+const escapeRegExp = (string) => {
+    return string ? string.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") : "";
+};
+
 /**
  * @desc    Create a new disease
  * @route   POST /api/health/diseases
@@ -43,7 +47,8 @@ export const createDisease = async (req, res) => {
         const { name, description, symptoms, causes, precautions, diagnosis, homeRemedies } = req.body;
 
         // Check if disease already exists (name is unique)
-        const existingDisease = await Disease.findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
+        const escapedName = escapeRegExp(name);
+        const existingDisease = await Disease.findOne({ name: { $regex: new RegExp(`^${escapedName}$`, "i") } });
         if (existingDisease) {
             return conflictResponse(res, "Disease with this name already exists");
         }
@@ -85,9 +90,10 @@ export const getAllDiseases = async (req, res) => {
 
         const query = {};
         if (search) {
+            const escapedSearch = escapeRegExp(search);
             query.$or = [
-                { name: { $regex: search, $options: "i" } },
-                { symptoms: { $regex: search, $options: "i" } },
+                { name: { $regex: escapedSearch, $options: "i" } },
+                { symptoms: { $regex: escapedSearch, $options: "i" } },
             ];
         }
 
@@ -150,7 +156,8 @@ export const updateDisease = async (req, res) => {
 
         // If name is being changed, check for duplicates
         if (name && name !== disease.name) {
-            const existingDisease = await Disease.findOne({ name: { $regex: new RegExp(`^${name}$`, "i") } });
+            const escapedName = escapeRegExp(name);
+            const existingDisease = await Disease.findOne({ name: { $regex: new RegExp(`^${escapedName}$`, "i") } });
             if (existingDisease) {
                 return conflictResponse(res, "Disease with this name already exists");
             }

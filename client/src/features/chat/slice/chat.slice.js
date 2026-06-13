@@ -61,7 +61,7 @@ export const deleteChat = createAsyncThunk(
   "chat/deleteChat",
   async (chatId, { rejectWithValue }) => {
     try {
-      const response = await chatAPI.deleteChat(chatId);
+      await chatAPI.deleteChat(chatId);
       return chatId;
     } catch (error) {
       return rejectWithValue(

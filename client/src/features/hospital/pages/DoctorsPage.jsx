@@ -27,12 +27,14 @@ const DoctorsPage = () => {
 
   useEffect(()=>{
     handleGetHospital()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   useEffect(()=>{
     if(!hospitalLoading && hospital?.data?._id) {
       handleGetAllDoctors(hospital?.data?._id)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[hospital])
 
 

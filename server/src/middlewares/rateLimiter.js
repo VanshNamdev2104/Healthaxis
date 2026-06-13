@@ -13,7 +13,6 @@ export const generalLimiter = rateLimit({
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   skipFailedRequests: true, // Don't count failed requests
-  trustProxy: false, // Disable trust proxy validation
   handler: (req, res) => {
     logger.warn('Rate limit exceeded', {
       ip: req.ip,
@@ -42,7 +41,6 @@ export const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipFailedRequests: true, // Don't count failed requests
-  trustProxy: false, // Disable trust proxy validation
   handler: (req, res) => {
     logger.warn('Auth rate limit exceeded', {
       ip: req.ip,
@@ -71,7 +69,6 @@ export const aiLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipFailedRequests: true, // Don't count failed requests
-  trustProxy: false, // Disable trust proxy validation
   handler: (req, res) => {
     logger.warn('AI rate limit exceeded', {
       ip: req.ip,

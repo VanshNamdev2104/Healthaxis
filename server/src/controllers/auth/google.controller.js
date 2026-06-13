@@ -19,9 +19,7 @@ export const googleCallback = async (req, res) => {
         res.cookie("refreshToken", refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
 
         // ✅ Redirect without tokens in URL
-        const redirectPath = user.role === "admin" ? "/admin/dashboard"
-            : user.role === "hospitalAdmin" ? "/hospital/dashboard"
-            : "/dashboard";
+        const redirectPath = "/dashboard";
 
         return res.redirect(
             `${process.env.CLIENT_URL || "https://healthaxis-plum.vercel.app"}${redirectPath}`

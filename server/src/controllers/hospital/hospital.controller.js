@@ -269,6 +269,109 @@ async function resubmitHospitalController(req, res) {
     }
 }
 
+async function getHospitalAnalytics(req, res) {
+    const user = req.user;
+
+    try {
+        if (user.role !== "hospitalAdmin") {
+            return res.status(403).json({ success: false, message: "Access denied. Restricted to hospital administrators." });
+        }
+
+        const hospitalId = user.hospital;
+        if (!hospitalId) {
+            return res.status(400).json({ success: false, message: "No hospital assigned to this user" });
+        }
+
+        // Fetch doctors and appointments
+        const doctors = await doctorModel.find({ hospital: hospitalId });
+        const appointments = await appointmentModel.find({ hospital: hospitalId }).populate("doctor");
+
+        // Calculate metrics
+        const totalAppointments = appointments.length;
+        const approvedAppointments = appointments.filter(a => a.status === "approved" || a.status === "APPROVED");
+        const pendingAppointments = appointments.filter(a => a.status === "pending" || a.status === "PENDING");
+        const cancelledAppointments = appointments.filter(a => a.status === "rejected" || a.status === "REJECTED");
+
+        // Total Revenues: sum of approved consult fees
+        const totalRevenue = approvedAppointments.reduce((sum, app) => {
+            return sum + (app.doctor?.fee || 0);
+        }, 0);
+
+        // Utilization: approved / total (with fallback)
+        const utilizationRate = totalAppointments > 0 
+            ? Math.round((approvedAppointments.length / totalAppointments) * 100) 
+            : 0;
+
+        // Repeat vs unique patients
+        const patientCounts = {};
+        appointments.forEach(app => {
+            const name = app.patientName || app.name || "Unknown";
+            patientCounts[name] = (patientCounts[name] || 0) + 1;
+        });
+        const uniquePatients = Object.keys(patientCounts).length;
+        const repeatPatients = Object.values(patientCounts).filter(c => c > 1).length;
+
+        // Doctor Performance
+        const doctorStats = doctors.map(doc => {
+            const docApps = appointments.filter(a => a.doctor?._id.toString() === doc._id.toString());
+            const approved = docApps.filter(a => a.status === "approved" || a.status === "APPROVED").length;
+            const revenue = docApps.reduce((s, a) => s + (doc.fee || 0), 0);
+            return {
+                name: doc.name,
+                specialization: doc.specialization,
+                totalBookings: docApps.length,
+                approvedBookings: approved,
+                revenue
+            };
+        });
+
+        // Monthly bookings trend (for charting)
+        // Group by month name (last 6 months)
+        const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const monthlyTrend = {};
+        
+        // Seed last 6 months
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date();
+            d.setMonth(d.getMonth() - i);
+            const mName = months[d.getMonth()];
+            monthlyTrend[mName] = { month: mName, bookings: 0, revenue: 0 };
+        }
+
+        appointments.forEach(app => {
+            const appDate = new Date(app.date);
+            const mName = months[appDate.getMonth()];
+            if (monthlyTrend[mName]) {
+                monthlyTrend[mName].bookings += 1;
+                if (app.status === "approved" || app.status === "APPROVED") {
+                    monthlyTrend[mName].revenue += (app.doctor?.fee || 0);
+                }
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                summary: {
+                    totalRevenue,
+                    utilizationRate,
+                    totalAppointments,
+                    approvedAppointments: approvedAppointments.length,
+                    pendingAppointments: pendingAppointments.length,
+                    cancelledAppointments: cancelledAppointments.length,
+                    uniquePatients,
+                    repeatPatients
+                },
+                doctorPerformance: doctorStats,
+                monthlyTrend: Object.values(monthlyTrend)
+            }
+        });
+
+    } catch (error) {
+        logger.error("Get Hospital Analytics Error", { error: error.message, userId: user._id });
+        return res.status(500).json({ success: false, message: error.message || "Failed to fetch analytics" });
+    }
+}
 
 export default {
     createHospitalController,
@@ -277,5 +380,6 @@ export default {
     getYourHospitalController,
     deleteHospitalController,
     getHospitalAdmin,
-    resubmitHospitalController
+    resubmitHospitalController,
+    getHospitalAnalytics
 };

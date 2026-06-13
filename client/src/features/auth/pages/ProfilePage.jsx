@@ -22,17 +22,16 @@ export default function ProfilePage() {
   const [changePasswordMode, setChangePasswordMode] = useState(false);
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-  const [completeness, setCompleteness] = useState(0);
 
   const fileInputRef = useRef(null);
 
   const { handleUpdateProfile, handleChangePassword, loading } = useProfile();
 
-  useEffect(() => {
+  const completeness = (() => {
     const fields = [user?.name, user?.email, user?.number, user?.profileImage];
     const filled = fields.filter(Boolean).length;
-    setCompleteness((filled / fields.length) * 100);
-  }, [user]);
+    return (filled / fields.length) * 100;
+  })();
 
   const {
     register,

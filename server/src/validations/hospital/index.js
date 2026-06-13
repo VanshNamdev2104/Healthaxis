@@ -56,7 +56,15 @@ export const createHospitalSchema = z.object({
     .string()
     .trim()
     .max(200, "Speciality must be at most 200 characters")
-    .optional()
+    .optional(),
+
+  openingTime: z
+    .string({ required_error: "Opening time is required" })
+    .trim(),
+
+  closingTime: z
+    .string({ required_error: "Closing time is required" })
+    .trim()
 });
 
 /**
@@ -74,7 +82,7 @@ export const createDoctorSchema = z.object({
     .trim()
     .email("Please provide a valid email"),
 
-  contect: z
+  contact: z
     .string({ required_error: "Contact number is required" })
     .trim()
     .regex(/^[0-9]{10}$/, "Contact number must be exactly 10 digits"),
@@ -137,9 +145,11 @@ export const createAppointmentSchema = z.object({
     .regex(/^[0-9]{10}$/, "Phone number must be exactly 10 digits"),
 
   alternateNo: z
-    .string({ required_error: "Alternate number is required" })
+    .string()
     .trim()
     .regex(/^[0-9]{10}$/, "Alternate number must be exactly 10 digits")
+    .optional()
+    .or(z.literal(""))
 });
 
 /**

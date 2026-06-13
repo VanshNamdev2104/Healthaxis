@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useEffect } from "react";
-/* eslint-disable no-unused-vars */
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Plus, Edit2, Trash2, Filter, Download, Ban } from "lucide-react";
 import { useAdmin } from "../hooks/useAdmin.js";

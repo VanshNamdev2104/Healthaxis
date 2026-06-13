@@ -2,62 +2,56 @@ import React, { useState, useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { Calendar, Clock, X, Check } from 'lucide-react';
 
+const formatDateForInput = (dateStr) => {
+  if (!dateStr) return "";
+  // If it's already in yyyy-MM-dd, return it
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+  
+  // If it's DD/MM/YYYY
+  const parts = dateStr.split('/');
+  if (parts.length === 3) {
+    const [day, month, year] = parts;
+    // Ensure day and month are 2 digits
+    const d = day.padStart(2, '0');
+    const m = month.padStart(2, '0');
+    return `${year}-${m}-${d}`;
+  }
+  
+  return "";
+};
+
+const formatTimeForInput = (timeStr) => {
+  if (!timeStr) return "";
+  // If it's already in HH:mm, return it
+  if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
+  
+  // Handle "4 AM", "10:30 PM" etc.
+  const match = timeStr.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);
+  if (match) {
+    let [_, hours, minutes = "00", modifier] = match;
+    hours = parseInt(hours);
+    if (modifier.toUpperCase() === "PM" && hours < 12) hours += 12;
+    if (modifier.toUpperCase() === "AM" && hours === 12) hours = 0;
+    return `${hours.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
+  }
+  
+  return "";
+};
+
 const ApproveModal = ({ isOpen, onClose, onSubmit, appointment }) => {
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
-  const [form, setForm] = useState({
-    date: "",
-    time: ""
-  });
-
-  const formatDateForInput = (dateStr) => {
-    if (!dateStr) return "";
-    // If it's already in yyyy-MM-dd, return it
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-    
-    // If it's DD/MM/YYYY
-    const parts = dateStr.split('/');
-    if (parts.length === 3) {
-      const [day, month, year] = parts;
-      // Ensure day and month are 2 digits
-      const d = day.padStart(2, '0');
-      const m = month.padStart(2, '0');
-      return `${year}-${m}-${d}`;
-    }
-    
-    return "";
-  };
-
-  const formatTimeForInput = (timeStr) => {
-    if (!timeStr) return "";
-    // If it's already in HH:mm, return it
-    if (/^\d{2}:\d{2}$/.test(timeStr)) return timeStr;
-    
-    // Handle "4 AM", "10:30 PM" etc.
-    const match = timeStr.match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)/i);
-    if (match) {
-      let [_, hours, minutes = "00", modifier] = match;
-      hours = parseInt(hours);
-      if (modifier.toUpperCase() === "PM" && hours < 12) hours += 12;
-      if (modifier.toUpperCase() === "AM" && hours === 12) hours = 0;
-      return `${hours.toString().padStart(2, '0')}:${minutes.padStart(2, '0')}`;
-    }
-    
-    return "";
-  };
+  const [form, setForm] = useState(() => ({
+    date: appointment?.date ? formatDateForInput(appointment.date) : "",
+    time: appointment?.time ? formatTimeForInput(appointment.time) : ""
+  }));
 
   useEffect(() => {
     if (isOpen) {
-      // Set values from appointment if available, else empty to force user selection
-      setForm({
-        date: appointment?.date ? formatDateForInput(appointment.date) : "",
-        time: appointment?.time ? formatTimeForInput(appointment.time) : ""
-      });
-
       gsap.fromTo(overlayRef.current, { opacity: 0 }, { opacity: 1, duration: 0.4 });
       gsap.fromTo(modalRef.current, { y: 40, opacity: 0, scale: 0.95 }, { y: 0, opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.7)' });
     }
-  }, [isOpen, appointment]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

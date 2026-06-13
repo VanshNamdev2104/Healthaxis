@@ -336,7 +336,7 @@ async function getAppointment(req, res) {
                 message: "Invalid appointment ID",
             });
         }
-        const appointment = await appointmentModel.findById(appointmentId).populate("doctor").populate("hospital").populate("user");
+        const appointment = await appointmentModel.findById(appointmentId).populate("doctor").populate("hospital").populate("user", "name email number profileImage");
 
         if (!appointment) {
             return res.status(404).json({
@@ -399,12 +399,19 @@ async function approveAppointment(req, res) {
             });
         }
 
-        const appointment = await appointmentModel.findById(appointmentId).populate("doctor").populate("hospital").populate("user");
+        const appointment = await appointmentModel.findById(appointmentId).populate("doctor").populate("hospital").populate("user", "name email number profileImage");
 
         if (!appointment) {
             return res.status(404).json({
                 success: false,
                 message: "Appointment not found",
+            });
+        }
+
+        if (appointment.hospital._id.toString() !== user.hospital.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized access to this hospital's appointment",
             });
         }
 
@@ -460,7 +467,7 @@ async function rejectAppointment(req, res) {
             });
         }
 
-        const appointment = await appointmentModel.findById(appointmentId).populate("doctor").populate("hospital").populate("user");
+        const appointment = await appointmentModel.findById(appointmentId).populate("doctor").populate("hospital").populate("user", "name email number profileImage");
 
         if (!appointment) {
             return res.status(404).json({
@@ -468,6 +475,13 @@ async function rejectAppointment(req, res) {
                 message: "Appointment not found",
             });
         } 
+
+        if (user.role !== "hospitalAdmin" || !user.hospital || appointment.hospital._id.toString() !== user.hospital.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized access to this hospital's appointment",
+            });
+        }
 
         const doctor = appointment?.doctor?.name;
         const hospital = appointment?.hospital?.name;
@@ -528,6 +542,17 @@ async function deleteAppointment(req, res) {
             });
         }
 
+        const isUserAuthorized = 
+            (user.role === "user" && appointment.user.toString() === user._id.toString()) ||
+            (user.role === "hospitalAdmin" && user.hospital && appointment.hospital.toString() === user.hospital.toString());
+
+        if (!isUserAuthorized) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized to delete this appointment",
+            });
+        }
+
         if (appointment.status !== "pending") {
             return res.status(400).json({
                 success: false,
@@ -556,6 +581,96 @@ async function deleteAppointment(req, res) {
     }
 }
 
+async function rescheduleAppointment(req, res) {
+    const { date, time } = req.body;
+    const user = req.user;
+    const { appointmentId } = req.params;
+
+    try {
+        if (!appointmentId) {
+            return res.status(400).json({
+                success: false,
+                message: "Appointment ID is required",
+            });
+        }
+        if (!date || !time) {
+            return res.status(400).json({
+                success: false,
+                message: "Date and Time are required",
+            });
+        }
+
+        const appointment = await appointmentModel.findById(appointmentId).populate("doctor").populate("hospital").populate("user", "name email number profileImage");
+
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                message: "Appointment not found",
+            });
+        }
+
+        const isUserAuthorized = 
+            (user.role === "user" && appointment.user._id.toString() === user._id.toString()) ||
+            (user.role === "hospitalAdmin" && user.hospital && appointment.hospital._id.toString() === user.hospital.toString());
+
+        if (!isUserAuthorized) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized to reschedule this appointment",
+            });
+        }
+
+        // Validate time slot conflict for this doctor
+        const existing = await appointmentModel.findOne({
+            doctor: appointment.doctor._id,
+            date,
+            time,
+            status: { $in: ["pending", "approved"] },
+            _id: { $ne: appointmentId }
+        });
+        if (existing) {
+            return res.status(400).json({
+                success: false,
+                message: "This time slot is already booked",
+            });
+        }
+
+        appointment.date = date;
+        appointment.time = time;
+        await appointment.save();
+
+        const doctorName = appointment?.doctor?.name;
+        const hospitalName = appointment?.hospital?.name;
+        const hospitalCity = appointment?.hospital?.city;
+        const patient = appointment?.user;
+
+        if (patient && patient.email) {
+            const subject = "Appointment Rescheduled - HealthAxis";
+            const text = `Hello ${patient.name},\n\nYour appointment with Dr. ${doctorName} at ${hospitalName} (${hospitalCity}) has been rescheduled to ${date} at ${time}.\n\nThank you,\nHealthAxis Team`;
+            const html = `<p>Hello <strong>${patient.name}</strong>,</p><p>Your appointment with <strong>Dr. ${doctorName}</strong> at <strong>${hospitalName}</strong> (${hospitalCity}) has been rescheduled to <strong>${date}</strong> at <strong>${time}</strong>.</p><br/><p>Thank you,<br/>HealthAxis Team</p>`;
+            await sendMail(patient.email, subject, text, html).catch(err => logger.error("Failed to send reschedule email", { error: err.message }));
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Appointment rescheduled successfully",
+            data: appointment,
+        });
+
+    } catch (error) {
+        logger.error("Reschedule Appointment Error", { 
+            error: error.message, 
+            stack: error.stack,
+            appointmentId,
+            userId: user._id 
+        });
+        return res.status(500).json({
+            success: false,
+            message: error.message || "Failed to reschedule appointment",
+        });
+    }
+}
+
 export default {
     createAppointmentController,
     getAllAppointmentsOfHospital,
@@ -567,5 +682,6 @@ export default {
     getAppointment,
     approveAppointment,
     rejectAppointment,
-    deleteAppointment
+    deleteAppointment,
+    rescheduleAppointment
 }

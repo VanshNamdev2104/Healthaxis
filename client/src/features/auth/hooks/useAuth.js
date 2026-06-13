@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { setUser, setLoading, setError, logout as logoutAction, clearError } from "../slice/auth.slice.js";
-import { login, register, logout as logoutApi, getCurrentUser, updateProfile, changePassword, googleAuth, forgotPassword as forgotPasswordApi, resetPassword as resetPasswordApi } from "../services/auth.api.js";
+import { login, register, logout as logoutApi, getCurrentUser, updateProfile, changePassword, googleAuth, forgotPassword as forgotPasswordApi, resetPassword as resetPasswordApi, deleteAccount as deleteAccountApi } from "../services/auth.api.js";
 
 export const useAuth = () => {
     const dispatch = useDispatch();
@@ -128,6 +128,19 @@ export const useAuth = () => {
         }
     }
 
+    async function handleDeleteAccount() {
+        try {
+            dispatch(setLoading(true));
+            await deleteAccountApi();
+            dispatch(logoutAction());
+        } catch (error) {
+            dispatch(setError(error.response?.data?.message || "Failed to delete account"));
+            throw error;
+        } finally {
+            dispatch(setLoading(false));
+        }
+    }
+
     return {
         user,
         loading,
@@ -142,6 +155,7 @@ export const useAuth = () => {
         handleChangePassword,
         handleForgotPassword,
         handleResetPassword,
+        handleDeleteAccount,
         clearError: () => dispatch(clearError())
     };
 };

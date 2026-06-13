@@ -5,7 +5,7 @@ import { Calendar, Clock, Stethoscope, Building2, Search, XCircle, AlertCircle, 
 import { gsap } from 'gsap';
 
 const Appointments_user = () => {
-    const { appointments, loading, error } = useSelector((state) => state.appointment);
+    const { appointments, loading } = useSelector((state) => state.appointment);
     const { handleGetUserAppointments, handleDeleteAppointment } = useHospital();
 
     const [search, setSearch] = useState('');
@@ -19,7 +19,7 @@ const Appointments_user = () => {
 
     useEffect(() => {
         handleGetUserAppointments();
-    }, []);
+    }, [handleGetUserAppointments]);
 
     useEffect(() => {
         // GSAP Animations

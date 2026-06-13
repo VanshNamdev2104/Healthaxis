@@ -14,7 +14,6 @@ const ChatPage = () => {
     chats,
     messages,
     activeChatId,
-    activeChat,
     loading,
     sending,
     error,
@@ -30,14 +29,14 @@ const ChatPage = () => {
   // Load chats on mount
   useEffect(() => {
     handleFetchChats();
-  }, []);
+  }, [handleFetchChats]);
 
   // Load messages when active chat changes
   useEffect(() => {
     if (activeChatId) {
       handleFetchMessages(activeChatId);
     }
-  }, [activeChatId]);
+  }, [activeChatId, handleFetchMessages]);
 
   // Handle new chat
   const handleNewChat = async () => {

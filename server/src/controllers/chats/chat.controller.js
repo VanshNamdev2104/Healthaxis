@@ -58,6 +58,15 @@ async function sendMessageController(req, res) {
             });
         }
 
+        // Verify chat belongs to logged-in user
+        const chat = await chatModel.findOne({ _id: chatId, user: user._id });
+        if (!chat) {
+            return res.status(403).json({
+                success: false,
+                message: "Unauthorized access to this chat room"
+            });
+        }
+
         const newHumanMessage = await messageModel.create({ chat: chatId, content: message, summary: message, role: "human" });
         // const messages = await messageModel.find({ chat: chatId });
         const lastMessages = await messageModel

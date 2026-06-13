@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const ChartComponent = ({ title, data, type = "line" }) => {
+const ChartComponent = ({ title, data }) => {
   const maxValue = data.length > 0 ? Math.max(...data) : 0;
   const minValue = data.length > 0 ? Math.min(...data) : 0;
   const range = maxValue - minValue || 1;

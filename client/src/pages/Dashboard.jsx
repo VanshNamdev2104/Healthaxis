@@ -13,11 +13,14 @@ import {
   BarChart3,
   Pill,
   MessageCircle,
-  Building2
+  Building2,
+  FileText,
+  Activity,
+  Video
 } from "lucide-react";
 import { useNavigate } from "react-router";
-import { useDispatch, useSelector } from "react-redux";
-import { logout } from "../features/auth/slice/auth.slice.js";
+import { useSelector } from "react-redux";
+import { useAuth } from "../features/auth/hooks/useAuth.js";
 import {
   DASHBOARD_TABS,
   STORAGE_KEYS,
@@ -109,17 +112,24 @@ const ADMIN_TAB_CONFIG = [
 
 export function Dashboard() {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+  const { handleLogout: authLogout } = useAuth();
 
   const USER_TAB_CONFIG = [
     BASE_USER_TAB_CONFIG[0], // Dashboard
     BASE_USER_TAB_CONFIG[1], // Hospitals
-    ...(user?.role === 'user' ? [{ id: DASHBOARD_TABS.APPOINTMENTS, label: "My Appointments", icon: Calendar }] : []),
+    ...(user?.role === 'user' ? [
+      { id: DASHBOARD_TABS.APPOINTMENTS, label: "My Appointments", icon: Calendar },
+      { id: DASHBOARD_TABS.REPORTS, label: "Medical Files", icon: FileText },
+      { id: DASHBOARD_TABS.TIMELINE, label: "Health Timeline", icon: Activity },
+      { id: DASHBOARD_TABS.VIDEO_CONSULT, label: "Video Consult", icon: Video }
+    ] : []),
     ...(user?.hospital || user?.role === 'hospitalAdmin' ? [{ id: DASHBOARD_TABS.MY_HOSPITAL, label: "My Hospital", icon: Building2 }] : []),
     ...(user?.role === 'hospitalAdmin' ? [
       { id: DASHBOARD_TABS.DOCTORS, label: "Doctors", icon: Stethoscope },
-      { id: DASHBOARD_TABS.APPOINTMENTS, label: "Appointments", icon: Calendar }
+      { id: DASHBOARD_TABS.APPOINTMENTS, label: "Appointments", icon: Calendar },
+      { id: DASHBOARD_TABS.HOSPITAL_ANALYTICS, label: "Hospital Analytics", icon: BarChart3 },
+      { id: DASHBOARD_TABS.VIDEO_CONSULT, label: "Video Consult", icon: Video }
     ] : []),
     ...BASE_USER_TAB_CONFIG.slice(2)
   ];
@@ -131,20 +141,24 @@ export function Dashboard() {
   const [activeTab, setActiveTab] = useState(initialTab);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
-  const performLogout = useCallback(() => {
+  const performLogout = useCallback(async () => {
     localStorage.removeItem(STORAGE_KEYS.TOKEN);
     localStorage.removeItem(STORAGE_KEYS.USER);
-    dispatch(logout());
+    try {
+      await authLogout();
+    } catch (err) {
+      console.error("Logout API failed:", err);
+    }
     navigate(ROUTES.AUTH);
-  }, [dispatch, navigate]);
+  }, [authLogout, navigate]);
 
   const handleLogout = useCallback(() => {
     setShowLogoutDialog(true);
-  }, []);
+  }, [setShowLogoutDialog]);
 
   const handleTabChange = useCallback((tabId) => {
     setActiveTab(tabId);
-  }, []);
+  }, [setActiveTab]);
 
   const sidebarLinks = tabConfig.map((tab) => ({
     label: tab.label,
@@ -174,7 +188,7 @@ export function Dashboard() {
     <div className="flex flex-col md:flex-row w-full h-screen overflow-hidden" role="main">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
-          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+          <div className="flex flex-col flex-1 overflow-y-auto overflow-x-hidden scrollbar-none">
             {open ? <Logo /> : <LogoIcon />}
 
             <nav className="mt-8 flex flex-col gap-2" aria-label="Main navigation">
@@ -194,7 +208,13 @@ export function Dashboard() {
                 label: user?.name || DEFAULT_USER.NAME,
                 href: "#",
                 onClick: () => handleTabChange(DASHBOARD_TABS.PROFILE),
-                icon: (
+                icon: user?.profileImage ? (
+                  <img
+                    src={user.profileImage}
+                    alt={user.name || "User profile"}
+                    className="h-7 w-7 shrink-0 rounded-full object-cover border border-slate-200/50"
+                  />
+                ) : (
                   <div className="h-7 w-7 shrink-0 rounded-full bg-indigo-500 flex items-center justify-center text-white text-[10px] font-bold">
                     {user?.name?.charAt(0) || DEFAULT_USER.INITIAL}
                   </div>

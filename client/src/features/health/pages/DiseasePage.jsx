@@ -14,7 +14,6 @@ const DiseasePage = () => {
   const [showAddModal, setShowAddModal] = useState(false);
 
   const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('All');
   const navigate = useNavigate();
 
   const gridRef = useRef(null);
@@ -35,13 +34,6 @@ const DiseasePage = () => {
       return matchSearch;
     });
   }, [diseases, search]);
-
-  // Extract unique categories from disease names for filtering
-  const categories = useMemo(() => {
-    return ['All', ...new Set((diseases?.diseases || [])
-      .map(d => d.name?.charAt(0).toUpperCase())
-      .filter(Boolean))];
-  }, [diseases]);
 
   useEffect(() => {
     window.scrollTo(0, 0);

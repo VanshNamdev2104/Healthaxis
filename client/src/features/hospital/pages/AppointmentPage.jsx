@@ -10,11 +10,12 @@ import { CalendarCheck, Search, Download, Plus, Filter, Clock, Check, X } from '
 const AppointmentPage = () => {
   const { appointments, loading, error } = useSelector((state) => state.appointment);
   const { hospital, loading: hospitalLoading } = useSelector((state) => state.hospital);
-  const {handleGetHospital, handleGetAllAppointments, HandleApproveAppointement, HandleRejectAppointement, handleDeleteAppointment } = useHospital();
+  const {handleGetHospital, handleGetAllAppointments, HandleApproveAppointement, HandleRejectAppointement, handleDeleteAppointment, handleReschedule } = useHospital();
 
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
+  const [isRescheduleModalOpen, setIsRescheduleModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
 
@@ -26,14 +27,14 @@ const AppointmentPage = () => {
 
   useEffect(()=>{
     handleGetHospital();
-    // console.log("check AP.jsx 23",appointments);
-    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
   useEffect(() => {
     if (!hospitalLoading && hospital?.data?._id) {
       handleGetAllAppointments(hospital?.data?._id);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hospital?.data?._id, hospitalLoading]);
 
   const displayAppointments = useMemo(() => {
@@ -223,16 +224,19 @@ const AppointmentPage = () => {
               <div key={app._id || i} className="appointment-card-anim opacity-0">
                 <AppointmentCard
                   appointment={app}
-                  approve={(id) => {
+                  approve={() => {
                     setSelectedAppointment(app);
                     setIsApproveModalOpen(true);
                   }}
                   reject={HandleRejectAppointement}
-                  deleteAppointment={(id) => {
+                  deleteAppointment={() => {
                     setSelectedAppointment(app);
                     setIsDeleteModalOpen(true);
                   }}
-                  onReschedule={(a) => console.log('Clinical Review:', a)}
+                  onReschedule={(a) => {
+                    setSelectedAppointment(a);
+                    setIsRescheduleModalOpen(true);
+                  }}
                 />
               </div>
             ))
@@ -256,15 +260,29 @@ const AppointmentPage = () => {
         </div>
       </main>
 
-      <ApproveModal
-        isOpen={isApproveModalOpen}
-        onClose={() => setIsApproveModalOpen(false)}
-        appointment={selectedAppointment}
-        onSubmit={(id, date, time) => {
-          HandleApproveAppointement(id, date, time);
-          setIsApproveModalOpen(false);
-        }}
-      />
+      {isApproveModalOpen && (
+        <ApproveModal
+          isOpen={isApproveModalOpen}
+          onClose={() => setIsApproveModalOpen(false)}
+          appointment={selectedAppointment}
+          onSubmit={(id, date, time) => {
+            HandleApproveAppointement(id, date, time);
+            setIsApproveModalOpen(false);
+          }}
+        />
+      )}
+
+      {isRescheduleModalOpen && (
+        <ApproveModal
+          isOpen={isRescheduleModalOpen}
+          onClose={() => setIsRescheduleModalOpen(false)}
+          appointment={selectedAppointment}
+          onSubmit={(id, date, time) => {
+            handleReschedule(id, date, time);
+            setIsRescheduleModalOpen(false);
+          }}
+        />
+      )}
 
       <DeleteModal
         isOpen={isDeleteModalOpen}

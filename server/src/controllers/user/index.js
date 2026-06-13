@@ -1,6 +1,10 @@
 import User from "../../models/user/user.model.js";
+import hospitalModel from "../../models/hospital/hospital.model.js";
+import doctorModel from "../../models/hospital/doctor.model.js";
+import appointmentModel from "../../models/hospital/appointment.model.js";
 import crypto from "crypto";
 import { generateTokens, verifyRefreshToken } from "../../utils/token.js";
+import { uploadToImageKit } from "../../services/storage.service.js";
 import {
     successResponse,
     errorResponse,
@@ -250,8 +254,12 @@ export const updateProfile = async (req, res) => {
 
         // Handle profile image upload
         if (req.file) {
-            const mimeType = req.file.mimetype || 'image/jpeg';
-            updates.profileImage = `data:${mimeType};base64,${req.file.buffer.toString('base64')}`;
+            const uploadResult = await uploadToImageKit(
+                req.file.buffer,
+                `${Date.now()}_${req.file.originalname}`,
+                "/healthaxis/avatars"
+            );
+            updates.profileImage = uploadResult.url;
         }
 
         const updatedUser = await User.findByIdAndUpdate(
@@ -279,7 +287,14 @@ export const updateProfile = async (req, res) => {
  */
 export const deleteAccount = async (req, res) => {
     try {
-        const { name, email } = req.user;
+        const { name, email, role, hospital } = req.user;
+
+        // If the user is a hospitalAdmin, cascade delete their hospital profile, doctors, and appointments
+        if (role === "hospitalAdmin" && hospital) {
+            await doctorModel.deleteMany({ hospital });
+            await appointmentModel.deleteMany({ hospital });
+            await hospitalModel.findByIdAndDelete(hospital);
+        }
 
         await User.findByIdAndDelete(req.user._id);
 

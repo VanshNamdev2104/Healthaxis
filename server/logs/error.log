@@ -2395,3 +2395,4 @@ ValidationError: Appointment validation failed: alternateNo: Alternate No is req
     at async model.save (C:\Users\Windows11\Desktop\HealthAxis\server\node_modules\mongoose\lib\model.js:667:5)
     at async Function.create (C:\Users\Windows11\Desktop\HealthAxis\server\node_modules\mongoose\lib\model.js:2754:5)
     at async createAppointmentController (file:///C:/Users/Windows11/Desktop/HealthAxis/server/src/controllers/hospital/appointment.controller.js:67:32)
+2026-06-13 22:01:19 [ERROR]: Error in uploadReport: This model does not support images {"service":"healthaxis-api"}

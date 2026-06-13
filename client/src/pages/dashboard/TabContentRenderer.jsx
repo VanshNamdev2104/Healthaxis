@@ -7,10 +7,7 @@ import ErrorBoundary from "../../components/ErrorBoundary";
 import LoadingFallback from "./LoadingFallback.jsx";
 import DashboardWelcome from "./DashboardWelcome.jsx";
 import SettingsPage from "./SettingsPage.jsx";
-import Disease_user from "../../features/user/pages/Disease_user.jsx";
-import Medicine_user from "../../features/user/pages/Medicine_user.jsx";
 import AccessDenied from "./components/AccessDenied.jsx";
-
 // Lazy load feature pages
 const Hospital = lazy(() => import("../../features/hospital/pages/Hospital"));
 const HospitalList = lazy(() => import("../../features/hospital/pages/HospitalList"));
@@ -20,6 +17,12 @@ const DiseasePage = lazy(() => import("../../features/health/pages/DiseasePage")
 const MedicinePage = lazy(() => import("../../features/health/pages/MedicinePage"));
 const ProfilePage = lazy(() => import("../../features/auth/pages/ProfilePage"));
 const Appointments_user = lazy(() => import("../../features/user/pages/Appointments_user"));
+const Disease_user = lazy(() => import("../../features/user/pages/Disease_user"));
+const Medicine_user = lazy(() => import("../../features/user/pages/Medicine_user"));
+const ReportUploadPage = lazy(() => import("../../features/hospital/pages/ReportUploadPage"));
+const HealthTimeline = lazy(() => import("../../features/hospital/pages/HealthTimeline"));
+const VideoConsultation = lazy(() => import("../../features/hospital/pages/VideoConsultation"));
+const HospitalAnalytics = lazy(() => import("../../features/hospital/pages/HospitalAnalytics"));
 
 // Lazy load admin pages
 const AdminDashboard = lazy(() => import("../../features/admin/pages/AdminDashboard"));
@@ -33,7 +36,7 @@ const DoctorManagement = lazy(() => import("../../features/admin/pages/DoctorMan
 const TabContentRenderer = memo(({ activeTab, user, setActiveTab }) => {
 
   const contentMap = {
-    [DASHBOARD_TABS.DASHBOARD]: <DashboardWelcome user={useSelector((state) => state.auth.user)} />,
+    [DASHBOARD_TABS.DASHBOARD]: <DashboardWelcome user={useSelector((state) => state.auth.user)} setActiveTab={setActiveTab} />,
     [DASHBOARD_TABS.HOSPITALS]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
@@ -44,7 +47,7 @@ const TabContentRenderer = memo(({ activeTab, user, setActiveTab }) => {
     [DASHBOARD_TABS.MY_HOSPITAL]: (
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
-          <Hospital />
+          <Hospital isTab={true} />
         </Suspense>
       </ErrorBoundary>
     ),
@@ -87,6 +90,34 @@ const TabContentRenderer = memo(({ activeTab, user, setActiveTab }) => {
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <ProfilePage />
+        </Suspense>
+      </ErrorBoundary>
+    ),
+    [DASHBOARD_TABS.REPORTS]: (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <ReportUploadPage />
+        </Suspense>
+      </ErrorBoundary>
+    ),
+    [DASHBOARD_TABS.TIMELINE]: (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <HealthTimeline />
+        </Suspense>
+      </ErrorBoundary>
+    ),
+    [DASHBOARD_TABS.VIDEO_CONSULT]: (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <VideoConsultation />
+        </Suspense>
+      </ErrorBoundary>
+    ),
+    [DASHBOARD_TABS.HOSPITAL_ANALYTICS]: (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          {user.role === "hospitalAdmin" ? <HospitalAnalytics /> : <AccessDenied />}
         </Suspense>
       </ErrorBoundary>
     ),

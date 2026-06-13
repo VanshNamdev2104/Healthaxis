@@ -9,6 +9,10 @@ export const DASHBOARD_TABS = {
   MEDICINES: "Medicines",
   SETTINGS: "Settings",
   PROFILE: "Profile",
+  REPORTS: "Reports",
+  TIMELINE: "Timeline",
+  VIDEO_CONSULT: "VideoConsult",
+  HOSPITAL_ANALYTICS: "HospitalAnalytics",
   // Admin tabs
   ADMIN_DASHBOARD: "AdminDashboard",
   VERIFICATION_QUEUE: "VerificationQueue",

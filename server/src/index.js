@@ -7,6 +7,7 @@ import passport from "./config/passport.js";
 import env from "./config/dotenv.js";
 import { notFoundResponse } from "./utils/responsehandler.js";
 import errorhandlerMiddleware from "./utils/errorhandler.js";
+import { generalLimiter, authLimiter, aiLimiter } from "./middlewares/rateLimiter.js";
 import path from "path";
 import { fileURLToPath } from "url";
 
@@ -22,6 +23,10 @@ import hospitalRoutes from "./routes/hospital/hospital.routes.js";
 import doctorRoutes from "./routes/hospital/doctor.routes.js";
 import appointmentRoutes from "./routes/hospital/appointment.routes.js";
 import adminRoutes from "./routes/admin/admin.routes.js";
+import reportRoutes from "./routes/hospital/report.routes.js";
+import followupRoutes from "./routes/hospital/followup.routes.js";
+import callRoutes from "./routes/hospital/call.routes.js";
+import notificationRoutes from "./routes/notification.routes.js";
 import graphService from "./services/ai/graph.service.js";
 import healthRoutes from "../health.js";
 
@@ -66,9 +71,10 @@ app.use(passport.initialize());
 app.set("trust proxy", true);
 
 // ─── API Routes ──────────────────────────────────────────────
-app.use("/api/user", userRoutes);
-app.use("/api/chat", chatRoutes);
-app.use("/api/auth", authRoutes);
+app.use("/api", generalLimiter);
+app.use("/api/user", authLimiter, userRoutes);
+app.use("/api/chat", aiLimiter, chatRoutes);
+app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/health/disease", diseaseRoutes);
 app.use("/api/health/diseases", diseaseRoutes);
 app.use("/api/health/medicine", medicineRoutes);
@@ -77,6 +83,10 @@ app.use("/api/hospital", hospitalRoutes);
 app.use("/api/doctors", doctorRoutes);
 app.use("/api/appointments", appointmentRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/reports", reportRoutes);
+app.use("/api/followups", followupRoutes);
+app.use("/api/calls", callRoutes);
+app.use("/api/notifications", notificationRoutes);
 app.use("/health", healthRoutes);
 
 // ─── Static Files ─────────────────────────────────────────
