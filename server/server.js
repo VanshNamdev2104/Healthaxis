@@ -2,7 +2,6 @@ import http from "http";
 import app from "./src/index.js";
 import env from "./src/config/dotenv.js";
 import { connectDb, closeDb } from "./src/config/db.js";
-import { initSocket } from "./src/config/socket.js";
 import logger from "./src/config/logger.js";
 import "./src/services/mail.service.js";
 
@@ -12,9 +11,6 @@ const startServer = async () => {
 
     // Create HTTP server from Express app
     const server = http.createServer(app);
-
-    // Initialize Socket.IO on the HTTP server
-    initSocket(server);
 
     server.listen(env.PORT, () => {
       logger.info(`Server running on port ${env.PORT}`);

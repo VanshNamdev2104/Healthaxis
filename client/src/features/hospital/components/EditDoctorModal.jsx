@@ -26,22 +26,27 @@ const PremiumInput = ({ label, icon, ...props }) => (
 const EditDoctorModal = ({ isOpen, onClose, onSubmit, doctor, isLoading }) => {
   const modalRef = useRef(null);
   const overlayRef = useRef(null);
-  const [form, setForm] = useState({
-    name: "", email: "", contact: "", specialization: "", experience: "", fee: 0
-  });
+  const [form, setForm] = useState(() => ({
+    name: doctor?.name || "",
+    email: doctor?.email || "",
+    contact: doctor?.contact || "",
+    specialization: doctor?.specialization || "",
+    experience: doctor?.experience || "",
+    fee: doctor?.fee || 0
+  }));
+  const [prevDoctor, setPrevDoctor] = useState(doctor);
 
-  useEffect(() => {
-    if (doctor) {
-      setForm({
-        name: doctor.name || "",
-        email: doctor.email || "",
-        contact: doctor.contact || "",
-        specialization: doctor.specialization || "",
-        experience: doctor.experience || "",
-        fee: doctor.fee || 0
-      });
-    }
-  }, [doctor]);
+  if (doctor !== prevDoctor) {
+    setPrevDoctor(doctor);
+    setForm({
+      name: doctor?.name || "",
+      email: doctor?.email || "",
+      contact: doctor?.contact || "",
+      specialization: doctor?.specialization || "",
+      experience: doctor?.experience || "",
+      fee: doctor?.fee || 0
+    });
+  }
 
   useEffect(() => {
     if (isOpen) {

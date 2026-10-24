@@ -5,51 +5,12 @@ import { Link } from "react-router";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../features/auth/slice/auth.slice";
 import LogoutConfirmDialog from "./LogoutConfirmDialog";
+import Antigravity from "./Antigravity";
 
 /* helper */
-function cn(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
-/* floating shapes */
-function ElegantShape({
-  className,
-  delay = 0,
-  width = 400,
-  height = 100,
-  rotate = 0,
-  gradient = "from-white/[0.08]",
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: -150, rotate: rotate - 15 }}
-      animate={{ opacity: 1, y: 0, rotate }}
-      transition={{
-        duration: 2.4,
-        delay,
-        ease: [0.23, 0.86, 0.39, 0.96],
-      }}
-      className={cn("absolute", className)}
-    >
-      <motion.div
-        animate={{ y: [0, 15, 0] }}
-        transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        style={{ width, height }}
-        className="relative"
-      >
-        <div
-          className={cn(
-            "absolute inset-0 rounded-full",
-            "bg-gradient-to-r to-transparent",
-            gradient,
-            "backdrop-blur-[2px] border border-white/[0.15]",
-            "shadow-[0_8px_32px_rgba(255,255,255,0.1)]"
-          )}
-        />
-      </motion.div>
-    </motion.div>
-  );
-}
+// function cn(...classes) {
+//   return classes.filter(Boolean).join(" ");
+// }
 
 export default function HeroGeometric() {
   const { isAuthenticated } = useSelector((state) => state.auth);
@@ -76,41 +37,29 @@ export default function HeroGeometric() {
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#030303]">
       
-      {/* background glow */}
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/[0.05] via-transparent to-blue-500/[0.05] blur-3xl" />
-
-      {/* floating shapes */}
-      <div className="absolute inset-0 overflow-hidden">
-        <ElegantShape
-          delay={0.3}
-          width={600}
-          height={140}
-          rotate={12}
-          gradient="from-cyan-500/[0.15]"
-          className="left-[-10%] md:left-[-5%] top-[20%]"
-        />
-
-        <ElegantShape
-          delay={0.5}
-          width={500}
-          height={120}
-          rotate={-15}
-          gradient="from-blue-500/[0.15]"
-          className="right-[-5%] md:right-[0%] top-[70%]"
-        />
-
-        <ElegantShape
-          delay={0.4}
-          width={300}
-          height={80}
-          rotate={-8}
-          gradient="from-indigo-500/[0.15]"
-          className="left-[10%] bottom-[10%]"
+      {/* background glow / antigravity */}
+      <div className="absolute inset-0 z-0">
+        <Antigravity
+          count={300}
+          magnetRadius={6}
+          ringRadius={7}
+          waveSpeed={0.4}
+          waveAmplitude={1}
+          particleSize={1.5}
+          lerpSpeed={0.05}
+          color="#5227FF"
+          autoAnimate
+          particleVariance={1}
+          rotationSpeed={0}
+          depthFactor={1}
+          pulseSpeed={3}
+          particleShape="capsule"
+          fieldStrength={10}
         />
       </div>
 
       {/* MAIN CONTENT */}
-      <div className="relative z-10 container mx-auto px-4 md:px-6 text-center">
+      <div className="relative z-10 container mx-auto px-4 md:px-6 text-center pointer-events-none">
         <div className="max-w-3xl mx-auto">
 
           {/* badge */}
@@ -165,7 +114,7 @@ export default function HeroGeometric() {
           >
             {isAuthenticated ? (
               <div className="flex justify-center gap-4 flex-wrap">
-                <Link to="/dashboard">
+                <Link to="/dashboard" className="pointer-events-auto">
                   <button className="px-8 py-3 rounded-full bg-linear-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition shadow-xl">
                     Dashboard
                   </button>
@@ -173,14 +122,14 @@ export default function HeroGeometric() {
 
                 <button
                   onClick={() => setShowLogoutDialog(true)}
-                  className="px-8 py-3 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 text-white transition"
+                  className="px-8 py-3 rounded-full bg-white/10 border border-white/20 hover:bg-white/20 text-white transition pointer-events-auto"
                 >
                   Logout
                 </button>
               </div>
             ) : (
               <div className="flex justify-center gap-4 flex-wrap">
-                <Link to="/auth">
+                <Link to="/auth" className="pointer-events-auto">
                   <button className="px-8 py-3 rounded-full bg-linear-to-r from-cyan-400 to-blue-500 text-black font-semibold hover:scale-105 transition shadow-xl">
                     Get Started
                   </button>

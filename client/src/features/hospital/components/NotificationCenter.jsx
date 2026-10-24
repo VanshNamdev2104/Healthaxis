@@ -7,7 +7,19 @@ export default function NotificationCenter() {
     const [isOpen, setIsOpen] = useState(false);
     const dropdownRef = useRef(null);
 
+    async function fetchNotifications() {
+        try {
+            const response = await axiosInstance.get("/api/notifications");
+            if (response.data?.success) {
+                setNotifications(response.data.data);
+            }
+        } catch (err) {
+            console.error("Failed to load notifications", err);
+        }
+    }
+
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         fetchNotifications();
         
         // Poll for notifications every 30 seconds for dynamic updates
@@ -26,17 +38,6 @@ export default function NotificationCenter() {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-
-    const fetchNotifications = async () => {
-        try {
-            const response = await axiosInstance.get("/api/notifications");
-            if (response.data?.success) {
-                setNotifications(response.data.data);
-            }
-        } catch (err) {
-            console.error("Failed to load notifications", err);
-        }
-    };
 
     const handleMarkAllRead = async () => {
         try {

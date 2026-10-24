@@ -56,21 +56,20 @@ const DashboardWelcome = memo(({ user, setActiveTab }) => {
     }
   }, [user?.role, hospitalId, handleGetAllDoctors, handleGetAllAppointments]);
 
-  const [lang, setLang] = useState("en");
-
-  useEffect(() => {
+  const [lang] = useState(() => {
     const saved = localStorage.getItem("healthaxis_settings");
     if (saved) {
       try {
         const settings = JSON.parse(saved);
         if (settings.language) {
-          setLang(settings.language);
+          return settings.language;
         }
       } catch (e) {
         console.error(e);
       }
     }
-  }, []);
+    return "en";
+  });
 
   const getGreeting = () => {
     const hour = new Date().getHours();

@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { StrictMode, useEffect, useState } from 'react'
+import { StrictMode, useEffect } from 'react'
 import { createRoot } from 'react-dom/client'
 import './app/index.css'
 import { ToastContainer, toast } from 'react-toastify'
@@ -10,13 +10,10 @@ import { store } from './app/store/app.store.js'
 import { useAuth } from './features/auth/hooks/useAuth.js'
 
 
-import HealthAxisLoader from './components/HealthAxisLoader.jsx'
-
 // This component runs once when the app starts.
 // It checks with the backend if the user's cookies are still valid.
 const InitAuth = ({ children }) => {
   const { handleGetCurrentUser, handleLogout, isAuthenticated } = useAuth();
-  const [showLoader, setShowLoader] = useState(true);
 
   // Sync settings (theme and accent color) on mount
   useEffect(() => {
@@ -89,10 +86,6 @@ const InitAuth = ({ children }) => {
       events.forEach(event => document.removeEventListener(event, resetTimer));
     };
   }, [isAuthenticated, handleLogout]);
-
-  if (showLoader) {
-    return <HealthAxisLoader onComplete={() => setShowLoader(false)} duration={4800} />;
-  }
 
   return children;
 };

@@ -25,7 +25,6 @@ import appointmentRoutes from "./routes/hospital/appointment.routes.js";
 import adminRoutes from "./routes/admin/admin.routes.js";
 import reportRoutes from "./routes/hospital/report.routes.js";
 import followupRoutes from "./routes/hospital/followup.routes.js";
-import callRoutes from "./routes/hospital/call.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import graphService from "./services/ai/graph.service.js";
 import healthRoutes from "../health.js";
@@ -85,7 +84,6 @@ app.use("/api/appointments", appointmentRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/followups", followupRoutes);
-app.use("/api/calls", callRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/health", healthRoutes);
 

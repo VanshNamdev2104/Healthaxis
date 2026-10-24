@@ -21,7 +21,6 @@ const Disease_user = lazy(() => import("../../features/user/pages/Disease_user")
 const Medicine_user = lazy(() => import("../../features/user/pages/Medicine_user"));
 const ReportUploadPage = lazy(() => import("../../features/hospital/pages/ReportUploadPage"));
 const HealthTimeline = lazy(() => import("../../features/hospital/pages/HealthTimeline"));
-const VideoConsultation = lazy(() => import("../../features/hospital/pages/VideoConsultation"));
 const HospitalAnalytics = lazy(() => import("../../features/hospital/pages/HospitalAnalytics"));
 
 // Lazy load admin pages
@@ -104,13 +103,6 @@ const TabContentRenderer = memo(({ activeTab, user, setActiveTab }) => {
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <HealthTimeline />
-        </Suspense>
-      </ErrorBoundary>
-    ),
-    [DASHBOARD_TABS.VIDEO_CONSULT]: (
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingFallback />}>
-          <VideoConsultation />
         </Suspense>
       </ErrorBoundary>
     ),

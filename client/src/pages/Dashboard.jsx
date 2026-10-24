@@ -16,7 +16,6 @@ import {
   Building2,
   FileText,
   Activity,
-  Video
 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useSelector } from "react-redux";
@@ -122,14 +121,12 @@ export function Dashboard() {
       { id: DASHBOARD_TABS.APPOINTMENTS, label: "My Appointments", icon: Calendar },
       { id: DASHBOARD_TABS.REPORTS, label: "Medical Files", icon: FileText },
       { id: DASHBOARD_TABS.TIMELINE, label: "Health Timeline", icon: Activity },
-      { id: DASHBOARD_TABS.VIDEO_CONSULT, label: "Video Consult", icon: Video }
     ] : []),
     ...(user?.hospital || user?.role === 'hospitalAdmin' ? [{ id: DASHBOARD_TABS.MY_HOSPITAL, label: "My Hospital", icon: Building2 }] : []),
     ...(user?.role === 'hospitalAdmin' ? [
       { id: DASHBOARD_TABS.DOCTORS, label: "Doctors", icon: Stethoscope },
       { id: DASHBOARD_TABS.APPOINTMENTS, label: "Appointments", icon: Calendar },
       { id: DASHBOARD_TABS.HOSPITAL_ANALYTICS, label: "Hospital Analytics", icon: BarChart3 },
-      { id: DASHBOARD_TABS.VIDEO_CONSULT, label: "Video Consult", icon: Video }
     ] : []),
     ...BASE_USER_TAB_CONFIG.slice(2)
   ];
